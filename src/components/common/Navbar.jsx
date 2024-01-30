@@ -11,26 +11,23 @@ import {
   MenuDivider,
   Avatar,
   WrapItem,
-  Wrap,
+  Box,
 } from "@chakra-ui/react";
 
 const Navbar = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(false);
   return (
     <div className="flex items-center justify-between bg-white p-4">
       <Image src={blackLogo} alt="logo" />
-      <div>
+      <div className="flex items-center">
         {isLogin ? (
           <Menu>
             <MenuButton as="Button">
-              <WrapItem>
-                <Avatar
-                  size="md"
-                  boxSize="2.5em"
-                  name=""
-                  src="https://bit.ly/broken-link"
-                />
-              </WrapItem>
+              <Box display="flex" justifyContent="center" alignItems="center">
+                <WrapItem>
+                  <Avatar size="md" boxSize="50px" name="" src={mockPhoto} />
+                </WrapItem>
+              </Box>
             </MenuButton>
             <MenuList>
               <MenuItem>Profile</MenuItem>
