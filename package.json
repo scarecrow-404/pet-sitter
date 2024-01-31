@@ -14,9 +14,11 @@
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "framer-motion": "^11.0.3",
+    "jquery": "^3.7.1",
     "next": "14.1.0",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "thai-address-autocomplete-react": "^1.0.1"
   },
   "devDependencies": {
     "autoprefixer": "^10.0.1",
