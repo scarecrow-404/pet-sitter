@@ -26,6 +26,7 @@ import halfYellowEllipse from "@/asset/images/half-yellow-ellipse.svg";
 export default function Home() {
   return (
     <>
+
       <Navbar />
       <main className="flex min-h-4/6 flex-col items-center justify-between gap-10 my-3 border-2">
         <div className="w-full flex justify-items-center items-center border-2 border-cyan-500 lg:w-11/12">
@@ -229,6 +230,7 @@ export default function Home() {
         </div>
       </main>{" "}
       <Footer />
+  
     </>
   );
 }
