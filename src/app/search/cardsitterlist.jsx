@@ -5,7 +5,7 @@ import catpic from "@/asset/images/catforsitterlist.jpg";
 import iconLocation from "@/asset/images/icon=map-marker.svg";
 import Footer from "@/components/common/Footer";
 import { useState } from "react";
-import star from "@/asset/images/star 1.svg";
+import star from "@/asset/images/star1.svg";
 
 function CardSitter({}) {
   const sitterRating = [5, 4, 3, 2, 1];

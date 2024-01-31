@@ -105,7 +105,7 @@ export default function Home() {
             />
           </div>
         </div>
-
+<SearchBar/>
         <p className="w-11/12 text-center text-base font-extrabold md:text-lg">
           "Your Pets, Our Priority: Perfect Care, Anytime, Anywhere."
         </p>

@@ -72,8 +72,8 @@ const SitterManagement = () => {
       [scope]: value,
     }));
   };
-  const handleSelect = (address, event) => {
-    event.preventDefault();
+  const handleSelect = (address) => {
+   
     setAddress(address);
     setProvince(address.province);
     setDistrict(address.amphoe);
@@ -83,7 +83,7 @@ const SitterManagement = () => {
 
   //upload logo
   const handleImageChange = (event) => {
-    event.preventDefault();
+    
     const file = event.target.files[0];
 
     if (Object.keys(logo).length > 1) {
@@ -106,7 +106,7 @@ const SitterManagement = () => {
   };
   //upload petimage
   const handlePetImageChange = (event) => {
-    event.preventDefault();
+   
     const file = event.target.files[0];
 
     if (Object.keys(petImage).length >= 10) {
