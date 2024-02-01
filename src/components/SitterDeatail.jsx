@@ -5,6 +5,7 @@ import Image from "next/image";
 import React, { useState } from "react";
 import avatar from "@/asset/images/secondSitterDetail.svg";
 import star from "@/asset/images/Star2.svg";
+import PopupBooking from "./Popup";
 
 function SitterDetail() {
   const [rating, setRating] = useState("");
@@ -21,18 +22,18 @@ function SitterDetail() {
   return (
     <div className="mainDivDetailSitter lg:flex-row-reverse lg:flex md:flex-row-reverse md:flex">
       <div className="p-[20px] gap-2">
-        <div className=" p-[24px]  flex flex-col items-center text-center gap-2 border-2 rounded-lg ">
-          <Image src={avatar} className="rounded-[50%]" />
+        <div className=" p-[24px]  flex flex-col items-center text-center gap-2 border-2 rounded-lg w-full">
+          <Image src={avatar} className="rounded-[50%] " alt="" />
           <p className="text-[36px]  font-bold "> Happy House!</p>
           <div className="flex gap-3">
             <p className=" font-bold text-[20px]">John Dep</p>
             <p className="text-[#1CCD83] text-[16px]">1.5 Years Exp.</p>
           </div>
           <div>
-            <Image src={star} />
+            <Image src={star} alt="" />
           </div>
           <div className="flex text-[#7B7E8F] text-[15px]">
-            <Image src={locationIcon} />
+            <Image src={locationIcon} alt="" />
             <p>Senanikorn, Bangkok</p>
           </div>
           <div className=" flex gap-2 pt-2 ">
@@ -51,11 +52,7 @@ function SitterDetail() {
           </div>
         </div>
 
-        <div className=" w-full h-auto p-[20px] border-2 rounded-lg shadow-2xl">
-          <button className="bg-secondOrange w-full rounded-2xl p-[10px] hover:bg-thirdOrange focus:bg-firstOrange-400  active:bg-fifthOrange">
-            Book Now
-          </button>
-        </div>
+        <PopupBooking />
       </div>
 
       <div className="sisterDetail flex w-full ">
@@ -96,7 +93,7 @@ function SitterDetail() {
           </div>
           <div className="rating p-[24px] bg-fifthGray rounded-sm rounded-tl-[100px] rounded-tr-[20px] flex flex-col ">
             <div className="flex p-[24px] bg-white rounded-sm rounded-l-[100px] rounded-r-[20px] relative gap-[20px] items-start">
-              <Image src={union} className="w-[100px]" />
+              <Image src={union} className="w-[100px]" alt="" />
               <p className=" absolute text-[26px]  text-orange-600  left-[53px] top-[50px]">
                 4.5
               </p>
@@ -130,7 +127,7 @@ function SitterDetail() {
             </div>
             <div className="flex flex-col p-[24px]">
               <div className="flex gap-3 ">
-                <Image src={dog} className="w-[60px]  rounded-[50%]" />
+                <Image src={dog} className="w-[60px]  rounded-[50%]" alt="" />
                 <div>
                   <p>John Dep</p>
                   <p>Apr 23, 2024</p>
