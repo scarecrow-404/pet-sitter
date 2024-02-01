@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import Link from "next/link";
 import blackLogo from "@/asset/images/logoInBlack.svg";
 import mockPhoto from "@/asset/images/profileFrame.svg";
 import Image from "next/image";
@@ -18,11 +19,14 @@ const Navbar = () => {
   const [isLogin, setIsLogin] = useState(true);
   return (
     <div className="flex items-center justify-between bg-white p-4 sticky top-0 z-20">
-      <Image src={blackLogo} alt="logo" className=" w-fit md:w-52" />
+      <Link href="/">
+        <Image src={blackLogo} alt="logo" className=" w-fit md:w-52" />
+      </Link>
+
       <div className="flex items-center">
         {isLogin ? (
           <Menu>
-            <MenuButton as="Button">
+            <MenuButton as="button">
               <Box display="flex" justifyContent="center" alignItems="center">
                 <WrapItem>
                   <Avatar size="md" boxSize="40px" name="" src={mockPhoto} />
@@ -42,10 +46,11 @@ const Navbar = () => {
         ) : (
           <button>Login</button>
         )}
-
-        <button className="bg-secondOrange rounded-full p-2 text-white ml-6 hidden md:block">
-          Find A Pet Sitter
-        </button>
+        <Link href="/search">
+          <button className="bg-secondOrange rounded-full p-2 text-white ml-6 hidden md:block">
+            Find A Pet Sitter
+          </button>
+        </Link>
       </div>
     </div>
   );
