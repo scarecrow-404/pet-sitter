@@ -2,35 +2,29 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { CreateInput } from "thai-address-autocomplete-react";
 import Image from "next/image";
-
+import Link from "next/link";
 import supabase from "@/lib/utils/db";
 import { useRouter } from "next/navigation";
-const router = useRouter;
-import {
-  FormControl,
-  FormLabel,
-  Input,
-  Textarea,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  IconButton,
-} from "@chakra-ui/react";
+
+import { FormControl, FormLabel, Input, Textarea } from "@chakra-ui/react";
 import { Select, CreatableSelect, AsyncSelect } from "chakra-react-select";
-import { HamburgerIcon } from "@chakra-ui/icons";
+
 import Frame427321094 from "@/asset/images/Frame427321094.svg";
 import deleteButton from "@/asset/images/delete.svg";
 import deleteButtonHover from "@/asset/images/deleteHover.svg";
 import frameFray from "@/asset/images/photoFrameOutlineRounded.svg";
 import upload from "@/asset/images/uploadMin10.svg";
 import uploadGray from "@/asset/images/uploadMin10Gray.svg";
-import profile from "@/asset/images/Frame427321006.svg";
+
 import { flightRouterStateSchema } from "next/dist/server/app-render/types";
 import { Router } from "next/router";
+import { event } from "jquery";
+// import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+
 const InputThaiAddress = CreateInput();
 
-const PetSitterProfile = () => {
+const PetSitterProfilePage = () => {
+  const router = useRouter();
   //superbase
   const [loading, setLoading] = useState(true);
   const insertDataSitter = async () => {
@@ -58,12 +52,40 @@ const PetSitterProfile = () => {
       if (error && status !== 406) {
         throw error;
       }
-      console.log(data);
+      alert("บันทึกข้อมูลเรียบร้อยแล้ว...");
     } catch (error) {
       console.log(error);
     } finally {
       setLoading(false);
     }
+  };
+  //upload file
+  const uploadLogo = async () => {
+    try {
+      if (!file) return;
+      // const file = event.target.files[0];
+      // if (!event.target.files || event.target.files.length === 0) {
+      //   throw new Error("You must select an image to upload.");
+      // }
+
+      const { data, error } = await supabase.storage
+        .from("images")
+        .upload("public/" + file?.name, file);
+      if (error) {
+        console.error("Error uploading file:", error);
+      } else {
+        console.log("File uploaded successfully:", data);
+        setImageURL(data.publicURL);
+      }
+    } catch (error) {
+      alert("Error uploading avatar!");
+    }
+  };
+
+  /// show data
+  const getDataSitter = async () => {
+    try {
+    } catch (error) {}
   };
 
   //เปลี่ยนสี ปุ่ม delete v2
@@ -89,7 +111,11 @@ const PetSitterProfile = () => {
   const [services, setServices] = useState("");
   const [myPlace, setMyPlace] = useState("");
   const [logo, setLogo] = useState({});
-  const [previewUrl, setPreviewUrl] = useState(Frame427321094);
+  //upload logo
+  const [previewURL, setPreviewURL] = useState(Frame427321094);
+  const [file, setFile] = useState(null);
+  const [imageURL, setImageURL] = useState(null);
+
   const [previewUrlPet, setPreviewUrlPet] = useState();
   const [petImage, setPetImage] = useState({});
 
@@ -124,28 +150,20 @@ const PetSitterProfile = () => {
   };
 
   //upload logo
-  const handleImageChange = (event) => {
-    event.preventDefault();
-    const file = event.target.files[0];
+  const handleLogoChange = (event) => {
+   
+    const selectedFile = event.target.files[0];
 
-    if (Object.keys(logo).length > 1) {
-      alert("Can't upload more than 1 image");
-      return true;
+    if (selectedFile.size > 2 * 1024 * 1024) {
+      // Check if file size exceeds 2 MB
+      alert("File size exceeds the limit of 2 MB.");
+      return;
     }
 
-    if (file && file.size <= 10 * 1024 * 1024) {
-      const uniqueId = Date.now();
-      setLogo({
-        [uniqueId]: file,
-      });
-
-      const reader = new FileReader();
-      reader.onload = () => {
-        setPreviewUrl(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
+    setFile(selectedFile);
+    setPreviewURL(URL.createObjectURL(selectedFile));
   };
+
   //upload petimage
   const handlePetImageChange = async (event) => {
     event.preventDefault();
@@ -155,7 +173,7 @@ const PetSitterProfile = () => {
       setIsMoreThanTen(true);
       return true;
     }
-    console.log(Object.keys(petImage).length);
+
     if (file && file.size <= 20 * 1024 * 1024) {
       const uniqueId = Date.now();
       setPetImage({ ...petImage, [uniqueId]: file });
@@ -163,7 +181,7 @@ const PetSitterProfile = () => {
   };
 
   const handleFormSubmit = (event) => {
-    event.preventDefault();
+    uploadPetSitter();
     insertDataSitter();
   };
 
@@ -203,154 +221,121 @@ const PetSitterProfile = () => {
     { value: "5", label: "5++" },
   ];
   return (
-    <div className="flex bg-sixthGray mx-auto max-w-[1440px]">
-      <div className="min-w-[375px] mx-auto md:w-auto md:mx-3 bg-sixthGray max-w-[1200px] lg:ml-60">
-        <div className="headBar flex items-center gap-5 p-5 bg-white justify-between">
-          <div className="flex flex-col items-center md:flex-row md:gap-5">
-            <Image src={profile} width={40} height={40} alt="profile" />
-            <p>Jane Maison</p>
-          </div>
-          <div className="lg:hidden">
-            <Menu>
-              <MenuButton
-                as={IconButton}
-                aria-label="Options"
-                icon={<HamburgerIcon />}
-                variant="outline"
-              />
-              <MenuList>
-                <MenuItem>Pet Sitter Profile</MenuItem>
-                <MenuItem>Booking List</MenuItem>
-                <MenuItem>Payout Option</MenuItem>
-                <MenuItem>Log Out</MenuItem>
-              </MenuList>
-            </Menu>
-          </div>
+    <>
+      <div className="Title flex justify-between items-center py-3">
+        <div className="nameTitle pl-5">Pet Sitter Profile</div>
+        <div className="pr-5">
+          <button
+            onClick={handleFormSubmit}
+            className="bg-secondOrange rounded-3xl min-w-20 h-10 hidden md:block"
+          >
+            Update
+          </button>
         </div>
-        <div className="Title flex justify-between items-center py-3">
-          <div className="nameTitle pl-5">Pet Sitter Profile</div>
-          <div className="pr-5">
-            <button
-              onClick={handleFormSubmit}
-              className="bg-secondOrange rounded-3xl min-w-20 h-10 hidden md:block"
-            >
-              Update
-            </button>
-          </div>
-        </div>
+      </div>
+      <div className="bg-sixthGray rounded-xl p-5 mb-5">
         <div className="bg-white rounded-xl p-5 mb-5">
           <div className="pb-2">Basic Information</div>
           <div className="flex flex-col gap-2 mt-2 w-60">
+            Profile Image
             <label htmlFor="profile">
-              <FormLabel>Profile Image</FormLabel>
-              {previewUrl && (
-                <div className="pic ">
-                  <Image
-                    className="block md:hidden lg:hidden cursor-pointer rounded-full w-[100px] h-[100px]"
-                    src={previewUrl}
-                    width={100}
-                    height={100}
-                    alt="Preview"
-                  />
-                  <Image
-                    className="hidden md:block lg:hidden cursor-pointer rounded-full w-40 h-40"
-                    src={previewUrl}
-                    width={167}
-                    height={167}
-                    alt="Preview"
-                  />
-                  <Image
-                    className="hidden md:hidden lg:block cursor-pointer rounded-full w-60 h-60"
-                    src={previewUrl}
-                    width={240}
-                    height={240}
-                    alt="Preview"
-                  />
-                </div>
+              {
+                imageURL ? (
+                  <Image src={imageURL} alt="Image" width={100} height={100} />
+                ) : null
+                // <Image src={previewURL} alt="Preview" width={100} height={100}/>
+              }
+              {previewURL && (
+                <Image
+                  src={previewURL}
+                  alt="Preview"
+                  width={100}
+                  height={100}
+                />
               )}
 
               <input
                 type="file"
+                onChange={handleLogoChange}
+                accept="image/*"
+                className="sr-only"
                 id="profile"
                 name="profile"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="sr-only"
               />
             </label>
-          </div>
-          <div className="md:flex md:gap-9 md:justify-between">
-            <div className="fullname md:w-80 lg:w-[474px] xl:w-[560px]">
-              <FormControl isRequired>
-                <FormLabel>Your full name</FormLabel>
-                <Input
-                  type="text"
-                  minLength="6"
-                  maxLength="60"
-                  value={fullName}
-                  onChange={(event) => {
-                    setFullName(event.target.value);
-                  }}
-                />
-              </FormControl>
+            <div className="md:flex md:gap-9 md:justify-between">
+              <div className="fullname md:w-80 lg:w-[474px] xl:w-[560px]">
+                <FormControl isRequired>
+                  <FormLabel>Your full name</FormLabel>
+                  <Input
+                    type="text"
+                    minLength="6"
+                    maxLength="60"
+                    value={fullName}
+                    onChange={(event) => {
+                      setFullName(event.target.value);
+                    }}
+                  />
+                </FormControl>
+              </div>
+              <div className="Experience md:w-80 lg:w-[474px] xl:w-[560px]">
+                <FormControl isRequired>
+                  <FormLabel>Experience</FormLabel>
+                  <Select
+                    name="experience"
+                    options={options}
+                    placeholder="Select Experience"
+                    closeMenuOnSelect={true}
+                    value={experience}
+                    onChange={handleExperience}
+                    id="experience"
+                  />
+                </FormControl>
+              </div>
             </div>
-            <div className="Experience md:w-80 lg:w-[474px] xl:w-[560px]">
-              <FormControl isRequired>
-                <FormLabel>Experience</FormLabel>
-                <Select
-                  name="experience"
-                  options={options}
-                  placeholder="Select Experience"
-                  closeMenuOnSelect={true}
-                  value={experience}
-                  onChange={handleExperience}
-                  id="experience"
-                />
-              </FormControl>
+            <div className="md:flex md:gap-9 md:justify-between">
+              <div className="phoneNumber md:w-80 lg:w-[474px] xl:w-[560px]">
+                <FormControl isRequired>
+                  <FormLabel>Phone Number</FormLabel>
+                  <Input
+                    type="tel"
+                    minLength={1}
+                    maxLength={12}
+                    inputMode="numeric"
+                    pattern="\d*"
+                    value={phoneNumber}
+                    onChange={(event) => {
+                      setPhoneNumber(event.target.value);
+                    }}
+                  />
+                </FormControl>
+              </div>
+              <div className="email md:w-80 lg:w-[474px] xl:w-[560px]">
+                <FormControl isRequired>
+                  <FormLabel>Email</FormLabel>
+                  <Input
+                    value={email}
+                    onChange={(event) => {
+                      setEmail(event.target.value);
+                    }}
+                  />
+                </FormControl>
+              </div>
             </div>
-          </div>
-          <div className="md:flex md:gap-9 md:justify-between">
-            <div className="phoneNumber md:w-80 lg:w-[474px] xl:w-[560px]">
-              <FormControl isRequired>
-                <FormLabel>Phone Number</FormLabel>
-                <Input
-                  type="tel"
-                  minLength={1}
-                  maxLength={12}
-                  inputMode="numeric"
-                  pattern="\d*"
-                  value={phoneNumber}
-                  onChange={(event) => {
-                    setPhoneNumber(event.target.value);
-                  }}
-                />
-              </FormControl>
-            </div>
-            <div className="email md:w-80 lg:w-[474px] xl:w-[560px]">
-              <FormControl isRequired>
-                <FormLabel>Email</FormLabel>
-                <Input
-                  value={email}
-                  onChange={(event) => {
-                    setEmail(event.target.value);
-                  }}
-                />
-              </FormControl>
-            </div>
-          </div>
-          <div>
-            <div className="Introduction">
-              <FormControl isRequired>
-                <FormLabel>
-                  Introduction (Describe about yourself as pet sitter)
-                </FormLabel>
-                <Textarea
-                  value={introduction}
-                  onChange={(event) => {
-                    setIntroduction(event.target.value);
-                  }}
-                />
-              </FormControl>
+            <div>
+              <div className="Introduction">
+                <FormControl isRequired>
+                  <FormLabel>
+                    Introduction (Describe about yourself as pet sitter)
+                  </FormLabel>
+                  <Textarea
+                    value={introduction}
+                    onChange={(event) => {
+                      setIntroduction(event.target.value);
+                    }}
+                  />
+                </FormControl>
+              </div>
             </div>
           </div>
         </div>
@@ -555,8 +540,8 @@ const PetSitterProfile = () => {
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
-export default PetSitterProfile;
+export default PetSitterProfilePage;
