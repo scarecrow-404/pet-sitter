@@ -26,16 +26,10 @@ import greenStar from "@/asset/images/greenStar.svg";
 import blueEllipse from "@/asset/images/Ellipse17.svg";
 import halfYellowEllipse from "@/asset/images/half-yellow-ellipse.svg";
 
-
 export default function Home() {
   return (
     <>
-
       <Navbar />
-
- 
-
-
       <main className="flex min-h-4/6 flex-col items-center justify-between gap-10 my-3 border-2">
         <div className="w-full flex justify-items-center items-center border-2 border-cyan-500 lg:w-11/12">
           <div className="w-4/12 h-[110px] relative top-4 z-0 border-2 md:h-[280px] md:top-0 lg:h-[350px]">
@@ -105,7 +99,7 @@ export default function Home() {
             />
           </div>
         </div>
-<SearchBar/>
+        <SearchBar />
         <p className="w-11/12 text-center text-base font-extrabold md:text-lg">
           "Your Pets, Our Priority: Perfect Care, Anytime, Anywhere."
         </p>
@@ -237,9 +231,7 @@ export default function Home() {
           />
         </div>
       </main>{" "}
-
       <Footer />
-  
     </>
   );
 }
