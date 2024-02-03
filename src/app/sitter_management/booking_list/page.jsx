@@ -2,118 +2,188 @@
 import React, { useState } from "react";
 import { Sidebar, TopBar } from "@/components/sidebar";
 import { Input } from "@chakra-ui/react";
+
+import { useRouter } from "next/navigation";
 const BookingList = () => {
+  const router = useRouter();
   const data = [
     {
       id: 1,
       PetOwnerName: "John Wick",
       amountPet: 2,
       Duration: 3,
-      BookedDate: "25 Aug,7 AM - 10 AM",
+      BookedDate: "25 Aug, 7 AM - 10 AM",
       Status: "Waiting for confirm",
+      TotalPaid: 150,
+      TransactionDate: "2024-02-03",
+      TransactionNo: "1234567",
+      AdditionalMessage: "I love my pet",
     },
     {
       id: 2,
       PetOwnerName: "John Wick",
       amountPet: 2,
       Duration: 3,
-      BookedDate: "25 Aug,7 AM - 10 AM",
+      BookedDate: "25 Aug, 7 AM - 10 AM",
       Status: "Waiting for service",
+      TotalPaid: 200,
+      TransactionDate: "2024-02-03",
+      TransactionNo: "2345678",
+      AdditionalMessage: "I miss my pet",
     },
     {
       id: 3,
       PetOwnerName: "John Wick",
       amountPet: 2,
       Duration: 3,
-      BookedDate: "25 Aug,7 AM - 10 AM",
+      BookedDate: "25 Aug, 7 AM - 10 AM",
       Status: "In service",
+      TotalPaid: 250,
+      TransactionDate: "2024-02-03",
+      TransactionNo: "3456789",
+      AdditionalMessage: "My pet is happy",
     },
     {
       id: 4,
       PetOwnerName: "John Wick",
       amountPet: 2,
       Duration: 3,
-      BookedDate: "25 Aug,7 AM - 10 AM",
+      BookedDate: "25 Aug, 7 AM - 10 AM",
       Status: "Success",
+      TotalPaid: 300,
+      TransactionDate: "2024-02-03",
+      TransactionNo: "4567890",
+      AdditionalMessage: "My pet is healthy",
     },
     {
       id: 5,
       PetOwnerName: "John Wick",
       amountPet: 2,
       Duration: 3,
-      BookedDate: "25 Aug,7 AM - 10 AM",
+      BookedDate: "25 Aug, 7 AM - 10 AM",
       Status: "Canceled",
-    },{
-      id: 5,
-      PetOwnerName: "John Wick",
-      amountPet: 2,
-      Duration: 3,
-      BookedDate: "25 Aug,7 AM - 10 AM",
-      Status: "Canceled",
-    },{
-      id: 5,
-      PetOwnerName: "John Wick",
-      amountPet: 2,
-      Duration: 3,
-      BookedDate: "25 Aug,7 AM - 10 AM",
-      Status: "Canceled",
-    },{
-      id: 5,
-      PetOwnerName: "John Wick",
-      amountPet: 2,
-      Duration: 3,
-      BookedDate: "25 Aug,7 AM - 10 AM",
-      Status: "Canceled",
-    },{
-      id: 5,
-      PetOwnerName: "John Wick",
-      amountPet: 2,
-      Duration: 3,
-      BookedDate: "25 Aug,7 AM - 10 AM",
-      Status: "Canceled",
-    },{
-      id: 5,
-      PetOwnerName: "John Wick",
-      amountPet: 2,
-      Duration: 3,
-      BookedDate: "25 Aug,7 AM - 10 AM",
-      Status: "Canceled",
+      TotalPaid: 0,
+      TransactionDate: "2024-02-03",
+      TransactionNo: "5678901",
+      AdditionalMessage: "Sorry for the inconvenience",
     },
     {
-      id: 2,
+      id: 6,
       PetOwnerName: "John Wick",
       amountPet: 2,
       Duration: 3,
-      BookedDate: "25 Aug,7 AM - 10 AM",
-      Status: "Waiting for service",
+      BookedDate: "25 Aug, 7 AM - 10 AM",
+      Status: "Canceled",
+      TotalPaid: 0,
+      TransactionDate: "2024-02-03",
+      TransactionNo: "6789012",
+      AdditionalMessage: "Looking forward to rebooking",
     },
     {
-      id: 2,
+      id: 7,
       PetOwnerName: "John Wick",
       amountPet: 2,
       Duration: 3,
-      BookedDate: "25 Aug,7 AM - 10 AM",
-      Status: "Waiting for service",
+      BookedDate: "25 Aug, 7 AM - 10 AM",
+      Status: "Canceled",
+      TotalPaid: 0,
+      TransactionDate: "2024-02-03",
+      TransactionNo: "7890123",
+      AdditionalMessage: "Next time, please call in advance",
     },
     {
-      id: 2,
+      id: 8,
       PetOwnerName: "John Wick",
       amountPet: 2,
       Duration: 3,
-      BookedDate: "25 Aug,7 AM - 10 AM",
-      Status: "Waiting for service",
+      BookedDate: "25 Aug, 7 AM - 10 AM",
+      Status: "Canceled",
+      TotalPaid: 0,
+      TransactionDate: "2024-02-03",
+      TransactionNo: "8901234",
+      AdditionalMessage: "My pet is not feeling well",
     },
     {
-      id: 2,
+      id: 9,
       PetOwnerName: "John Wick",
       amountPet: 2,
       Duration: 3,
-      BookedDate: "25 Aug,7 AM - 10 AM",
-      Status: "Waiting for service",
-    }
-    
+      BookedDate: "25 Aug, 7 AM - 10 AM",
+      Status: "Canceled",
+      TotalPaid: 0,
+      TransactionDate: "2024-02-03",
+      TransactionNo: "9012345",
+      AdditionalMessage: "Please refund my payment",
+    },
+    {
+      id: 10,
+      PetOwnerName: "John Wick",
+      amountPet: 2,
+      Duration: 3,
+      BookedDate: "25 Aug, 7 AM - 10 AM",
+      Status: "Canceled",
+      TotalPaid: 0,
+      TransactionDate: "2024-02-03",
+      TransactionNo: "0123456",
+      AdditionalMessage: "I have a scheduling conflict",
+    },
+    {
+      id: 11,
+      PetOwnerName: "John Wick",
+      amountPet: 2,
+      Duration: 3,
+      BookedDate: "25 Aug, 7 AM - 10 AM",
+      Status: "In service",
+      TotalPaid: 350,
+      TransactionDate: "2024-02-03",
+      TransactionNo: "1234567",
+      AdditionalMessage: "My pet is enjoying the service",
+    },
+    {
+      id: 12,
+      PetOwnerName: "John Wick",
+      amountPet: 2,
+      Duration: 3,
+      BookedDate: "25 Aug, 7 AM - 10 AM",
+      Status: "Success",
+      TotalPaid: 400,
+      TransactionDate: "2024-02-03",
+      TransactionNo: "2345678",
+      AdditionalMessage: "Highly recommend this service",
+    },
+    {
+      id: 13,
+      PetOwnerName: "John Wick",
+      amountPet: 2,
+      Duration: 3,
+      BookedDate: "25 Aug, 7 AM - 10 AM",
+      Status: "In service",
+      TotalPaid: 450,
+      TransactionDate: "2024-02-03",
+      TransactionNo: "3456789",
+      AdditionalMessage: "My pet is so happy!",
+    },
   ];
+  const handleClick = (item) => {
+    const path = `/sitter_management/booking_list/${item.id}`;
 
+    const queryString = new URLSearchParams({
+      id: item.id,
+      name: item.PetOwnerName,
+      amountPet: item.amountPet,
+      Duration: item.Duration,
+      BookedDate: item.BookedDate,
+      Status: item.Status,
+      TotalPaid: item.TotalPaid,
+      TransactionDate: item.TransactionDate,
+      TransactionNo: item.TransactionNo,
+      AdditionalMessage: item.AdditionalMessage,
+    }).toString();
+
+    const url = String(path) + "?" + queryString;
+
+    window.location.href = url;
+  };
   return (
     <div className="flex bg-sixthGray justify-center">
       <div className="hidden bg-sixthGray lg:block relative">
@@ -133,20 +203,36 @@ const BookingList = () => {
             <thead className="text-white bg-black text-[13px] md:text-[14px]">
               <tr>
                 <th className="text-center py-4 md:py-6">Name</th>
-                <th className="text-center py-4 md:py-6 hidden md:table-cell ">Pet(s)</th>
-                <th className="text-center py-4 md:py-6 hidden md:table-cell">Duration</th>
+                <th className="text-center py-4 md:py-6 hidden md:table-cell ">
+                  Pet(s)
+                </th>
+                <th className="text-center py-4 md:py-6 hidden md:table-cell">
+                  Duration
+                </th>
                 <th className="text-center py-4 md:py-6">Booked Date</th>
                 <th className="text-center py-4 md:py-6">Status</th>
               </tr>
             </thead>
             <tbody className="text-[13px] md:text-[16px]">
-              {data.map((item, id) => {
+              {data.map((item) => {
                 return (
-                  <tr key={id} className="cursor-pointer hover:bg-fourthGray" >
-                    <td className="text-center py-2 md:py-6 ">{item.PetOwnerName}</td>
-                    <td className="text-center py-2 md:py-6 hidden md:table-cell">{item.amountPet}</td>
-                    <td className="text-center py-2 md:py-6 hidden md:table-cell">{item.Duration}</td>
-                    <td className="text-center py-2 md:py-6">{item.BookedDate}</td>
+                  <tr
+                    key={item.id}
+                    onClick={() => handleClick(item)}
+                    className="cursor-pointer hover:bg-fourthGray"
+                  >
+                    <td className="text-center py-2 md:py-6 ">
+                      {item.PetOwnerName}
+                    </td>
+                    <td className="text-center py-2 md:py-6 hidden md:table-cell">
+                      {item.amountPet}
+                    </td>
+                    <td className="text-center py-2 md:py-6 hidden md:table-cell">
+                      {item.Duration}
+                    </td>
+                    <td className="text-center py-2 md:py-6">
+                      {item.BookedDate}
+                    </td>
                     <td
                       className={`${
                         item.Status === "Waiting for confirm"

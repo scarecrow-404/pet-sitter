@@ -142,11 +142,7 @@ const SitterManagement = () => {
       const uniqueId = Date.now();
       setPetImage({ ...petImage, [uniqueId]: file });
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        setPreviewUrlPet(reader.result);
-      };
-      reader.readAsDataURL(file);
+      
     }
   };
   //click logo
@@ -167,14 +163,30 @@ const SitterManagement = () => {
     delete petImage[petImageKey];
     setPetImage({ ...petImage });
   };
-  const experienceData = [0, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
-  const colorOptions = [
-    { value: "blue", label: "Blue", color: "#0052CC" },
-    { value: "purple", label: "Purple", color: "#5243AA" },
-    { value: "red", label: "Red", color: "#FF5630" },
-    { value: "orange", label: "Orange", color: "#FF8B00" },
-    { value: "yellow", label: "Yellow", color: "#FFC400" },
-    { value: "green", label: "Green", color: "#36B37E" },
+  const handleExperience = (experience) => {
+    setExperience(experience);
+  };
+  const handlePetType = (petType) => {
+    setPetType(petType);
+  };
+  const optionPetType = [
+    { value: "Dog", label: "Dog" },
+    { value: "Cat", label: "Cat" },
+    { value: "Bird", label: "Bird" },
+    { value: "Rabbit", label: "Rabbit" },
+  ];
+
+  const options = [
+    { value: "0", label: "0" },
+    { value: "1", label: "1" },
+    { value: "1.5", label: "1.5" },
+    { value: "2", label: "2" },
+    { value: "2.5", label: "2.5" },
+    { value: "3", label: "3" },
+    { value: "3.5", label: "3.5" },
+    { value: "4", label: "4" },
+    { value: "4.5", label: "4.5" },
+    { value: "5", label: "5++" },
   ];
   return (
     <div className="flex bg-sixthGray justify-center">
@@ -233,15 +245,14 @@ const SitterManagement = () => {
             <div className="Experience md:w-80 lg:w-[474px] xl:w-[560px]">
               <FormControl isRequired>
                 <FormLabel>Experience</FormLabel>
-                <Select placeholder="Select Experience">
-                  <option value="option1">Option 1</option>
-                </Select>
-                <Input
-                  type="number"
+                <Select
+                  name="experience"
+                  options={options}
+                  placeholder="Select Experience"
+                  closeMenuOnSelect={true}
                   value={experience}
-                  onChange={(event) => {
-                    setExperience(event.target.value);
-                  }}
+                  onChange={handleExperience}
+                  id="experience"
                 />
               </FormControl>
             </div>
@@ -310,15 +321,14 @@ const SitterManagement = () => {
                 <FormLabel>Pet type</FormLabel>
                 <Select
                   isMulti
-                  name="colors"
-                  options={colorOptions}
-                  placeholder="Select some colors..."
-                  variant="outline"
+                  name="petType"
+                  id="petType"
+                  options={optionPetType}
+                  placeholder="Select type"
                   colorScheme="orange"
-                  defaultValue={petType}
-                  onChange={(event) => {
-                    setPetType(event.target.defaultValue);
-                  }}
+                  closeMenuOnSelect={false}
+                  value={petType}
+                  onChange={handlePetType}
                 />
               </FormControl>
             </div>
