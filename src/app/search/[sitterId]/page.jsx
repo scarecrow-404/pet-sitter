@@ -10,7 +10,7 @@ import avatar3 from "@/asset/images/thirdSitterDetail.svg";
 import Carousel from "@/components/Carousel";
 import SitterDetail from "@/components/SitterDeatail";
 import PopupBooking from "@/components/Popup";
-
+import withAuth from "@/lib/utils/withAuth";
 const SitterProfile = () => {
   const images = [{ url: avatar }, { url: avatar2 }, { url: avatar3 }];
 
@@ -40,4 +40,4 @@ const SitterProfile = () => {
   );
 };
 
-export default SitterProfile;
+export default withAuth(SitterProfile);
