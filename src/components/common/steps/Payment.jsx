@@ -14,13 +14,17 @@ function Payment() {
       <div>
         <div className="flex mx-[20px] gap-[16px] ">
           <button
-            className="text-[12px] md:text-[18px] leading-[24px] h-[60px] md:h-[80px] w-full border-[4px] rounded-[999px]"
+            className={`text-[12px] md:text-[18px] leading-[24px] h-[60px] md:h-[80px] w-full border-[4px] rounded-[999px]
+            ${changePage ? "text-[#FF7037] border-[#FF7037]" : ""}
+            `}
             onClick={!changePage ? creditCard : null}
           >
             Credit Card
           </button>
           <button
-            className="text-[12px] md:text-[18px] leading-[24px] h-[60px] md:h-[80px] w-full border-[4px] rounded-[999px]"
+            className={`text-[12px] md:text-[18px] leading-[24px] h-[60px] md:h-[80px] w-full border-[4px] rounded-[999px]
+            ${!changePage ? "text-[#FF7037] border-[#FF7037]" : ""}
+            `}
             onClick={changePage ? cash : null}
           >
             Cash
