@@ -28,27 +28,6 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 
 const OrderDetails = ({ searchParams }) => {
-  const handleClick = (item) => {
-    const path = `/sitter_management/booking_list/${item.id}`;
-
-    const queryString = new URLSearchParams({
-      id: item.pet_id,
-      name: item.name,
-      petType: item.petType,
-      Breed: item.Breed,
-      Sex: item.Sex,
-      Age: item.Age,
-      Color: item.Color,
-      Weight: item.TransactionDate,
-      About: item.TransactionNo,
-      Image: item.AdditionalMessage,
-    }).toString();
-
-    const url = String(path) + "?" + queryString;
-
-    window.location.href = url;
-  };
-
   const dataPets = [
     {
       pet_id: 1,
@@ -123,61 +102,66 @@ const OrderDetails = ({ searchParams }) => {
       About: "An intelligent and energetic dog.",
       Image: "https://example.com/bella.jpg",
     },
-    // { pet_id: 7,
-    //   name: "Simba",
-    //   petType: "Cat",
-    //   Breed: "Bengal",
-    //   Sex: "Male",
-    //   Age: "6 months",
-    //   Color: "Spotted",
-    //   Weight: "3 kg",
-    //   About: "A playful and adventurous cat.",
-    //   Image: "https://example.com/simba.jpg",
-    // },
-    // { pet_id: 8,
-    //   name: "Charlie",
-    //   petType: "Rabbit",
-    //   Breed: "Golden Retriever",
-    //   Sex: "Male",
-    //   Age: "2 years",
-    //   Color: "Golden",
-    //   Weight: "25 kg",
-    //   About: "A friendly and gentle dog. Loves to fetch!",
-    //   Image: "https://example.com/charlie.jpg",
-    // },
-    // { pet_id: 9,
-    //   name: "Lily",
-    //   petType: "Cat",
-    //   Breed: "Persian",
-    //   Sex: "Female",
-    //   Age: "3 years",
-    //   Color: "White",
-    //   Weight: "5 kg",
-    //   About: "A calm and luxurious cat with long fur.",
-    //   Image: "https://example.com/lily.jpg",
-    // },
-    // { pet_id: 10,
-    //   name: "Oscar",
-    //   petType: "Bird",
-    //   Breed: "Dachshund",
-    //   Sex: "Male",
-    //   Age: "1.5 years",
-    //   Color: "Brown",
-    //   Weight: "6 kg",
-    //   About: "A small and lively dog with a long body.",
-    //   Image: "https://example.com/oscar.jpg",
-    // },
-    // { pet_id: 11,
-    //   name: "Mia",
-    //   petType: "Cat",
-    //   Breed: "Ragdoll",
-    //   Sex: "Female",
-    //   Age: "2 years",
-    //   Color: "Blue point",
-    //   Weight: "4 kg",
-    //   About: "A gentle and affectionate cat.",
-    //   Image: "https://example.com/mia.jpg",
-    // },
+    {
+      pet_id: 7,
+      name: "Simba",
+      petType: "Cat",
+      Breed: "Bengal",
+      Sex: "Male",
+      Age: "6 months",
+      Color: "Spotted",
+      Weight: "3 kg",
+      About: "A playful and adventurous cat.",
+      Image: "https://example.com/simba.jpg",
+    },
+    {
+      pet_id: 8,
+      name: "Charlie",
+      petType: "Rabbit",
+      Breed: "Golden Retriever",
+      Sex: "Male",
+      Age: "2 years",
+      Color: "Golden",
+      Weight: "25 kg",
+      About: "A friendly and gentle dog. Loves to fetch!",
+      Image: "https://example.com/charlie.jpg",
+    },
+    {
+      pet_id: 9,
+      name: "Lily",
+      petType: "Cat",
+      Breed: "Persian",
+      Sex: "Female",
+      Age: "3 years",
+      Color: "White",
+      Weight: "5 kg",
+      About: "A calm and luxurious cat with long fur.",
+      Image: "https://example.com/lily.jpg",
+    },
+    {
+      pet_id: 10,
+      name: "Oscar",
+      petType: "Bird",
+      Breed: "Dachshund",
+      Sex: "Male",
+      Age: "1.5 years",
+      Color: "Brown",
+      Weight: "6 kg",
+      About: "A small and lively dog with a long body.",
+      Image: "https://example.com/oscar.jpg",
+    },
+    {
+      pet_id: 11,
+      name: "Mia",
+      petType: "Cat",
+      Breed: "Ragdoll",
+      Sex: "Female",
+      Age: "2 years",
+      Color: "Blue point",
+      Weight: "4 kg",
+      About: "A gentle and affectionate cat.",
+      Image: "https://example.com/mia.jpg",
+    },
   ];
   const [windowWidth, setWindowWidth] = useState(0);
 
@@ -205,12 +189,10 @@ const OrderDetails = ({ searchParams }) => {
         <div className="Title flex justify-between items-center py-3 w-full">
           <div className="pl-5 flex flex-row justify-between min-w-[350px] w-full md:flex md:justify-start md:gap-5">
             <div className="flex flex-row items-center">
-              <div>
-                <Link href="/sitter_management/booking_list">
-                  <ChevronLeftIcon />
-                </Link>
-              </div>
-              <div className="">{searchParams.name}</div>
+              <Link href="/sitter_management/booking_list">
+                <ChevronLeftIcon />
+              </Link>
+              <p className="">{searchParams.name}</p>
             </div>
             <div
               className={`${
@@ -265,16 +247,21 @@ const OrderDetails = ({ searchParams }) => {
             )}
           </div>
         </div>
-        <div className="flex flex-col justify-start items-start py-3 px-4 bg-white rounded-2xl lg:h-screen lg:max-h-screen">
+        <div className="flex flex-col justify-start items-start py-3 px-4 bg-white rounded-2xl lg:h-fit">
           <div className="flex justify-between min-w-[340px] py-3 w-full">
             <div className="">
               <h1 className=" text-fourthGray">Pet Owner Name</h1>
               <div>{searchParams.name}</div>
             </div>
-            <div className="flex items-center gap-2 text-secondOrange cursor-pointer">
-              <ViewIcon />
-              <p>View Profile</p>
-            </div>
+            <PopUpOwnerData
+              index={searchParams.id}
+              name={searchParams.name}
+              Email={searchParams.Email}
+              Image={searchParams.Image}
+              Phone={searchParams.Phone}
+              IDNumber={searchParams.IDNumber}
+              DateOfBirth={searchParams.DateOfBirth}
+            />
           </div>
           <div className="flex flex-col w-[340px]">
             <h1 className="text-fourthGray">Pet(s)</h1>
@@ -282,7 +269,7 @@ const OrderDetails = ({ searchParams }) => {
           </div>
           <div className="flex flex-col min-w-[340px] w-full md:w-[740px] lg:w-full">
             <h1 className="text-fourthGray pb-4">Pet Detail</h1>
-            <div className="flex flex-col flex-wrap justify-center items-center md:w-fit md:flex-row md:justify-start md:gap-6 lg:w-[740px] lg:justify-start xl:w-[1168px]">
+            <div className="flex flex-col flex-wrap justify-center items-center md:w-fit md:flex-row md:justify-start md:gap-6 lg:w-[740px] lg:justify-start xl:w-full">
               {dataPets.map((item, index) => {
                 return (
                   <PopUpPetData
@@ -462,20 +449,25 @@ function PopUpPetData({
         </div>
       </div>
 
-      <Modal isOpen={isOpen} onClose={onClose} size="6xl" h="100vh">
+      <Modal isOpen={isOpen} onClose={onClose} size="4xl" h="100vh">
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>{name}</ModalHeader>
           <ModalCloseButton />
           <hr />
           <ModalBody>
-            <div className="w-full h-full p-1 flex flex-col justify-center items-center gap-5">
+            <div className="max-w-[800px] w-full h-full p-1 flex flex-col justify-center items-center my-4 md:flex-row">
               <div className="flex flex-col items-center w-11/12 h-2/4">
-                <Avatar size="xl" name={name} src={image} className="" />
-                <p className=" hidden">{name}</p>
+                <div className="block md:hidden">
+                  <Avatar size="xl" name={name} src={image} className="" />
+                </div>
+                <div className="hidden md:block">
+                  <Avatar size="2xl" name={name} src={image} className="" />
+                </div>
+                <p className=" hidden my-5 md:flex">{name}</p>
               </div>
-              <div className="w-11/12 h-2/4 flex flex-col bg-slate-200">
-                <div className="flex flex-row">
+              <div className="w-11/12 h-full bg-slate-200 p-5 my-5">
+                <div className="grid grid-cols-2 gap-4 ">
                   <div className=" justify-start">
                     <div className="text-fourthGray">Pet Type</div>
                     <div>{petType}</div>
@@ -485,7 +477,7 @@ function PopUpPetData({
                     <div>{Breed}</div>
                   </div>
                 </div>
-                <div className="flex flex-row justify-around">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <div className="text-fourthGray">Sex</div>
                     <div>{Sex}</div>
@@ -495,7 +487,7 @@ function PopUpPetData({
                     <div>{Age}</div>
                   </div>
                 </div>
-                <div className="flex flex-row justify-around">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <div className="text-fourthGray">Color</div>
                     <div>{Color}</div>
@@ -505,9 +497,82 @@ function PopUpPetData({
                     <div>{Weight}</div>
                   </div>
                 </div>
-                <div className="flex flex-row justify-around">
+                <div className="grid grid-cols-1 gap-2">
                   <div className="text-fourthGray">About</div>
                   <div>{About}</div>
+                </div>
+              </div>
+            </div>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </div>
+  );
+}
+function PopUpOwnerData({
+  name,
+  Email,
+  Image,
+  index,
+  Phone,
+  IDNumber,
+  DateOfBirth,
+}) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  return (
+    <div key={index}>
+      <div
+        className="flex items-center gap-2 text-secondOrange cursor-pointer"
+        onClick={onOpen}
+      >
+        <ViewIcon />
+        <p>View Profile</p>
+      </div>
+
+      <Modal isOpen={isOpen} onClose={onClose} size="4xl" h="100vh">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{name}</ModalHeader>
+          <ModalCloseButton />
+          <hr />
+          <ModalBody>
+            <div className="max-w-[800px] w-full h-full p-1 flex flex-col justify-center items-center my-4 md:flex-row">
+              <div className="flex flex-col items-center w-11/12 h-2/4">
+                <div className="block md:hidden">
+                  <Avatar size="xl" name={name} src={Image} className="" />
+                </div>
+                <div className="hidden md:block">
+                  <Avatar size="2xl" name={name} src={Image} className="" />
+                </div>
+                <p className=" hidden my-5 md:flex">{name}</p>
+              </div>
+              <div className="w-11/12 h-full bg-slate-200 p-5 my-5">
+                <div className="grid grid-cols-2 gap-4 ">
+                  <div className=" justify-start">
+                    <div className="text-fourthGray">Pet Owner Name</div>
+                    <div>{name}</div>
+                  </div>
+                  <div className=" justify-end">
+                    <div className="text-fourthGray">Email</div>
+                    <div>{Email}</div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-fourthGray">Phone</div>
+                    <div>{Phone}</div>
+                  </div>
+                  <div>
+                    <div className="text-fourthGray">ID Number</div>
+                    <div>{IDNumber}</div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-fourthGray">Date Of Birth</div>
+                    <div>{DateOfBirth}</div>
+                  </div>
                 </div>
               </div>
             </div>

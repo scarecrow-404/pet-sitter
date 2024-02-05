@@ -141,8 +141,6 @@ const SitterManagement = () => {
     if (file && file.size <= 10 * 1024 * 1024) {
       const uniqueId = Date.now();
       setPetImage({ ...petImage, [uniqueId]: file });
-
-      
     }
   };
   //click logo
@@ -435,9 +433,9 @@ const SitterManagement = () => {
           <div className="md:flex md:gap-9 md:justify-between">
             <FormControl isRequired>
               <FormLabel>Province</FormLabel>
-              <InputThaiAddress.District
-                value={address["district"]}
-                onChange={handleChange("district")}
+              <InputThaiAddress.Province
+                value={address["province"]}
+                onChange={handleChange("province")}
                 onSelect={handleSelect}
               />
             </FormControl>
@@ -454,9 +452,9 @@ const SitterManagement = () => {
           <div className="md:flex md:gap-9 md:justify-between">
             <FormControl isRequired>
               <FormLabel>Sub-district</FormLabel>
-              <InputThaiAddress.Province
-                value={address["province"]}
-                onChange={handleChange("province")}
+              <InputThaiAddress.District
+                value={address["district"]}
+                onChange={handleChange("district")}
                 onSelect={handleSelect}
               />
             </FormControl>

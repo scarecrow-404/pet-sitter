@@ -1,9 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Sidebar, TopBar } from "@/components/sidebar";
-import { Input } from "@chakra-ui/react";
+import { Input, Select } from "@chakra-ui/react";
 
 import { useRouter } from "next/navigation";
+import { event } from "jquery";
 const BookingList = () => {
   const router = useRouter();
   const data = [
@@ -18,10 +19,14 @@ const BookingList = () => {
       TransactionDate: "2024-02-03",
       TransactionNo: "1234567",
       AdditionalMessage: "I love my pet",
+      Email: "johnwick@example.com",
+      Phone: "1234567890",
+      IDNumber: "1234567890123",
+      DateOfBirth: "1990-01-01",
     },
     {
       id: 2,
-      PetOwnerName: "John Wick",
+      PetOwnerName: "Aaron",
       amountPet: 2,
       Duration: 3,
       BookedDate: "25 Aug, 7 AM - 10 AM",
@@ -30,10 +35,14 @@ const BookingList = () => {
       TransactionDate: "2024-02-03",
       TransactionNo: "2345678",
       AdditionalMessage: "I miss my pet",
+      Email: "johnwick@example.com",
+      Phone: "1234567890",
+      IDNumber: "1234567890123",
+      DateOfBirth: "1990-01-01",
     },
     {
       id: 3,
-      PetOwnerName: "John Wick",
+      PetOwnerName: "Alisha",
       amountPet: 2,
       Duration: 3,
       BookedDate: "25 Aug, 7 AM - 10 AM",
@@ -42,10 +51,14 @@ const BookingList = () => {
       TransactionDate: "2024-02-03",
       TransactionNo: "3456789",
       AdditionalMessage: "My pet is happy",
+      Email: "johnwick@example.com",
+      Phone: "1234567890",
+      IDNumber: "1234567890123",
+      DateOfBirth: "1990-01-01",
     },
     {
       id: 4,
-      PetOwnerName: "John Wick",
+      PetOwnerName: "Benjamin",
       amountPet: 2,
       Duration: 3,
       BookedDate: "25 Aug, 7 AM - 10 AM",
@@ -54,10 +67,14 @@ const BookingList = () => {
       TransactionDate: "2024-02-03",
       TransactionNo: "4567890",
       AdditionalMessage: "My pet is healthy",
+      Email: "johnwick@example.com",
+      Phone: "1234567890",
+      IDNumber: "1234567890123",
+      DateOfBirth: "1990-01-01",
     },
     {
       id: 5,
-      PetOwnerName: "John Wick",
+      PetOwnerName: "Camilla",
       amountPet: 2,
       Duration: 3,
       BookedDate: "25 Aug, 7 AM - 10 AM",
@@ -66,10 +83,14 @@ const BookingList = () => {
       TransactionDate: "2024-02-03",
       TransactionNo: "5678901",
       AdditionalMessage: "Sorry for the inconvenience",
+      Email: "johnwick@example.com",
+      Phone: "1234567890",
+      IDNumber: "1234567890123",
+      DateOfBirth: "1990-01-01",
     },
     {
       id: 6,
-      PetOwnerName: "John Wick",
+      PetOwnerName: "Daisy",
       amountPet: 2,
       Duration: 3,
       BookedDate: "25 Aug, 7 AM - 10 AM",
@@ -78,10 +99,14 @@ const BookingList = () => {
       TransactionDate: "2024-02-03",
       TransactionNo: "6789012",
       AdditionalMessage: "Looking forward to rebooking",
+      Email: "johnwick@example.com",
+      Phone: "1234567890",
+      IDNumber: "1234567890123",
+      DateOfBirth: "1990-01-01",
     },
     {
       id: 7,
-      PetOwnerName: "John Wick",
+      PetOwnerName: "Emmalee",
       amountPet: 2,
       Duration: 3,
       BookedDate: "25 Aug, 7 AM - 10 AM",
@@ -90,10 +115,14 @@ const BookingList = () => {
       TransactionDate: "2024-02-03",
       TransactionNo: "7890123",
       AdditionalMessage: "Next time, please call in advance",
+      Email: "johnwick@example.com",
+      Phone: "1234567890",
+      IDNumber: "1234567890123",
+      DateOfBirth: "1990-01-01",
     },
     {
       id: 8,
-      PetOwnerName: "John Wick",
+      PetOwnerName: "Gavin",
       amountPet: 2,
       Duration: 3,
       BookedDate: "25 Aug, 7 AM - 10 AM",
@@ -102,10 +131,14 @@ const BookingList = () => {
       TransactionDate: "2024-02-03",
       TransactionNo: "8901234",
       AdditionalMessage: "My pet is not feeling well",
+      Email: "johnwick@example.com",
+      Phone: "1234567890",
+      IDNumber: "1234567890123",
+      DateOfBirth: "1990-01-01",
     },
     {
       id: 9,
-      PetOwnerName: "John Wick",
+      PetOwnerName: "Isabella",
       amountPet: 2,
       Duration: 3,
       BookedDate: "25 Aug, 7 AM - 10 AM",
@@ -114,10 +147,14 @@ const BookingList = () => {
       TransactionDate: "2024-02-03",
       TransactionNo: "9012345",
       AdditionalMessage: "Please refund my payment",
+      Email: "johnwick@example.com",
+      Phone: "1234567890",
+      IDNumber: "1234567890123",
+      DateOfBirth: "1990-01-01",
     },
     {
       id: 10,
-      PetOwnerName: "John Wick",
+      PetOwnerName: "Jennaleek",
       amountPet: 2,
       Duration: 3,
       BookedDate: "25 Aug, 7 AM - 10 AM",
@@ -126,10 +163,14 @@ const BookingList = () => {
       TransactionDate: "2024-02-03",
       TransactionNo: "0123456",
       AdditionalMessage: "I have a scheduling conflict",
+      Email: "johnwick@example.com",
+      Phone: "1234567890",
+      IDNumber: "1234567890123",
+      DateOfBirth: "1990-01-01",
     },
     {
       id: 11,
-      PetOwnerName: "John Wick",
+      PetOwnerName: "Katharine",
       amountPet: 2,
       Duration: 3,
       BookedDate: "25 Aug, 7 AM - 10 AM",
@@ -138,10 +179,14 @@ const BookingList = () => {
       TransactionDate: "2024-02-03",
       TransactionNo: "1234567",
       AdditionalMessage: "My pet is enjoying the service",
+      Email: "johnwick@example.com",
+      Phone: "1234567890",
+      IDNumber: "1234567890123",
+      DateOfBirth: "1990-01-01",
     },
     {
       id: 12,
-      PetOwnerName: "John Wick",
+      PetOwnerName: "Latisha",
       amountPet: 2,
       Duration: 3,
       BookedDate: "25 Aug, 7 AM - 10 AM",
@@ -150,10 +195,14 @@ const BookingList = () => {
       TransactionDate: "2024-02-03",
       TransactionNo: "2345678",
       AdditionalMessage: "Highly recommend this service",
+      Email: "johnwick@example.com",
+      Phone: "1234567890",
+      IDNumber: "1234567890123",
+      DateOfBirth: "1990-01-01",
     },
     {
       id: 13,
-      PetOwnerName: "John Wick",
+      PetOwnerName: "Maglorix",
       amountPet: 2,
       Duration: 3,
       BookedDate: "25 Aug, 7 AM - 10 AM",
@@ -162,6 +211,10 @@ const BookingList = () => {
       TransactionDate: "2024-02-03",
       TransactionNo: "3456789",
       AdditionalMessage: "My pet is so happy!",
+      Email: "johnwick@example.com",
+      Phone: "1234567890",
+      IDNumber: "1234567890123",
+      DateOfBirth: "1990-01-01",
     },
   ];
   const handleClick = (item) => {
@@ -178,11 +231,43 @@ const BookingList = () => {
       TransactionDate: item.TransactionDate,
       TransactionNo: item.TransactionNo,
       AdditionalMessage: item.AdditionalMessage,
+      Email: item.Email,
+      Phone: item.Phone,
+      IDNumber: item.IDNumber,
+      DateOfBirth: item.DateOfBirth,
     }).toString();
 
     const url = String(path) + "?" + queryString;
 
-    window.location.href = url;
+    router.push(url);
+  };
+  const [petData, setPetData] = useState([...data]);
+  const [keywords, setKeywords] = useState("");
+  const [keywordsStatus, setKeywordsStatus] = useState("");
+  useEffect(() => {
+    const filteredData = getKeywords();
+    setPetData(filteredData);
+  }, [keywords, keywordsStatus]);
+  const getKeywords = () => {
+    const regexKeywords = keywords.split(" ").join("|");
+    const regex = new RegExp(regexKeywords, "ig");
+    const results = data.filter((item) => {
+      return (
+        item.PetOwnerName.match(regex) ||
+        item.IDNumber.match(regex) ||
+        item.Status.match(regex) ||
+        item.BookedDate.match(regex)
+      );
+    });
+    if (keywordsStatus) {
+      const statusRegex = new RegExp(keywordsStatus, "ig");
+      return results.filter((item) => item.Status.match(statusRegex));
+    }
+    return results;
+  };
+  const getStatusCount = (status) => {
+    const count = data.filter((item) => item.Status === status).length;
+    return count;
   };
   return (
     <div className="flex bg-sixthGray justify-center">
@@ -194,8 +279,39 @@ const BookingList = () => {
         <div className="Title flex justify-between items-center py-3">
           <div className="nameTitle pl-5">Booking List</div>
           <div className="flex pr-5 gap-4">
-            <Input htmlSize={4} width="auto" placeholder="Search..." />
-            <Input htmlSize={4} width="auto" placeholder="All status" />
+            <Input
+              htmlSize={4}
+              width="auto"
+              placeholder="Search..."
+              value={keywords}
+              onChange={(event) => {
+                setKeywords(event.target.value);
+              }}
+            />
+            <Select
+              htmlSize={4}
+              placeholder="All status"
+              value={keywordsStatus}
+              onChange={(event) => {
+                setKeywordsStatus(event.target.value);
+              }}
+            >
+              <option value="Waiting for confirm">
+                Waiting for confirm ({getStatusCount("Waiting for confirm")})
+              </option>
+              <option value="Waiting for service">
+                Waiting for service ({getStatusCount("Waiting for service")})
+              </option>
+              <option value="In service">
+                In service ({getStatusCount("In service")})
+              </option>
+              <option value="Success">
+                Success ({getStatusCount("Success")})
+              </option>
+              <option value="Canceled">
+                Canceled ({getStatusCount("Canceled")})
+              </option>
+            </Select>
           </div>
         </div>
         <div className="Title flex justify-center items-start py-3 bg-white rounded-2xl lg:h-screen">
@@ -214,7 +330,7 @@ const BookingList = () => {
               </tr>
             </thead>
             <tbody className="text-[13px] md:text-[16px]">
-              {data.map((item) => {
+              {petData.map((item) => {
                 return (
                   <tr
                     key={item.id}
