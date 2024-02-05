@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useRef } from "react";
+require('dotenv').config()
 import { CreateInput } from "thai-address-autocomplete-react";
 import Image from "next/image";
 import { Sidebar, TopBar } from "@/components/sidebar";
@@ -30,18 +31,19 @@ import {
   IconButton,
   Avatar,
 } from "@chakra-ui/react";
-
+import { createClient } from "@supabase/supabase-js";
 import Frame427321094 from "@/asset/images/Frame427321094.svg";
 import deleteButton from "@/asset/images/delete.svg";
 import deleteButtonHover from "@/asset/images/deleteHover.svg";
 import frameFray from "@/asset/images/photoFrameOutlineRounded.svg";
 import upload from "@/asset/images/uploadMin10.svg";
 
-const InputThaiAddress = CreateInput();
 const SitterManagement = () => {
+  const InputThaiAddress = CreateInput();
   //profile
   const [fullName, setFullName] = useState("");
   const [experience, setExperience] = useState("");
+  const [isError, setIsError] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
   const [introduction, setIntroduction] = useState("");
@@ -69,6 +71,8 @@ const SitterManagement = () => {
   const [accountType, setAccountType] = useState("");
   const [bankName, setBankName] = useState("");
   const [etcs, setEtcs] = useState("");
+  // isError
+
   //set horver
   const [imageHoverStates, setImageHoverStates] = useState({});
   const handleMouseEnter = (petImageKey) => {
@@ -167,6 +171,21 @@ const SitterManagement = () => {
   const handlePetType = (petType) => {
     setPetType(petType);
   };
+//// Create a client
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY)
+  // Read records
+  async function readRecords() {
+    let { data: pet_type_master, error } = await supabase
+      .from("pet_type_master")
+      .select("*");
+
+    if (error) {
+      console.error("Error reading records:", error);
+    } else {
+      console.log("Records:", data);
+    }
+  }
+  console.log(readRecords());
   const optionPetType = [
     { value: "Dog", label: "Dog" },
     { value: "Cat", label: "Cat" },
@@ -227,12 +246,13 @@ const SitterManagement = () => {
           </div>
           <div className="md:flex md:gap-9 md:justify-between">
             <div className="fullname md:w-80 lg:w-[474px] xl:w-[560px]">
-              <FormControl isRequired>
+              <FormControl isRequired isInvalid={isError}>
                 <FormLabel>Your full name</FormLabel>
                 <Input
                   type="text"
                   minLength="6"
                   maxLength="60"
+                  pattern="^[a-zA-Z\s]*$"
                   value={fullName}
                   onChange={(event) => {
                     setFullName(event.target.value);
@@ -261,11 +281,11 @@ const SitterManagement = () => {
                 <FormLabel>Phone Number</FormLabel>
                 <Input
                   type="tel"
-                  minLength={1}
-                  maxLength={12}
-                  inputMode="numeric"
-                  pattern="\d*"
-                  value={phoneNumber}
+                  maxLength={10}
+                  value={phoneNumber
+                    .replace(/\D/g, "")
+                    .replace(/^(\d{3,3})(\d{3,3})(\d{4,4}).*$/, "$1 $2 $3")
+                    .trim()}
                   onChange={(event) => {
                     setPhoneNumber(event.target.value);
                   }}
@@ -276,6 +296,7 @@ const SitterManagement = () => {
               <FormControl isRequired>
                 <FormLabel>Email</FormLabel>
                 <Input
+                  type="email"
                   value={email}
                   onChange={(event) => {
                     setEmail(event.target.value);
