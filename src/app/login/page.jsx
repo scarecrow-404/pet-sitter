@@ -95,6 +95,10 @@ const LoginPage = () => {
       console.log(user);
       setUser(users[0]);
       console.log(userId);
+      
+      if (user) {
+        router.push("/");
+      }
     }
   }
 

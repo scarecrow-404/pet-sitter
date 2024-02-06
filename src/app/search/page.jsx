@@ -55,85 +55,41 @@ const Search = () => {
     province,
     users( full_name )
   `);
-      if (error || !data) {
-        console.log(error);
-      }
-      setSitterData(data);
-      console.log("1eapppppppppppp", data);
-    } else if (expStart && expEnd && petQuery.length == 0 && !ratingQuery) {
-      console.log("2if");
-      let { data, error } = await supabase
-        .from("pet_sitter")
-        .select(
-          `
+    if (error || !data) {
+      console.log(error);
+    }
+    setSitterData(data)
+    console.log("1eapppppppppppp",data)}
+
+ else if(expStart && expEnd && petQuery.length==0 && !ratingQuery){
+console.log("2if")
+    let { data, error } = await supabase.from("pet_sitter")
+    .select(`
     id,
     sitter_name,
     district,
     province,
     experience,
     users( full_name )
-  `
-        )
-        .gte("experience", expStart)
-        .lte("experience", expEnd);
+  `).gt( "experience" , expStart).lte("experience" , expEnd)
 
-      if (error || !data) {
-        console.log(error);
-      }
-      setSitterData(data);
-      console.log("2eapppppppppppp", data);
-    } else if (expStart && !expEnd && petQuery.length == 0 && !ratingQuery) {
-      console.log("2if");
-      let { data, error } = await supabase
-        .from("pet_sitter")
-        .select(
-          `
-        id,
-        sitter_name,
-        district,
-        province,
-        experience,
-        users( full_name )
-      `
-        )
-        .gt("experience", expStart);
-      if (error || !data) {
-        console.log(error);
-      }
-      setSitterData(data);
-      console.log("3eapppppppppppp", data);
-    } else if (expStart && expEnd && petQuery.length !== 0 && !ratingQuery) {
-      console.log("2if");
-      let { data, error } = await supabase
-        .from("pet_sitter")
-        .select(
-          `
-            id,
-            sitter_name,
-            district,
-            province,
-            experience,
-            users( full_name ),
-            pet_prefer( pet_type_master_id),
-            pet_type_master(name)
-          `
-        )
-        .eq("pet_type_master_id", 1);
-      if (error || !data) {
-        console.log(error);
-      }
-      setSitterData(data);
-      console.log("4eapppppppppppp", data);
+    if (error || !data) {
+      console.log(error);
     }
+    setSitterData(data)
+    console.log("2eapppppppppppp",data)
   }
+}
 
-  // console.log(sitterData)
+// console.log(sitterData)
+  
 
-  useEffect(() => {
-    splitExpNum(expQuery);
-    getSitterData(expStart, expEnd, petQuery, ratingQuery);
-  }, [search]);
+useEffect(()=>{
+  splitExpNum(expQuery)
+  getSitterData(expStart,expEnd, petQuery,ratingQuery) 
 
+},[search])
+ 
   function splitPage(numpage) {
     const pageArr = [];
 

@@ -12,9 +12,10 @@ import {
   InputRightElement,
 } from "@chakra-ui/react";
 import { usePathname } from "next/navigation";
+import { useUser} from "@/hooks/hooks"
 const SearchBar = () => {
-  const [search, setsearch] = useState();
-  const [experianceQuery, setExperianceQuery] = useState("");
+  const {search,setSearch}= useUser()
+  const [experianceQuery, setExperianceQuery] = useState("0-2");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchRating, setSearchRating] = useState("");
   const [inputType, setInputType] = useState([]);
@@ -42,7 +43,9 @@ const SearchBar = () => {
     console.log(searchRating);
     console.log(searchQuery);
     console.log(experianceQuery);
-    if (currentPath.startsWith("/search")) {
+    setSearch({"exp":experianceQuery,"rating":searchRating,"pet": inputType});
+    console.log(search);
+    if (pathname.startsWith("/search")) {
       console.log("Already on search Page");
     } else {
       router.push("/search");
