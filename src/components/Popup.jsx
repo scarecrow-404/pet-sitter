@@ -6,6 +6,7 @@ import iconX from "@/asset/images/iconX.svg";
 import ReactModal from "react-modal";
 import { Datepicker } from "flowbite-react";
 import TimePicker from "./TimePicker";
+import { FormControl, Input } from "@chakra-ui/react";
 
 function PopupBooking() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -32,7 +33,7 @@ function PopupBooking() {
   };
   return (
     <>
-      <div className="w-full h-auto p-[20px] border-2 rounded-lg shadow-2xl">
+      <div className="w-full h-auto p-[20px]  rounded-b-lg shadow-2xl">
         <button
           onClick={openModal}
           className="bg-secondOrange w-full rounded-2xl p-[10px] text-white hover:bg-thirdOrange focus:bg-firstOrange-400  active:bg-fifthOrange"
@@ -62,16 +63,22 @@ function PopupBooking() {
                 <div className="flex gap-[16px]">
                   <Image src={iconCalenda} alt="" />
 
-                  <Datepicker
+                  <FormControl>
+                    <Input
+                      placeholder="Select your date of birth"
+                      size="md"
+                      type="date"
+                      className="w-[412px] h-[40px] pl-[25px] border border-gray-400/40 p-[12px] rounded-lg  max-sm:w-[200px] max-sm:text-[14px]"
+                      onChange={{}}
+                    />
+                  </FormControl>
+
+                  {/* <Datepicker
                     class="w-[412px] h-[40px] pl-[25px] border border-gray-400/40 p-[12px] rounded-lg  max-sm:w-[200px] max-sm:text-[14px] "
                     onChange={(e) => {
                       handleDate(e.target.value);
                     }}
-                  />
-                  {/* <input
-                    className=" placeholder:italic placeholder:text-slate-400 w-[412px] h-[40px] border border-gray-400/40 p-[12px] rounded-lg  max-sm:w-[200px] max-sm:text-[14px]"
-                    placeholder="DD/MM/YY"
-                  ></input> */}
+                  /> */}
                 </div>
                 <label className="flex gap-[16px] ">
                   <Image src={iconClock} alt="" />

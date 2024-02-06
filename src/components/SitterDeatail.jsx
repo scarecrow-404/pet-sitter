@@ -9,8 +9,16 @@ import PopupBooking from "./Popup";
 
 function SitterDetail() {
   const [rating, setRating] = useState("");
+  const [detailUser, setDetailUser] = useState({});
 
   const sitterRating = ["All Reviews", 5, 4, 3, 2, 1];
+
+  // const user=[{name:'paramesh', exp:1.2 , address:"Nonthaburi"}]
+
+  async function userSitter() {
+    const result = await axios.get("/");
+    setDetailUser(result.data);
+  }
 
   function renderStar(starNumber) {
     let stars = [];
@@ -20,39 +28,41 @@ function SitterDetail() {
     return stars;
   }
   return (
-    <div className="mainDivDetailSitter lg:flex-row-reverse lg:flex md:flex-row-reverse md:flex">
-      <div className="p-[20px] gap-2">
-        <div className=" p-[24px]  flex flex-col items-center text-center gap-2 border-2 rounded-lg w-full">
-          <Image src={avatar} className="rounded-[50%] " alt="" />
-          <p className="text-[36px]  font-bold "> Happy House!</p>
-          <div className="flex gap-3">
-            <p className=" font-bold text-[20px]">John Dep</p>
-            <p className="text-[#1CCD83] text-[16px]">1.5 Years Exp.</p>
+    <div className="mainDivDetailSitter lg:flex-row-reverse lg:flex md:flex-row-reverse md:flex ">
+      <div className="p-[20px] gap-2 ">
+        <div className="shadow-2xl rounded-lg">
+          <div className=" p-[24px]  flex flex-col items-center text-center gap-2 rounded-t-lg w-full">
+            <Image src={avatar} className="rounded-[50%] " alt="" />
+            <p className="text-[36px]  font-bold "> Happy House!</p>
+            <div className="flex gap-3">
+              <p className=" font-bold text-[20px]">John Dep</p>
+              <p className="text-[#1CCD83] text-[16px]">1.5 Years Exp.</p>
+            </div>
+            <div>
+              <Image src={star} alt="" />
+            </div>
+            <div className="flex text-[#7B7E8F] text-[15px]">
+              <Image src={locationIcon} alt="" />
+              <p>Senanikorn, Bangkok</p>
+            </div>
+            <div className=" flex gap-2 pt-2 ">
+              <p className=" text-[14px]  border-solid border bg-secondGreen rounded-2xl  border-firstGreen pl-2 pr-2 text-firstGreen">
+                Dog
+              </p>
+              <p className=" text-[14px]  border-solid border bg-secondPink rounded-2xl  border-firstPink pl-2 pr-2 text-firstPink">
+                Cat
+              </p>
+              <p className=" text-[14px]  border-solid border bg-secondLigthBlue rounded-2xl  border-firstLigthBlue pl-2 pr-2 text-firstLigthBlue">
+                Bird
+              </p>
+              <p className=" text-[14px]  border-solid border bg-secondYellow rounded-2xl  border-firstYellow pl-2 pr-2 text-firstYellow">
+                Rabbit
+              </p>
+            </div>
           </div>
-          <div>
-            <Image src={star} alt="" />
-          </div>
-          <div className="flex text-[#7B7E8F] text-[15px]">
-            <Image src={locationIcon} alt="" />
-            <p>Senanikorn, Bangkok</p>
-          </div>
-          <div className=" flex gap-2 pt-2 ">
-            <p className=" text-[14px]  border-solid border bg-secondGreen rounded-2xl  border-firstGreen pl-2 pr-2 text-firstGreen">
-              Dog
-            </p>
-            <p className=" text-[14px]  border-solid border bg-secondPink rounded-2xl  border-firstPink pl-2 pr-2 text-firstPink">
-              Cat
-            </p>
-            <p className=" text-[14px]  border-solid border bg-secondLigthBlue rounded-2xl  border-firstLigthBlue pl-2 pr-2 text-firstLigthBlue">
-              Bird
-            </p>
-            <p className=" text-[14px]  border-solid border bg-secondYellow rounded-2xl  border-firstYellow pl-2 pr-2 text-firstYellow">
-              Rabbit
-            </p>
-          </div>
+          <hr></hr>
+          <PopupBooking />
         </div>
-
-        <PopupBooking />
       </div>
 
       <div className="sisterDetail flex w-full ">
@@ -108,7 +118,7 @@ function SitterDetail() {
                       return (
                         <button
                           key={rating}
-                          className="flex  items-center gap-1 border-[1px] p-1 rounded-md focus:border-orange-500 hover:bg-slate-100"
+                          className="flex  items-center gap-1 border-[1px] p-1 rounded-md focus:border-orange-500 focus:text-firstOrange hover:bg-slate-100 px-2"
                         >
                           <input
                             className="sr-only"
