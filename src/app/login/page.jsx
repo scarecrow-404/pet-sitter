@@ -1,13 +1,17 @@
 "use client";
-import React from "react";
-import { useState } from "react";
-import Image from "next/image";
+import React, { useEffect, useState } from "react";
 
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import starpic from "@/asset/images/Star1.svg";
 import squarepic from "@/asset/images/Ellipse15(butblue).svg";
 import cathand from "@/asset/images/Vector(butorange).svg";
 import Facebookicon from "@/asset/images/Facebookicon.svg";
 import Googleicon from "@/asset/images/Googleicon.svg";
+import { user, useUser } from "@/hooks/hooks";
+import { signIn } from "@/app/services/auth";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { data } from "jquery";
 
 const LoginPage = () => {
   const [values, setValues] = useState({
@@ -16,9 +20,10 @@ const LoginPage = () => {
     phone: "",
     password: "",
   });
-
+  const supabase = createClientComponentClient();
   const [errors, setErrors] = useState({});
-
+  const { user, setUser } = useUser();
+  const router = useRouter();
   function handleInput(event) {
     const newObj = { ...values, [event.target.name]: event.target.value };
     setValues(newObj);
@@ -38,9 +43,49 @@ const LoginPage = () => {
     return errors;
   }
 
-  function handleValidation(event) {
+  // useEffect(() => {
+  //   async function getUser() {
+  //     const {
+  //       data: { user },
+  //     } = await supabase.auth.api.getUser();
+  //     setUser(user);
+  //   }
+
+  //   getUser();
+  //   if (user) {
+  //     router.push("/");
+  //   }
+  // }, []);
+  // const [prevPath, setPrevPath] = useState("");
+
+  // useEffect(() => {
+  //   setPrevPath(document.referrer);
+  // }, []);
+  async function handleValidation(event) {
     event.preventDefault();
     setErrors(validation(values));
+    if (Object.keys(errors).length === 0) {
+      let result = await signIn(values.email, values.password);
+      setUser(result.user);
+      // const { data, insertError } = await supabase.from("users").insert([
+      //   {
+      //     email: values.email,
+      //     phone_number: values.phone,
+      //     user_type: "user",
+
+      //     full_name: values.name,
+      //   },
+      // ]);
+      // console.log(data);
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      console.log(data);
+      if (user) {
+        router.push("/");
+      }
+    }
   }
 
   return (
@@ -117,9 +162,11 @@ const LoginPage = () => {
               </div>
 
               <h3 className="flex items-center w-full mb-[10px]">
-                <span class="flex-grow bg-gray-200 rounded h-1"></span>
-                <span class="mx-3 text-lg font-medium">Or Countinue With</span>
-                <span class="flex-grow bg-gray-200 rounded h-1"></span>
+                <span className="flex-grow bg-gray-200 rounded h-1"></span>
+                <span className="mx-3 text-lg font-medium">
+                  Or Countinue With
+                </span>
+                <span className="flex-grow bg-gray-200 rounded h-1"></span>
               </h3>
 
               <div className="text-center">
@@ -140,7 +187,7 @@ const LoginPage = () => {
               </div>
 
               <div className="text-center mt-[10px] ">
-                <p>Don't have any account? Register</p>
+                <p> Don't have any account? Register</p>
               </div>
             </form>
           </div>

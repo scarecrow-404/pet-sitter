@@ -6,6 +6,10 @@ module.exports = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/**/*.{html,js}",
     "./node_modules/tw-elements/dist/js/**/*.js",
+
+
+    "./src/public/**/*.html",
+
   ],
   theme: {
     extend: {
@@ -40,5 +44,5 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tw-elements/dist/plugin.cjs")],
+  plugins: [require("flowbite/plugin")],
 };
