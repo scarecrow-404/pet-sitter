@@ -1,9 +1,15 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+require("dotenv").config();
 import { CreateInput } from "thai-address-autocomplete-react";
 import Image from "next/image";
-import Sidebar from "@/app/sitter_management/sidebar";
-
+import { Sidebar, TopBar } from "@/components/sidebar";
+import {
+  AsyncCreatableSelect,
+  AsyncSelect,
+  CreatableSelect,
+  Select,
+} from "chakra-react-select";
 import {
   FormControl,
   FormLabel,
@@ -22,20 +28,24 @@ import {
   MenuGroup,
   MenuOptionGroup,
   MenuDivider,
-  
   IconButton,
+  Avatar,
 } from "@chakra-ui/react";
-import { HamburgerIcon } from "@chakra-ui/icons";
+import supabase from "@/lib/utils/db";
 import Frame427321094 from "@/asset/images/Frame427321094.svg";
 import deleteButton from "@/asset/images/delete.svg";
+import deleteButtonHover from "@/asset/images/deleteHover.svg";
 import frameFray from "@/asset/images/photoFrameOutlineRounded.svg";
 import upload from "@/asset/images/uploadMin10.svg";
-import profile from "@/asset/images/Frame427321006.svg";
 const InputThaiAddress = CreateInput();
 const SitterManagement = () => {
+  const [optionPetType, setOptionPetType] = useState([]);
+  //input thai address
+
   //profile
   const [fullName, setFullName] = useState("");
-  const [experience, setExperience] = useState("");
+  const [experience, setExperience] = useState(null);
+  const [isError, setIsError] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
   const [introduction, setIntroduction] = useState("");
@@ -57,6 +67,29 @@ const SitterManagement = () => {
   const [district, setDistrict] = useState("");
   const [subDistrict, setSubDistrict] = useState("");
   const [postCode, setPostCode] = useState("");
+  //bank account
+  const [accountNumber, setAccountNumber] = useState("");
+  const [accountName, setAccountName] = useState("");
+  const [accountType, setAccountType] = useState("");
+  const [bankName, setBankName] = useState("");
+  const [etcs, setEtcs] = useState("");
+  // isError
+
+  //set horver
+  const [imageHoverStates, setImageHoverStates] = useState({});
+  const handleMouseEnter = (petImageKey) => {
+    setImageHoverStates((prevState) => ({
+      ...prevState,
+      [petImageKey]: true,
+    }));
+  };
+
+  const handleMouseLeave = (petImageKey) => {
+    setImageHoverStates((prevState) => ({
+      ...prevState,
+      [petImageKey]: false,
+    }));
+  };
 
   //ระบบกรอกที่อยู่
   const [address, setAddress] = useState({
@@ -73,7 +106,6 @@ const SitterManagement = () => {
     }));
   };
   const handleSelect = (address) => {
-   
     setAddress(address);
     setProvince(address.province);
     setDistrict(address.amphoe);
@@ -83,7 +115,6 @@ const SitterManagement = () => {
 
   //upload logo
   const handleImageChange = (event) => {
-    
     const file = event.target.files[0];
 
     if (Object.keys(logo).length > 1) {
@@ -106,7 +137,6 @@ const SitterManagement = () => {
   };
   //upload petimage
   const handlePetImageChange = (event) => {
-   
     const file = event.target.files[0];
 
     if (Object.keys(petImage).length >= 10) {
@@ -117,12 +147,6 @@ const SitterManagement = () => {
     if (file && file.size <= 10 * 1024 * 1024) {
       const uniqueId = Date.now();
       setPetImage({ ...petImage, [uniqueId]: file });
-
-      const reader = new FileReader();
-      reader.onload = () => {
-        setPreviewUrlPet(reader.result);
-      };
-      reader.readAsDataURL(file);
     }
   };
   //click logo
@@ -135,6 +159,7 @@ const SitterManagement = () => {
   };
   const handleFormSubmit = (event) => {
     event.preventDefault();
+    createRecord();
     // TODO: Perform the upload logic here
   };
 
@@ -143,76 +168,146 @@ const SitterManagement = () => {
     delete petImage[petImageKey];
     setPetImage({ ...petImage });
   };
+  const handleExperience = (experience) => {
+    setExperience(experience);
+  };
+  const handlePetType = (petType) => {
+    setPetType(petType);
+  };
+  //// Create a client
+  async function createRecord() {
+    const newRecord = {
+      fullName: fullName,
+      experience: parseFloat(experience.value),
+      phoneNumber: phoneNumber,
+      email: email,
+      introduction: introduction,
+      tradeName: tradeName,
+      petType: petType.map((item) => item.value).join(", "), // Assuming petType is an array of objects with 'value' property
+      services: services,
+      myPlace: myPlace,
+      addressDetail: addressDetail,
+      province: province,
+      district: district,
+      subDistrict: subDistrict,
+      postCode: postCode,
+      accountNumber: accountNumber,
+      accountName: accountName,
+      accountType: accountType,
+      bankName: bankName,
+      etcs: etcs,
+      // Add other fields as needed
+    };
+    const { data, error } = await supabase
+      .from("user_mock")
+      .insert([newRecord])
+      .select();
+
+    if (error) {
+      console.error("Error creating record:", error);
+    } else {
+      console.log("Record created:", data);
+    }
+  }
+  async function fetchDataProfile() {
+    let { data: user_mock, error } = await supabase
+      .from("user_mock")
+      .select("*");
+
+    if (error) {
+      console.error("Error reading records:", error);
+      return;
+    } else {
+      setFullName(user_mock[8].fullName);
+      setExperience(user_mock[8].experience);
+      setPhoneNumber(user_mock[8].phoneNumber);
+      setEmail(user_mock[8].email);
+      setIntroduction(user_mock[8].introduction);
+      setTradeName(user_mock[8].tradeName);
+      setServices(user_mock[8].services);
+      setMyPlace(user_mock[8].myPlace);
+      setAddressDetail(user_mock[8].addressDetail);
+      setProvince(user_mock[8].province);
+      setDistrict(user_mock[8].district);
+      setSubDistrict(user_mock[8].subDistrict);
+      setPostCode(user_mock[8].postCode);
+      setAccountNumber(user_mock[8].accountNumber);
+      setAccountName(user_mock[8].accountName);
+      setAccountType(user_mock[8].accountType);
+      setBankName(user_mock[8].bankName);
+      setEtcs(user_mock[8].etcs);
+    }
+  }
+  // Read records pet_type_master
+  async function fetchPetTypes() {
+    let { data: pet_type_master, error } = await supabase
+      .from("pet_type_master")
+      .select("*");
+
+    if (error) {
+      console.error("Error reading records:", error);
+      return;
+    }
+
+    const options = pet_type_master.map((item) => {
+      return { value: item.name, label: item.name };
+    });
+
+    setOptionPetType(options);
+  }
+  useEffect(() => {
+    fetchDataProfile();
+    fetchDataProfile().then((exp) => {
+      setExperience({ value: exp, label: exp }); // Assuming the Select component expects an object with value and label properties
+    });
+    fetchPetTypes();
+  }, []);
+
+  const options = [
+    { value: "0", label: "0" },
+    { value: "1", label: "1" },
+    { value: "1.5", label: "1.5" },
+    { value: "2", label: "2" },
+    { value: "2.5", label: "2.5" },
+    { value: "3", label: "3" },
+    { value: "3.5", label: "3.5" },
+    { value: "4", label: "4" },
+    { value: "4.5", label: "4.5" },
+    { value: "5", label: "5++" },
+  ];
   return (
-    <div className="flex justify-center bg-sixthGray">
-      <div className="hidden lg:block bg-sixthGray">
-        <Sidebar />
+    <div className="flex bg-sixthGray justify-center">
+      <div className="hidden bg-sixthGray lg:block relative">
+        <Sidebar active={1} />
       </div>
-      <div className="min-w-[375px] mx-auto md:w-auto md:mx-3 bg-sixthGray max-w-[1200px]">
-        <div className="headBar flex items-center gap-5 p-5 bg-white justify-between">
-          <div className="flex flex-col items-center md:flex-row md:gap-5">
-            <Image src={profile} width={40} height={40} alt="profile" />
-            <p>Jane Maison</p>
-          </div>
-          <div className="lg:hidden">
-            <Menu>
-              <MenuButton
-                as={IconButton}
-                aria-label="Options"
-                icon={<HamburgerIcon />}
-                variant="outline"
-              />
-              <MenuList>
-                <MenuItem>Pet Sitter Profile</MenuItem>
-                <MenuItem>Booking List</MenuItem>
-                <MenuItem>Payout Option</MenuItem>
-                <MenuItem>Log Out</MenuItem>
-              </MenuList>
-            </Menu>
-          </div>
-        </div>
+      <div className="flex-1 min-w-[375px] mx-auto md:w-auto md:mx-3 bg-sixthGray max-w-[1200px] lg:ml-60">
+        <TopBar />
         <div className="Title flex justify-between items-center py-3">
           <div className="nameTitle pl-5">Pet Sitter Profile</div>
           <div className="pr-5">
-            <button className="bg-secondOrange rounded-3xl min-w-20 h-10 hidden md:block">
+            <button
+              className="bg-secondOrange rounded-3xl min-w-20 h-10 hidden md:block"
+              onClick={handleFormSubmit}
+            >
               Update
             </button>
           </div>
         </div>
         <div className="bg-white rounded-xl p-5 mb-5">
-          <div>Basic Information</div>
+          <div className="pb-6">Basic Information</div>
           <div className="flex flex-col gap-2 mt-2">
             <FormLabel>Profile Image</FormLabel>
             {previewUrl && (
-              <div>
-                <Image
-                  className="block md:hidden lg:hidden"
+              <div className="mb-6">
+                <Avatar
                   src={previewUrl}
-                  width={100}
-                  height={100}
-                  alt="Preview"
-                  onClick={handleClickImage}
-                />
-                <Image
-                  className="hidden md:block lg:hidden"
-                  src={previewUrl}
-                  width={167}
-                  height={167}
-                  alt="Preview"
-                  onClick={handleClickImage}
-                />
-                <Image
-                  className="hidden md:hidden lg:block"
-                  src={previewUrl}
-                  width={240}
-                  height={240}
+                  size="2xl"
                   alt="Preview"
                   onClick={handleClickImage}
                 />
               </div>
             )}
-
-            <input
+            <Input
               type="file"
               id="profile"
               name="profile"
@@ -224,12 +319,13 @@ const SitterManagement = () => {
           </div>
           <div className="md:flex md:gap-9 md:justify-between">
             <div className="fullname md:w-80 lg:w-[474px] xl:w-[560px]">
-              <FormControl isRequired>
+              <FormControl isRequired isInvalid={isError}>
                 <FormLabel>Your full name</FormLabel>
                 <Input
                   type="text"
                   minLength="6"
                   maxLength="60"
+                  pattern="^[a-zA-Z\s]*$"
                   value={fullName}
                   onChange={(event) => {
                     setFullName(event.target.value);
@@ -240,12 +336,14 @@ const SitterManagement = () => {
             <div className="Experience md:w-80 lg:w-[474px] xl:w-[560px]">
               <FormControl isRequired>
                 <FormLabel>Experience</FormLabel>
-                <Input
-                  type="number"
+                <Select
+                  name="experience"
+                  options={options}
+                  placeholder="Select Experience"
+                  closeMenuOnSelect={true}
                   value={experience}
-                  onChange={(event) => {
-                    setExperience(event.target.value);
-                  }}
+                  onChange={handleExperience}
+                  id="experience"
                 />
               </FormControl>
             </div>
@@ -256,11 +354,18 @@ const SitterManagement = () => {
                 <FormLabel>Phone Number</FormLabel>
                 <Input
                   type="tel"
-                  minLength={1}
-                  maxLength={12}
-                  inputMode="numeric"
-                  pattern="\d*"
-                  value={phoneNumber}
+                  maxLength={10}
+                  value={
+                    phoneNumber
+                      ? phoneNumber
+                          .replace(/\D/g, "")
+                          .replace(
+                            /^(\d{3,3})(\d{3,3})(\d{4,4}).*$/,
+                            "$1 $2 $3"
+                          )
+                          .trim()
+                      : ""
+                  }
                   onChange={(event) => {
                     setPhoneNumber(event.target.value);
                   }}
@@ -271,6 +376,7 @@ const SitterManagement = () => {
               <FormControl isRequired>
                 <FormLabel>Email</FormLabel>
                 <Input
+                  type="email"
                   value={email}
                   onChange={(event) => {
                     setEmail(event.target.value);
@@ -296,7 +402,7 @@ const SitterManagement = () => {
           </div>
         </div>
         <div className="petSitter p-5 bg-white rounded-xl mb-5">
-          <p>Pet Sitter</p>
+          <p className="pb-6">Pet Sitter</p>
           <div className="md:flex md:gap-9 md:justify-between">
             <div className="TradeName md:w-80 lg:w-[474px] xl:w-[560px]">
               <FormControl isRequired>
@@ -312,11 +418,16 @@ const SitterManagement = () => {
             <div className="petType md:w-80 lg:w-[474px] xl:w-[560px]">
               <FormControl isRequired>
                 <FormLabel>Pet type</FormLabel>
-                <Input
+                <Select
+                  isMulti
+                  name="petType"
+                  id="petType"
+                  options={optionPetType}
+                  placeholder="Select type"
+                  colorScheme="orange"
+                  closeMenuOnSelect={false}
                   value={petType}
-                  onChange={(event) => {
-                    setPetType(event.target.value);
-                  }}
+                  onChange={handlePetType}
                 />
               </FormControl>
             </div>
@@ -348,29 +459,37 @@ const SitterManagement = () => {
               </FormControl>
             </div>
           </div>
-          <div>
+          <div className=" pt-6">
             <p>Image Gallery (Maximum 10 images)</p>
 
-            <div className="flex mb-4 gap-4 flex-wrap ">
+            <div className="flex my-4 gap-4 flex-wrap items-center">
               {Object.keys(petImage).map((petImageKey) => {
                 const file = petImage[petImageKey];
+                const isHovered = imageHoverStates[petImageKey] || false;
+                const imageSrc = isHovered ? deleteButtonHover : deleteButton;
                 return (
-                  <div key={petImageKey} className="relative">
+                  <div
+                    key={petImageKey}
+                    className="relative flex justify-center"
+                  >
                     <Image
-                      src={deleteButton}
-                      width={20}
-                      height={20}
+                      src={imageSrc}
+                      width={30}
+                      height={30}
                       alt="deleteButton"
-                      className="absolute left-32 pt-4"
+                      className="absolute right-0 top-0 cursor-pointer"
                       onClick={(event) => handleRemoveImage(event, petImageKey)}
+                      onMouseEnter={() => handleMouseEnter(petImageKey)}
+                      onMouseLeave={() => handleMouseLeave(petImageKey)}
                     />
-                    <Image
-                      src={URL.createObjectURL(file)}
-                      width={150}
-                      height={150}
-                      alt={file.name}
-                      className="pt-4"
-                    />
+                    <div className="bg-fifthGray rounded-lg w-[167px] h-[167px] flex justify-center items-center">
+                      <Image
+                        src={URL.createObjectURL(file)}
+                        width={150}
+                        height={150}
+                        alt={file.name}
+                      />
+                    </div>
                   </div>
                 );
               })}
@@ -400,7 +519,7 @@ const SitterManagement = () => {
           </div>
         </div>
         <div className="bg-white rounded-xl p-5 mb-5">
-          <p>Address</p>
+          <p className="pb-6">Address</p>
           <div>
             <FormControl isRequired>
               <FormLabel>Address detail</FormLabel>
@@ -415,9 +534,9 @@ const SitterManagement = () => {
           <div className="md:flex md:gap-9 md:justify-between">
             <FormControl isRequired>
               <FormLabel>Province</FormLabel>
-              <InputThaiAddress.District
-                value={address["district"]}
-                onChange={handleChange("district")}
+              <InputThaiAddress.Province
+                value={address["province"]}
+                onChange={handleChange("province")}
                 onSelect={handleSelect}
               />
             </FormControl>
@@ -434,9 +553,9 @@ const SitterManagement = () => {
           <div className="md:flex md:gap-9 md:justify-between">
             <FormControl isRequired>
               <FormLabel>Sub-district</FormLabel>
-              <InputThaiAddress.Province
-                value={address["province"]}
-                onChange={handleChange("province")}
+              <InputThaiAddress.District
+                value={address["district"]}
+                onChange={handleChange("district")}
                 onSelect={handleSelect}
               />
             </FormControl>
@@ -447,6 +566,63 @@ const SitterManagement = () => {
                 value={address["zipcode"]}
                 onChange={handleChange("zipcode")}
                 onSelect={handleSelect}
+              />
+            </FormControl>
+          </div>
+        </div>
+        {/* //bank account  */}
+        <div className="bg-white rounded-xl p-5 mb-5">
+          <p className="pb-6">Bank</p>
+          <div>
+            <FormControl isRequired>
+              <FormLabel>Account Number</FormLabel>
+              <Input
+                value={accountNumber}
+                onChange={(event) => {
+                  setAccountNumber(event.target.value);
+                }}
+              />
+            </FormControl>
+          </div>
+          <div className="md:flex md:gap-9 md:justify-between">
+            <FormControl isRequired>
+              <FormLabel>Account Name</FormLabel>
+              <Input
+                value={accountName}
+                onChange={(event) => {
+                  setAccountName(event.target.value);
+                }}
+              />
+            </FormControl>
+
+            <FormControl isRequired>
+              <FormLabel>Bank Name</FormLabel>
+              <Input
+                value={bankName}
+                onChange={(event) => {
+                  setBankName(event.target.value);
+                }}
+              />
+            </FormControl>
+          </div>
+          <div className="md:flex md:gap-9 md:justify-between">
+            <FormControl isRequired>
+              <FormLabel>Account Type</FormLabel>
+              <Input
+                value={accountType}
+                onChange={(event) => {
+                  setAccountType(event.target.value);
+                }}
+              />
+            </FormControl>
+
+            <FormControl isRequired>
+              <FormLabel>Etc.</FormLabel>
+              <Input
+                value={etcs}
+                onChange={(event) => {
+                  setEtcs(event.target.value);
+                }}
               />
             </FormControl>
           </div>
