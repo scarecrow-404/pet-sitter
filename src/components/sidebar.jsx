@@ -11,6 +11,10 @@ import payoutOptionHover from "@/asset/images/payoutOptionHover.svg";
 import logOut from "@/asset/images/logOut.svg";
 import logOutHover from "@/asset/images/logOutHover.svg";
 import profile from "@/asset/images/Frame427321006.svg";
+import { useUser } from "@/hooks/hooks";
+import { signOut } from "@/app/services/auth";
+import { useRouter } from "next/navigation";
+
 import {
   Menu,
   MenuButton,
@@ -50,6 +54,14 @@ export function Sidebar({ active }) {
   };
   const handleMouseLeavelogOut = () => {
     setImageSrcLogOut(logOut);
+  };
+
+  const { user, setUser } = useUser();
+
+  const router = useRouter();
+  const handleSignOut = () => {
+    signOut();
+    router.push("/");
   };
   return (
     <div className="w-60 h-[91vh] bg-sixthGray fixed">
@@ -110,6 +122,7 @@ export function Sidebar({ active }) {
         </div>
 
         <div
+          onClick={handleSignOut}
           onMouseEnter={handleMouseEnterLogOut}
           onMouseLeave={handleMouseLeavelogOut}
           className="flex flex-row cursor-pointer items-center px-6 py-3 gap-4 text-secondGray font-[16px] w-full hover:text-secondOrange hover:bg-orange-100"
@@ -123,7 +136,43 @@ export function Sidebar({ active }) {
 }
 
 export function TopBar({}) {
-  return (
+  const { user, setUser } = useUser();
+
+  const router = useRouter();
+  const handleSignOut = () => {
+    signOut();
+    router.push("/");
+  };
+  return (user ? (
+    <div className="headBar flex items-center gap-5 p-5 bg-white justify-between">
+      <div className="flex flex-col items-center md:flex-row md:gap-5">
+        <Image src={profile} width={40} height={40} alt="profile" />
+        <p>โต้ง</p>
+      </div>
+      <div className="lg:hidden">
+        <Menu>
+          <MenuButton
+            as={IconButton}
+            aria-label="Options"
+            icon={<HamburgerIcon />}
+            variant="outline"
+          />
+          <MenuList>
+            <Link href="/sitter_management">
+              <MenuItem>Pet Sitter Profile</MenuItem>
+            </Link>
+            <Link href="/sitter_management/booking_list">
+              <MenuItem>Booking List</MenuItem>
+            </Link>
+            <Link href="/sitter_management/payment">
+              <MenuItem>Payout Option</MenuItem>
+            </Link>
+            <MenuItem onClick={handleSignOut}>Log Out</MenuItem>
+          </MenuList>
+        </Menu>
+      </div>
+    </div>
+  ) : (
     <div className="headBar flex items-center gap-5 p-5 bg-white justify-between">
       <div className="flex flex-col items-center md:flex-row md:gap-5">
         <Image src={profile} width={40} height={40} alt="profile" />
@@ -152,5 +201,5 @@ export function TopBar({}) {
         </Menu>
       </div>
     </div>
-  );
-}
+  )
+)}
