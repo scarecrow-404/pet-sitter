@@ -1,9 +1,7 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
-import Image from "next/image";
-import star from "@/asset/images/Star2.svg";
 import avatar from "@/asset/images/secondSitterDetail.svg";
 import avatar2 from "@/asset/images/firstSitterDetail.svg";
 import avatar3 from "@/asset/images/thirdSitterDetail.svg";
@@ -14,17 +12,10 @@ import withAuth from "@/lib/utils/withAuth";
 const SitterProfile = () => {
   const images = [{ url: avatar }, { url: avatar2 }, { url: avatar3 }];
 
-  function renderStar(starNumber) {
-    let stars = [];
-    for (let i = 0; i < starNumber; i++) {
-      stars.push(<Image key={i} src={star} alt="star" className=" w-[12px]" />);
-    }
-    return stars;
-  }
-
   return (
-    <div className=" overflow-x-hidden">
+    <div className=" overflow-x-hidden max-w-[1440px] mx-auto">
       <Navbar />
+
       <div className="lg:hidden md:hidden m-3 ">
         <Carousel images={images} picNum={1} />
       </div>
@@ -35,6 +26,7 @@ const SitterProfile = () => {
         <Carousel images={images} picNum={3} />
       </div>
       <SitterDetail />
+
       <Footer />
     </div>
   );
