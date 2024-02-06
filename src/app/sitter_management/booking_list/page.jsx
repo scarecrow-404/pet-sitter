@@ -1,7 +1,7 @@
 import React from "react";
 
-const BookingList = () => {
-  return <div>this is booking list for sitter</div>;
-};
+function page() {
+  return <div>page</div>;
+}
 
-export default BookingList;
+export default page;
