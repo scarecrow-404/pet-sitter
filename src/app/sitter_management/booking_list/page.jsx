@@ -377,4 +377,4 @@ const BookingList = () => {
   );
 };
 
-export default BookingList;
+export default page;
