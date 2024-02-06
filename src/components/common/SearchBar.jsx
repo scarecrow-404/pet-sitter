@@ -12,9 +12,10 @@ import {
   InputRightElement,
 } from "@chakra-ui/react";
 import { usePathname } from "next/navigation";
+import { useUser} from "@/hooks/hooks"
 const SearchBar = () => {
-  const [search,setsearch]= useState()
-  const [experianceQuery, setExperianceQuery] = useState("");
+  const {search,setSearch}= useUser()
+  const [experianceQuery, setExperianceQuery] = useState("0-2");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchRating, setSearchRating] = useState("");
   const [inputType, setInputType] = useState([]);
@@ -34,13 +35,16 @@ const SearchBar = () => {
       return setIsLandingPage(false);
     }
   };
-  const handleSearch = () => {
+  const handleSearch = (e) => {
+    e.preventDefault()
     const currentPath = pathname;
     console.log("handleSearch");
     console.log(inputType);
     console.log(searchRating);
     console.log(searchQuery);
     console.log(experianceQuery);
+    setSearch({"exp":experianceQuery,"rating":searchRating,"pet": inputType});
+    console.log(search);
     if (pathname.startsWith("/search")) {
       console.log("Already on search Page");
     } else {
@@ -190,7 +194,7 @@ const SearchBar = () => {
               </button>
               <button
                 className="bg-secondOrange rounded-full p-3 max-h-12 text-white mr-3 "
-                onClick={handleSearch}
+                type="submit"
               >
                 Search
               </button>

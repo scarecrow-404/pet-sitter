@@ -12,10 +12,13 @@ import { useRouter } from "next/router";
 function CardSitter(props) {
   const [petId, setPetId] = useState([]);
   let id = props.id;
-  
+
+
 
   async function getPetprefer(id) {
-    let { data, error } = await supabase
+
+    
+      let { data, error } = await supabase
       .from("pet_prefer")
       .select("pet_type_master_id")
       .eq("pet_sitter_id", id);
@@ -23,9 +26,11 @@ function CardSitter(props) {
       console.log(error);
     }
     setPetId(data);
-    //console.log("Petidddd",data);
+  
   }
- // console.log(Array.isArray(petId))
+    
+    
+
   useEffect(() => {
     getPetprefer(id);
   }, []);
@@ -41,9 +46,9 @@ function CardSitter(props) {
     return stars;
   }
   return (
-    <div className=" w-full" key={props.key}>
+    <div className=" w-full  " key={props.key}>
       <section
-        className="flex  items-center p-2 rounded-xl   shadow-lg md:w-[80%]  h-52"
+        className="flex  items-center p-3 rounded-xl   shadow-md md:w-[80%]  h-52"
         direction={{ base: "column", sm: "row" }}
         overflow="hidden"
         variant="outline"
@@ -51,7 +56,7 @@ function CardSitter(props) {
         <div className=" flex  gap-3 w-[100%]">
           <Image
             objectFit="cover"
-            className=" w-[100px] h-[100px] rounded-xl   md:w-[150px]"
+            className=" w-[150px] h-[150px] rounded-xl   md:w-[250px]"
             src={catpic}
             alt="sitter pic"
           />
@@ -61,7 +66,7 @@ function CardSitter(props) {
               <div className="flex gap-2">
                 <Image
                   objectFit="cover"
-                  className=" w-[40px] h-[40px] rounded-[50%] lg:w-[50px] lg:h-[50px]"
+                  className=" w-[40px] h-[40px] rounded-[50%] lg:w-[70px] lg:h-[70px]"
                   src={catpic}
                   alt="sitter pic"
                 />
@@ -86,29 +91,29 @@ function CardSitter(props) {
                 </p>
               </div>
               <div className=" flex   gap-1 pt-2">
-                {petId.map((eachId) => {
+                {petId.map((eachId,index) => {
                   //console.log("eachid", eachId); 
                   if (eachId.pet_type_master_id=== 1) {
                     return (
-                      <p className=" text-[10px]  border-solid border bg-secondGreen rounded-2xl  border-firstGreen pl-2 pr-2 text-firstGreen">
+                      <p key={index} className=" text-[10px]  border-solid border bg-secondGreen rounded-2xl  border-firstGreen pl-2 pr-2 text-firstGreen">
                         Dog
                       </p>
                     );
                   } else if (eachId.pet_type_master_id === 2) {
                     return (
-                      <p className=" text-[10px]  border-solid border bg-secondPink rounded-2xl  border-firstPink pl-2 pr-2 text-firstPink">
+                      <p key={index} className=" text-[10px]  border-solid border bg-secondPink rounded-2xl  border-firstPink pl-2 pr-2 text-firstPink">
                         Cat
                       </p>
                     );
                   } else if (eachId.pet_type_master_id === 3) {
                     return (
-                      <p className=" text-[10px]  border-solid border bg-secondLigthBlue rounded-2xl  border-firstLigthBlue pl-2 pr-2 text-firstLigthBlue">
+                      <p  key={index} className=" text-[10px]  border-solid border bg-secondLigthBlue rounded-2xl  border-firstLigthBlue pl-2 pr-2 text-firstLigthBlue">
                         Bird
                       </p>
                     );
                   } else if (eachId.pet_type_master_id === 4) {
                     return (
-                      <p className=" text-[10px]  border-solid border bg-secondYellow rounded-2xl  border-firstYellow pl-2 pr-2 text-firstYellow">
+                      <p key={index} className=" text-[10px]  border-solid border bg-secondYellow rounded-2xl  border-firstYellow pl-2 pr-2 text-firstYellow">
                         Rabbit
                       </p>
                     );

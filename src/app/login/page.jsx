@@ -78,10 +78,7 @@ const LoginPage = () => {
       // ]);
       // console.log(data);
 
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      console.log(data);
+      
       if (user) {
         router.push("/");
       }

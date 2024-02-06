@@ -7,9 +7,10 @@ const UserContext = createContext();
 // Create a provider component
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [search,setSearch] = useState({});
   // setUser(supabase.auth.session().user);
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser,search,setSearch }}>
       {children}
     </UserContext.Provider>
   );
