@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Checkbox } from "@chakra-ui/react";
 import { usePathname } from "next/navigation";
 const SearchBar = () => {
+  const [search,setsearch]= useState()
   const [experianceQuery, setExperianceQuery] = useState("");
   const [type, setType] = useState([]);
   const [searchRating, setSearchRating] = useState("");
@@ -13,9 +14,11 @@ const SearchBar = () => {
   const petType = ["Dog", "Cat", "Bird", "Rabbit"];
   const sitterRating = [5, 4, 3, 2, 1];
   useEffect(() => {
-    console.log(type);
-    console.log(searchRating);
-  }, [type, searchRating]);
+    // console.log(type);
+    // console.log(searchRating);
+    console.log("tttttttt"+search)
+  }, [type, searchRating,experianceQuery]);
+
   function renderStar(starNumber) {
     let stars = [];
     for (let i = 0; i < starNumber; i++) {
@@ -23,8 +26,16 @@ const SearchBar = () => {
     }
     return stars;
   }
+
+ const hanleSubmit = (e)=>{
+ e.preventDefault();
+setsearch({searchRating,type,experianceQuery})
+}
+console.log("searchhhhhhhhhhhhhhhhhh",search)
+
   return (
-    <div className=" flex flex-col md:flex-wrap justify-center items-center m-2 gap-2 text-secondGray">
+    <form onSubmit={hanleSubmit}>
+    <div className=" flex flex-col md:flex-wrap justify-center items-center m-2 gap-2 text-secondGray ">
       <div className="flex flex-col gap-2 flex-wrap max-w-4xl flex-grow rounded-lg border-[1px] overflow-hidden shadow-lg">
         <div className="flex items-center gap-4 flex-wrap p-4 text-sm w-[100%] bg-fifthGray">
           Pet Type :
@@ -103,7 +114,7 @@ const SearchBar = () => {
               </select>
             </lebel>
             <div className="flex text-sm justify-end m-2 ">
-              <button className="bg-secondOrange rounded-full p-3 max-h-12 text-white mr-3">
+              <button  type="submit" className="bg-secondOrange rounded-full p-3 max-h-12 text-white mr-3">
                 Search
               </button>
             </div>
@@ -112,6 +123,7 @@ const SearchBar = () => {
         </div>
       </div>
     </div>
+    </form>
   );
 };
 
