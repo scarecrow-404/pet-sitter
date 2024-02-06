@@ -15,16 +15,24 @@ import calling from "@/asset/images/calling-all-pet.svg";
 import greenStar from "@/asset/images/greenStar.svg";
 import blueEllipse from "@/asset/images/Ellipse17.svg";
 import halfYellowEllipse from "@/asset/images/half-yellow-ellipse.svg";
+
 import catAllElement from "@/asset/images/catAllElement.svg";
 import dogAllElement from "@/asset/images/dogAllElement.svg";
 
+
+import { useUser } from "@/hooks/hooks";
+
 export default function Home() {
+  // const { user, setUser } = useUser();
+  // console.log(user);
   return (
     <>
       <Navbar />
+
       <main className="flex min-h-4/6 flex-col items-center justify-between gap-10 my-3 lg:gap-20 lg:my-6">
         <div className="w-full flex flex-row justify-center items-center lg:w-11/12">
           <div className="w-[23%] relative top-7 md:top-0 md:w-[25%] lg:w-[25%]">
+
             <Image
               src={catAllElement}
               alt="cat-with-element"
@@ -52,7 +60,9 @@ export default function Home() {
           </div>
         </div>
         <SearchBar />
+
         <p className="w-11/12 text-center text-base font-extrabold md:text-lg lg:text-2xl">
+
           "Your Pets, Our Priority: Perfect Care, Anytime, Anywhere."
         </p>
         <div className="flex flex-col items-center gap-6 w-10/12 lg:flex-row-reverse lg:justify-between lg:gap-0 lg:w-10/12 lg:px-10">

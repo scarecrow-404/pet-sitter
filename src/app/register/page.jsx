@@ -1,15 +1,17 @@
 "use client";
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
-
+import supabase from "@/lib/utils/db.js";
 import starpic from "@/asset/images/Star1.svg";
 import squarepic from "@/asset/images/Ellipse15(butblue).svg";
 import cathand from "@/asset/images/Vector(butorange).svg";
 import Facebookicon from "@/asset/images/Facebookicon.svg";
 import Googleicon from "@/asset/images/Googleicon.svg";
-
+import { signUp } from "@/app/services/auth";
+import { useRouter } from "next/navigation";
 const RegisterPage = () => {
+  const router = useRouter();
   const [values, setValues] = useState({
     name: "",
     email: "",
@@ -18,7 +20,7 @@ const RegisterPage = () => {
   });
 
   const [errors, setErrors] = useState({});
-
+  const [isregister, setIsregister] = useState(false);
   function handleInput(event) {
     const newObj = { ...values, [event.target.name]: event.target.value };
     setValues(newObj);
@@ -67,6 +69,18 @@ const RegisterPage = () => {
   function handleValidation(event) {
     event.preventDefault();
     setErrors(validation(values));
+    if (Object.keys(errors).length === 0) {
+      const user = signUp(values.email, values.password, values);
+      // const result = supabase.from("user_data").insert([
+      //   {
+      //     auth_id: user.id,
+      //     full_name: values.name,
+      //     email: values.email,
+      //   },
+      // ]);
+      console.log(values);
+      router.push("/login");
+    }
   }
 
   return (
@@ -88,7 +102,9 @@ const RegisterPage = () => {
               className="grid gap-[8px] sm:gap-[16px]"
             >
               <div>
-                <label className="text-[16px]">Your Name</label>
+                <label className="text-[16px]" htmlFor="name">
+                  Your Name
+                </label>
                 <br />
                 <input
                   className="w-full sm:w-[440px] mt-[4px] px-[16px] py-[5px] sm:py-[12px] border-[1px] rounded-[8px]  "
