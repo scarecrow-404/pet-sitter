@@ -83,8 +83,6 @@ const RegisterPage = () => {
     }
   }
 
-  const [session, setSession] = useState(null);
-
   return (
     <div className="flex items-center justify-center">
       <div className="h-screen xl:w-[1440px] flex items-center justify-center relative">
