@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import Link from "next/link";
 import blackLogo from "@/asset/images/logoInBlack.svg";
 import mockPhoto from "@/asset/images/profileFrame.svg";
 import Image from "next/image";
@@ -13,42 +14,57 @@ import {
   WrapItem,
   Box,
 } from "@chakra-ui/react";
-
+import { useUser } from "@/hooks/hooks";
+import { signOut } from "@/app/services/auth";
+import { useRouter } from "next/navigation";
 const Navbar = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const { user } = useUser();
+  // const Menu = () => {
+  //   return;
+  // };
+  const router = useRouter();
+  const handleSignOut = () => {
+    signOut();
+    router.push("/");
+  };
   return (
     <div className="flex items-center justify-between bg-white p-4 sticky top-0 z-20">
-      <Image src={blackLogo} alt="logo" className=" w-fit md:w-52" />
+      <Link href="/">
+        <Image src={blackLogo} alt="logo" className=" w-fit md:w-52" />
+      </Link>
+
       <div className="flex items-center">
-        {isLogin ? (
-          <Menu>
-            <MenuButton as="Button">
-              <Box display="flex" justifyContent="center" alignItems="center">
-                <WrapItem>
-                  <Avatar size="md" boxSize="40px" name="" src={mockPhoto} />
-                </WrapItem>
-              </Box>
-            </MenuButton>
-            <MenuList>
-              <MenuItem>Profile</MenuItem>
-              <MenuItem>Yout Pet </MenuItem>
+        {user ? (
+          <>
+            <Menu>
+              <MenuButton as="button">
+                <Box display="flex" justifyContent="center" alignItems="center">
+                  <WrapItem>
+                    <Avatar size="md" boxSize="40px" name="" src={mockPhoto} />
+                  </WrapItem>
+                </Box>
+              </MenuButton>
+              <MenuList>
+                <MenuItem>Profile</MenuItem>
+                <MenuItem>Yout Pet </MenuItem>
 
-              <MenuDivider />
+                <MenuDivider />
 
-              <MenuItem>Sitter Mode</MenuItem>
-              <MenuItem>Log out</MenuItem>
-            </MenuList>
-          </Menu>
+                <MenuItem>Sitter Mode</MenuItem>
+                <MenuItem onClick={handleSignOut}>Log out</MenuItem>
+              </MenuList>
+            </Menu>
+          </>
         ) : (
-          <button>Login</button>
+          <Link href="/login">Login</Link>
         )}
-
-        <button className="bg-secondOrange rounded-full p-2 text-white ml-6 hidden md:block">
-          Find A Pet Sitter
-        </button>
+        <Link href="/search">
+          <button className="bg-secondOrange rounded-full p-2 text-white ml-6 hidden md:block">
+            Find A Pet Sitter
+          </button>
+        </Link>
       </div>
     </div>
   );
 };
-
 export default Navbar;
