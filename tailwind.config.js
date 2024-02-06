@@ -7,7 +7,9 @@ module.exports = {
     "./src/**/*.{html,js}",
     "./node_modules/tw-elements/dist/js/**/*.js",
 
+
     "./src/public/**/*.html",
+
   ],
   theme: {
     extend: {
@@ -17,7 +19,7 @@ module.exports = {
         thirdOrange: "#FF986F",
         fourthOrange: "#FFB899",
         fifthOrange: "#FFD5C2",
-        sixthOrange: "##FFF1EC",
+        sixthOrange: "#FFF1EC",
         firstGray: "#3A3B46",
         secondGray: "#5B5D6F",
         thirdGray: "#7B7E8F",
