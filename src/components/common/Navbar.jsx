@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import blackLogo from "@/asset/images/logoInBlack.svg";
 import mockPhoto from "@/asset/images/profileFrame.svg";
@@ -17,16 +17,35 @@ import {
 import { useUser } from "@/hooks/hooks";
 import { signOut } from "@/app/services/auth";
 import { useRouter } from "next/navigation";
+
 const Navbar = () => {
-  const { user } = useUser();
+  const { user, setUser } = useUser();
+  const [isLogin, setIslogin] = useState(false);
+
   // const Menu = () => {
   //   return;
   // };
+  // useEffect(() => {
+  //   const fetchSession = async () => {
+  //     const session = supabase.auth.session();
+  //     if (session) {
+  //       setUser(session.user);
+  //     } else {
+  //       setUser(null);
+  //     }
+  //   };
+  //   if (user) {
+  //     setIslogin(true);
+  //   }
+  //   fetchSession();
+  // }, [user]);
+
   const router = useRouter();
   const handleSignOut = () => {
     signOut();
     router.push("/");
   };
+
   return (
     <div className="flex items-center justify-between bg-white p-4 sticky top-0 z-20">
       <Link href="/">

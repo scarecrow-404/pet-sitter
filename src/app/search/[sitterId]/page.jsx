@@ -9,9 +9,12 @@ import Carousel from "@/components/Carousel";
 import SitterDetail from "@/components/SitterDeatail";
 import PopupBooking from "@/components/Popup";
 import withAuth from "@/lib/utils/withAuth";
+import { useUser } from "@/hooks/hooks";
 const SitterProfile = () => {
+  const { user, setUser } = useUser();
   const images = [{ url: avatar }, { url: avatar2 }, { url: avatar3 }];
 
+  console.log(user);
   return (
     <div className=" overflow-x-hidden max-w-[1440px] mx-auto">
       <Navbar />

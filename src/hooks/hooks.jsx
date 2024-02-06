@@ -1,5 +1,6 @@
 "use client";
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
+import { getUser } from "@supabase/auth-helpers-nextjs";
 import supabase from "@/lib/utils/db";
 // Create a context
 const UserContext = createContext();
@@ -7,9 +8,14 @@ const UserContext = createContext();
 // Create a provider component
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
-  // setUser(supabase.auth.session().user);
+  const [userId, setUserId] = useState(null);
+  useEffect(() => {
+    const session = supabase.auth.getSession().session;
+    setUser(session?.user);
+  }, []); // The empty array means this effect runs once on mount and never again
+
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser, userId, setUserId }}>
       {children}
     </UserContext.Provider>
   );

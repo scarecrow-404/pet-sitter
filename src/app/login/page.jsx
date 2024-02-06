@@ -8,7 +8,7 @@ import squarepic from "@/asset/images/Ellipse15(butblue).svg";
 import cathand from "@/asset/images/Vector(butorange).svg";
 import Facebookicon from "@/asset/images/Facebookicon.svg";
 import Googleicon from "@/asset/images/Googleicon.svg";
-import { user, useUser } from "@/hooks/hooks";
+import { useUser } from "@/hooks/hooks";
 import { signIn } from "@/app/services/auth";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { data } from "jquery";
@@ -22,7 +22,7 @@ const LoginPage = () => {
   });
   const supabase = createClientComponentClient();
   const [errors, setErrors] = useState({});
-  const { user, setUser } = useUser();
+  const { user, setUser, userId } = useUser();
   const router = useRouter();
   function handleInput(event) {
     const newObj = { ...values, [event.target.name]: event.target.value };
@@ -50,7 +50,11 @@ const LoginPage = () => {
   //     } = await supabase.auth.api.getUser();
   //     setUser(user);
   //   }
-
+  useEffect(() => {
+    if (user) {
+      router.push("/");
+    }
+  }, [user]);
   //   getUser();
   //   if (user) {
   //     router.push("/");
@@ -66,7 +70,10 @@ const LoginPage = () => {
     setErrors(validation(values));
     if (Object.keys(errors).length === 0) {
       let result = await signIn(values.email, values.password);
-      setUser(result.user);
+      // const {
+      //   data: { user },
+      // } = await supabase.auth.getUser();
+
       // const { data, insertError } = await supabase.from("users").insert([
       //   {
       //     email: values.email,
@@ -78,13 +85,16 @@ const LoginPage = () => {
       // ]);
       // console.log(data);
 
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      console.log(data);
-      if (user) {
-        router.push("/");
-      }
+      console.log(result.user);
+
+      let { data: users, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", result.user.id);
+
+      console.log(user);
+      setUser(users[0]);
+      console.log(userId);
     }
   }
 
