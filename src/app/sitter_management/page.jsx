@@ -1,6 +1,6 @@
 "use client";
-import React, { useState, useRef } from "react";
-require('dotenv').config()
+import React, { useState, useRef, useEffect } from "react";
+require("dotenv").config();
 import { CreateInput } from "thai-address-autocomplete-react";
 import Image from "next/image";
 import { Sidebar, TopBar } from "@/components/sidebar";
@@ -31,18 +31,20 @@ import {
   IconButton,
   Avatar,
 } from "@chakra-ui/react";
-import { createClient } from "@supabase/supabase-js";
+import supabase from "@/lib/utils/db";
 import Frame427321094 from "@/asset/images/Frame427321094.svg";
 import deleteButton from "@/asset/images/delete.svg";
 import deleteButtonHover from "@/asset/images/deleteHover.svg";
 import frameFray from "@/asset/images/photoFrameOutlineRounded.svg";
 import upload from "@/asset/images/uploadMin10.svg";
-
+const InputThaiAddress = CreateInput();
 const SitterManagement = () => {
-  const InputThaiAddress = CreateInput();
+  const [optionPetType, setOptionPetType] = useState([]);
+  //input thai address
+
   //profile
   const [fullName, setFullName] = useState("");
-  const [experience, setExperience] = useState("");
+  const [experience, setExperience] = useState(null);
   const [isError, setIsError] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
@@ -157,6 +159,7 @@ const SitterManagement = () => {
   };
   const handleFormSubmit = (event) => {
     event.preventDefault();
+    createRecord();
     // TODO: Perform the upload logic here
   };
 
@@ -171,27 +174,94 @@ const SitterManagement = () => {
   const handlePetType = (petType) => {
     setPetType(petType);
   };
-//// Create a client
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY)
-  // Read records
-  async function readRecords() {
+  //// Create a client
+  async function createRecord() {
+    const newRecord = {
+      fullName: fullName,
+      experience: parseFloat(experience.value),
+      phoneNumber: phoneNumber,
+      email: email,
+      introduction: introduction,
+      tradeName: tradeName,
+      petType: petType.map((item) => item.value).join(", "), // Assuming petType is an array of objects with 'value' property
+      services: services,
+      myPlace: myPlace,
+      addressDetail: addressDetail,
+      province: province,
+      district: district,
+      subDistrict: subDistrict,
+      postCode: postCode,
+      accountNumber: accountNumber,
+      accountName: accountName,
+      accountType: accountType,
+      bankName: bankName,
+      etcs: etcs,
+      // Add other fields as needed
+    };
+    const { data, error } = await supabase
+      .from("user_mock")
+      .insert([newRecord])
+      .select();
+
+    if (error) {
+      console.error("Error creating record:", error);
+    } else {
+      console.log("Record created:", data);
+    }
+  }
+  async function fetchDataProfile() {
+    let { data: user_mock, error } = await supabase
+      .from("user_mock")
+      .select("*");
+
+    if (error) {
+      console.error("Error reading records:", error);
+      return;
+    } else {
+      setFullName(user_mock[8].fullName);
+      setExperience(user_mock[8].experience);
+      setPhoneNumber(user_mock[8].phoneNumber);
+      setEmail(user_mock[8].email);
+      setIntroduction(user_mock[8].introduction);
+      setTradeName(user_mock[8].tradeName);
+      setServices(user_mock[8].services);
+      setMyPlace(user_mock[8].myPlace);
+      setAddressDetail(user_mock[8].addressDetail);
+      setProvince(user_mock[8].province);
+      setDistrict(user_mock[8].district);
+      setSubDistrict(user_mock[8].subDistrict);
+      setPostCode(user_mock[8].postCode);
+      setAccountNumber(user_mock[8].accountNumber);
+      setAccountName(user_mock[8].accountName);
+      setAccountType(user_mock[8].accountType);
+      setBankName(user_mock[8].bankName);
+      setEtcs(user_mock[8].etcs);
+    }
+  }
+  // Read records pet_type_master
+  async function fetchPetTypes() {
     let { data: pet_type_master, error } = await supabase
       .from("pet_type_master")
       .select("*");
 
     if (error) {
       console.error("Error reading records:", error);
-    } else {
-      console.log("Records:", data);
+      return;
     }
+
+    const options = pet_type_master.map((item) => {
+      return { value: item.name, label: item.name };
+    });
+
+    setOptionPetType(options);
   }
-  console.log(readRecords());
-  const optionPetType = [
-    { value: "Dog", label: "Dog" },
-    { value: "Cat", label: "Cat" },
-    { value: "Bird", label: "Bird" },
-    { value: "Rabbit", label: "Rabbit" },
-  ];
+  useEffect(() => {
+    fetchDataProfile();
+    fetchDataProfile().then((exp) => {
+      setExperience({ value: exp, label: exp }); // Assuming the Select component expects an object with value and label properties
+    });
+    fetchPetTypes();
+  }, []);
 
   const options = [
     { value: "0", label: "0" },
@@ -215,7 +285,10 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANO
         <div className="Title flex justify-between items-center py-3">
           <div className="nameTitle pl-5">Pet Sitter Profile</div>
           <div className="pr-5">
-            <button className="bg-secondOrange rounded-3xl min-w-20 h-10 hidden md:block">
+            <button
+              className="bg-secondOrange rounded-3xl min-w-20 h-10 hidden md:block"
+              onClick={handleFormSubmit}
+            >
               Update
             </button>
           </div>
@@ -282,10 +355,17 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANO
                 <Input
                   type="tel"
                   maxLength={10}
-                  value={phoneNumber
-                    .replace(/\D/g, "")
-                    .replace(/^(\d{3,3})(\d{3,3})(\d{4,4}).*$/, "$1 $2 $3")
-                    .trim()}
+                  value={
+                    phoneNumber
+                      ? phoneNumber
+                          .replace(/\D/g, "")
+                          .replace(
+                            /^(\d{3,3})(\d{3,3})(\d{4,4}).*$/,
+                            "$1 $2 $3"
+                          )
+                          .trim()
+                      : ""
+                  }
                   onChange={(event) => {
                     setPhoneNumber(event.target.value);
                   }}
