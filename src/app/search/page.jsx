@@ -6,6 +6,8 @@ import SearchBar from "@/components/common/SearchBar";
 import { supabase } from "@/lib/db";
 import {useUser} from "@/hooks/hooks"
 
+
+
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 
