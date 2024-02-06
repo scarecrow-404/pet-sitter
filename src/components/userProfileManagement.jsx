@@ -52,12 +52,12 @@ function UserManagementProfile() {
 
   return (
     // form
-    <div className="flex flex-col items-center justify-between gap-5 py-6 lg:gap-10">
-      <h1 className="w-5/6 text-xl font-semibold md:text-2xl lg:w-[850px]">
+    <div className="flex flex-col xl:items-start xl:pl-12 mx-auto py-6 lg:gap-10 min-w-[375px] w-full lg:max-w-[1440px]">
+      <h1 className="w-5/6 text-xl font-semibold md:text-2xl lg:max-w-[740px] pl-5 ">
         Profile
       </h1>
       {/* profile pic */}
-      <div className="lg:w-[850px]">
+      <div className="flex justify-start items-start lg:max-w-[750px] pl-5 ">
         <label htmlFor="profile">
           <FormLabel></FormLabel>
           {previewPhoto && (
@@ -96,7 +96,7 @@ function UserManagementProfile() {
         </label>
       </div>
       {/* all input */}
-      <div className="w-[90%] flex flex-col justify-between items-center gap-4 py-4 md:w-[85%] lg:gap-8 lg:w-[850px]">
+      <div className="w-full flex flex-col justify-between mx-auto items-center gap-4 py-4 md:w-full lg:gap-8  xl:items-start xl:justify-start">
         <div className="w-11/12">
           <FormControl isRequired>
             <FormLabel>Your name</FormLabel>
@@ -144,7 +144,7 @@ function UserManagementProfile() {
             </FormControl>
           </div>
         </div>
-        <div className="border-2 w-11/12 flex flex-col gap-4 lg:flex-row lg:gap-0 lg:justify-between">
+        <div className="w-11/12 flex flex-col gap-4 lg:flex-row lg:gap-0 lg:justify-between">
           <div className="w-full lg:w-[48%]">
             <FormControl isRequired>
               <FormLabel>ID Number</FormLabel>
@@ -179,7 +179,7 @@ function UserManagementProfile() {
             </FormControl>
           </div>
         </div>
-        <div className="relative lg:left-[310px]">
+        <div className="lg:left-[310px]">
           <button
             className="bg-secondOrange p-2 text-sm rounded-3xl text-white md:text-xl"
             //for check useState (if connected to db already ,pls delete)
