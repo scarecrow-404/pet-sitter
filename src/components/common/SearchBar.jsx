@@ -13,6 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { usePathname } from "next/navigation";
 const SearchBar = () => {
+  const [search,setsearch]= useState()
   const [experianceQuery, setExperianceQuery] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchRating, setSearchRating] = useState("");
@@ -69,6 +70,7 @@ const SearchBar = () => {
     console.log("clearSearch");
   };
   return (
+    <form onSubmit={handleSearch}>
     <div className=" flex flex-col md:flex-wrap justify-center items-center m-2 gap-2 text-secondGray ">
       <div className="flex flex-col gap-1 flex-wrap max-w-4xl flex-grow rounded-lg border-[1px] overflow-hidden shadow-lg">
         {isLandingPage ? null : (
@@ -198,6 +200,7 @@ const SearchBar = () => {
         </div>
       </div>
     </div>
+    </form>
   );
 };
 
