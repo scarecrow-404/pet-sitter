@@ -7,18 +7,9 @@ import avatar from "@/asset/images/secondSitterDetail.svg";
 import star from "@/asset/images/Star2.svg";
 import PopupBooking from "./Popup";
 
-function SitterDetail() {
+function SitterDetail(props) {
   const [rating, setRating] = useState("");
-  const [detailUser, setDetailUser] = useState({});
-
   const sitterRating = ["All Reviews", 5, 4, 3, 2, 1];
-
-  // const user=[{name:'paramesh', exp:1.2 , address:"Nonthaburi"}]
-
-  async function userSitter() {
-    const result = await axios.get("/");
-    setDetailUser(result.data);
-  }
 
   function renderStar(starNumber) {
     let stars = [];
@@ -33,17 +24,21 @@ function SitterDetail() {
         <div className="shadow-2xl rounded-lg">
           <div className=" p-[24px]  flex flex-col items-center text-center gap-2 rounded-t-lg w-full">
             <Image src={avatar} className="rounded-[50%] " alt="" />
-            <p className="text-[36px]  font-bold "> Happy House!</p>
+            <p className="text-[30px]  font-bold "> {props.sitterName}</p>
             <div className="flex gap-3">
-              <p className=" font-bold text-[20px]">John Dep</p>
-              <p className="text-[#1CCD83] text-[16px]">1.5 Years Exp.</p>
+              <p className=" font-bold text-[17px]">{props.fullName}</p>
+              <p className="text-[#1CCD83] text-[16px]">
+                {props.exp} Years Exp.
+              </p>
             </div>
             <div>
               <Image src={star} alt="" />
             </div>
             <div className="flex text-[#7B7E8F] text-[15px]">
               <Image src={locationIcon} alt="" />
-              <p>Senanikorn, Bangkok</p>
+              <p>
+                {props.district}, {props.province}
+              </p>
             </div>
             <div className=" flex gap-2 pt-2 ">
               <p className=" text-[14px]  border-solid border bg-secondGreen rounded-2xl  border-firstGreen pl-2 pr-2 text-firstGreen">
@@ -68,43 +63,37 @@ function SitterDetail() {
       <div className="sisterDetail flex w-full ">
         <div className=" flex flex-col w-full">
           <div className="informationSister py-[24px] px-[30px]">
-            <h1 className="text-[40px] pb-[48px] font-bold">Happy House!</h1>
+            <h1 className="text-[40px] pb-[48px] font-bold">
+              {props.sitterName}
+            </h1>
             <div className="introduction-box pb-[48px]">
               <p className=" font-bold text-[20px] pb-[12px]">Introduction</p>
-              <p className="text-[15px] ">
-                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Saepe,
-                cumque. Blanditiis non rerum hic quasi laboriosam nesciunt
-                fugiat libero cupiditate provident explicabo, nemo veritatis
-                accusantium inventore! Totam est modi vel.
-              </p>
+              <p className="text-[15px] ">{props.introduction}</p>
             </div>
             <div className="service-box pb-[48px]">
               <p className=" font-bold text-[24px] pb-[12px]">Services</p>
               <p className="text-[15px]">
-                🐱 Cat Sitting: Lorem ipsum dolor sit amet consectetur,
+                {props.service}
+                {/* 🐱 Cat Sitting: Lorem ipsum dolor sit amet consectetur,
                 adipisicing elit. Saepe, cumque. Blanditiis non rerum hic quasi
                 laboriosam nesciunt fugiat.<br></br>
                 🐶 Dog Sitting: Lorem ipsum dolor sit amet consectetur
                 adipisicing elit. Distinctio nam aliquid quidem sed assumenda,
                 laboriosam rerum alias nulla doloremque quo?<br></br>
                 🐇 Rabbit Sitting: Lorem, ipsum dolor sit amet consectetur
-                adipisicing elit. Libero inventore asperiores neque ipsam atque.
+                adipisicing elit. Libero inventore asperiores neque ipsam atque. */}
               </p>
             </div>
             <div className="sitterPlace-box pb-[48px]">
               <p className=" font-bold text-[24px] pb-[12px]">My Place</p>
-              <p>
-                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Saepe,
-                cumque. Blanditiis non rerum hic quasi laboriosam nesciunt
-                fugiat libero cupiditate provident explicabo, nemo veritatis
-                accusantium inventore! Totam est modi vel.
-              </p>
+              <p>{props.place}</p>
             </div>
           </div>
           <div className="rating p-[24px] bg-fifthGray rounded-sm rounded-tl-[100px] rounded-tr-[20px] flex flex-col ">
             <div className="flex p-[24px] bg-white rounded-sm rounded-l-[100px] rounded-r-[20px] relative gap-[20px] items-start">
               <Image src={union} className="w-[100px]" alt="" />
               <p className=" absolute text-[26px]  text-orange-600  left-[53px] top-[50px]">
+                {/* avg star */}
                 4.5
               </p>
               <p className=" absolute text-[13px]  text-orange-600  left-[43px] top-[85px]">
@@ -139,13 +128,23 @@ function SitterDetail() {
               <div className="flex gap-3 ">
                 <Image src={dog} className="w-[60px]  rounded-[50%]" alt="" />
                 <div>
-                  <p>John Dep</p>
-                  <p>Apr 23, 2024</p>
+                  <p>
+                    {/* name of reviewer */}
+                    John Dep
+                  </p>
+                  <p>
+                    {/* date to created_at */}
+                    Apr 23, 2024
+                  </p>
                 </div>
               </div>
               <div className="py-[20px]">
-                <p>{rating}****</p>
                 <p>
+                  ****
+                  {/* star of review */}
+                </p>
+                <p>
+                  {/* review comment */}
                   Lorem ipsum dolor, sit amet consectetur adipisicing elit.
                   Ipsum asperiores quas facilis deleniti repellendus, nisi saepe
                   temporibus sequi neque ex.
