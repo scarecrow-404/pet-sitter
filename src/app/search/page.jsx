@@ -2,15 +2,13 @@
 import React from "react";
 import { useState } from "react";
 import CardSitter from "@/app/search/cardsitterlist.jsx";
-
-
+import SearchBar from "@/components/common/SearchBar";
+import Navbar from "@/components/common/Navbar";
+import Footer from "@/components/common/Footer";
 
 const Search = () => {
   const [sitterdata, setSitterData] = useState("");
   const [pages, setPage] = useState(1);
-
-
-
 
   // const getSitterList = async () => {
   //   const result = await fetch("")
@@ -27,10 +25,11 @@ const Search = () => {
   }
 
   return (
-    <section className=" p-3 w-full">
-      <header>Search For Pet Sitter</header>
-      <section className="  w-[100%] flex flex-col  gap-5 md:flex-row md:w-[80%]" >
-        <div>search</div>
+    <section className=" w-full">
+      <Navbar />
+
+      <section className="  w-[100%] flex flex-col  gap-5 md:flex-row md:w-[80%] p-3">
+        <SearchBar />
         <CardSitter />
         {/* {setSitterData.map((item,index)=>(
         <CardSitter
@@ -40,17 +39,20 @@ const Search = () => {
       </section>
 
       <div className="flex gap-2">
-      <a href="#">pevious</a>
-{splitPage(10).map((item)=>{ return (
-    <a href="#">{item}</a>
-         
-)})}
-<a href="#">next</a>
-</div>
+        <a href="#">pevious</a>
+        {splitPage(10).map((item, index) => {
+          return (
+            <a href="#" key={index}>
+              {item}
+            </a>
+          );
+        })}
+        <a href="#">next</a>
+      </div>
 
+      <Footer />
     </section>
   );
-
 };
 
 export default Search;
