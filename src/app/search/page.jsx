@@ -1,18 +1,16 @@
-section"use client";
+"use client";
 import React from "react";
-import { useState ,useEffect} from "react";
+import { useState, useEffect } from "react";
 import CardSitter from "@/app/search/cardsitterlist.jsx";
 import SearchBar from "@/components/common/SearchBar";
 import { supabase } from "@/lib/db";
-
-
 
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 
 const Search = () => {
   const [sitterData, setSitterData] = useState([]);
-  const[idSitter,setIdSitter]=useState("")
+  const [idSitter, setIdSitter] = useState("");
   const [pages, setPage] = useState(1);
 
   // const getSitterList = async () => {
@@ -20,30 +18,29 @@ const Search = () => {
   //   setSitterData(result)
   // }
 
-console.log(idSitter)
-  async function getSitterData(){
-    let { data, error } = await supabase.from("pet_sitter")
-    .select(`
+  console.log(idSitter);
+  async function getSitterData() {
+    let { data, error } = await supabase.from("pet_sitter").select(`
     id,
     sitter_name,
     district,
     province,
     users( full_name )
-  `)
+  `);
     if (error || !data) {
       console.log(error);
     }
     // setSitterData(data);
     // console.log(data)
 
-setSitterData(data)
-// console.log(sitterData)
+    setSitterData(data);
+    // console.log(sitterData)
   }
 
-useEffect(()=>{
-  getSitterData()
-},[])
- 
+  useEffect(() => {
+    getSitterData();
+  }, []);
+
   function splitPage(numpage) {
     const pageArr = [];
 
@@ -90,8 +87,7 @@ useEffect(()=>{
       <Footer />
       </section>*/}
       </section>
-      </section>
-      
+    </section>
   );
 };
 
