@@ -33,7 +33,7 @@ function createPet() {
   const handleUploadPhoto = (event) => {
     event.preventDefault();
     const file = event.target.files[0];
- 
+
     if (Object.keys(photo).length > 1) {
       alert("Can't upload more than 1 image");
       return true;
