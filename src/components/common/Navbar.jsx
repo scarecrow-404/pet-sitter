@@ -13,45 +13,71 @@ import {
   Avatar,
   WrapItem,
   Box,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
 } from "@chakra-ui/react";
 import { useUser } from "@/hooks/hooks";
 import { signOut } from "@/app/services/auth";
 import { useRouter } from "next/navigation";
 import supabase from "@/lib/utils/db";
-import { set } from "date-fns";
+import LoadingImage from "@/asset/images/paw-1.1s-200px.svg";
+import ReactModal from "react-modal";
+import PopUpSitterConfirm from "../PopupSitterConfirm";
 const Navbar = () => {
   const { user, setUser, userId, setUserId } = useUser();
-
+  const [isLoading, setIsLoading] = useState(true);
   const [profileImage, setProfileImage] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPetSitter, setIsPetSitter] = useState(false);
   async function getUser(session) {
     const { data, error } = await supabase
       .from("users")
       .select("*")
       .eq("id", session.user.id);
-    // console.log(session.user.id);
-    // console.log(data);
     setUser(data[0]);
-    // console.log(user);
+    setIsLoading(false);
+    return data[0]; // return the user data
   }
+
   useEffect(() => {
-    supabase.auth.onAuthStateChange((event, session) => {
+    const session = supabase.auth.session;
+
+    if (session) {
+      setIsLoading(true);
+      setUserId(session.user.id);
+      getUser(session);
+    }
+
+    supabase.auth.onAuthStateChange(async (event, session) => {
       console.log(`Supabase auth event: ${event}`);
-      //console.log(session);
 
       if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
         if (session) {
+          setIsLoading(true);
           setUserId(session.user.id);
-          getUser(session);
+          const user = await getUser(session);
           const image = user?.profile_image;
           setProfileImage(image ?? mockPhoto);
+          if (user?.user_type === "sitter") {
+            console.log(user?.user_type);
+            setIsPetSitter(true);
+          }
+          setIsLoading(false);
+        } else {
+          setIsLoading(false);
         }
       } else if (event === "SIGNED_OUT") {
+        setIsLoading(false);
         setUser(null);
         setProfileImage(mockPhoto);
       }
     });
   }, []);
-
   const router = useRouter();
   const handleLogin = () => {
     user ? router.push("/") : router.push("/login");
@@ -63,23 +89,15 @@ const Navbar = () => {
     router.push("/profile");
   };
   const handleSitterClick = () => {
-    let sitterStatus = false;
-    if (user?.user_type === "sitter") {
-      sitterStatus = true;
-    }
-    if (sitterStatus) {
-      router.push("/sitter_management");
-    } else {
-      popUpSitter();
-    }
+    router.push("/sitter_management");
   };
+
   const handleSignOut = () => {
     signOut();
     router.push("/");
   };
-  const popUpSitter = () => {
-    console.log("popup");
-    return alert("You are not a sitter yet");
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -89,7 +107,17 @@ const Navbar = () => {
       </Link>
 
       <div className="flex items-center">
-        {user ? (
+        {isLoading ? (
+          <div className="flex justify-center items-center w-[40px] animate-pulse">
+            <Image
+              width={60}
+              height={60}
+              src={LoadingImage}
+              alt="paw loading"
+              className=" animate-spin"
+            />
+          </div>
+        ) : user ? (
           <>
             <Menu>
               <MenuButton as="button">
@@ -107,10 +135,16 @@ const Navbar = () => {
               <MenuList>
                 <MenuItem onClick={handleProfileClick}>Profile</MenuItem>
                 <MenuItem onClick={handlePetClick}>Yout Pet </MenuItem>
-
+                <MenuItem>History </MenuItem>
                 <MenuDivider />
+                {isPetSitter ? (
+                  <MenuItem onClick={handleSitterClick}>
+                    Sitter Management
+                  </MenuItem>
+                ) : (
+                  <PopUpSitterConfirm />
+                )}
 
-                <MenuItem onClick={handleSitterClick}>Sitter Mode</MenuItem>
                 <MenuItem onClick={handleSignOut}>Log out</MenuItem>
               </MenuList>
             </Menu>
