@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   FormControl,
   FormLabel,
@@ -24,18 +25,18 @@ import backIcon from "@/asset/images/backIcon.svg";
 import previewPet from "@/asset/images/previewPetPhoto.svg";
 import deletePet from "@/asset/images/deletePetIcon.svg";
 
-function updatePet() {
+function updatePet({ searchParams }) {
   const [photo, setPhoto] = useState({});
   const [previewPetPhoto, setPreviewPetPhoto] = useState(previewPet);
   const inputRefLogo = useRef(null);
-  const [petName, setPetName] = useState("");
-  const [petType, setPetType] = useState(""); // เป็น selector มา edit ถ้าต้องเปลี่ยนแปลงอะไร
-  const [breed, setBreed] = useState("");
-  const [sex, setSex] = useState(""); // เป็น selector มา edit ถ้าต้องเปลี่ยนแปลงอะไร
-  const [age, setAge] = useState("");
-  const [color, setColor] = useState("");
-  const [weight, setWeight] = useState("");
-  const [about, setAbout] = useState("");
+  const [petName, setPetName] = useState(searchParams.name);
+  const [petType, setPetType] = useState(searchParams.petType); // เป็น selector มา edit ถ้าต้องเปลี่ยนแปลงอะไร
+  const [breed, setBreed] = useState(searchParams.Breed);
+  const [sex, setSex] = useState(searchParams.Sex); // เป็น selector มา edit ถ้าต้องเปลี่ยนแปลงอะไร
+  const [age, setAge] = useState(searchParams.Age);
+  const [color, setColor] = useState(searchParams.Color);
+  const [weight, setWeight] = useState(searchParams.Weight);
+  const [about, setAbout] = useState(searchParams.About);
 
   const handleUploadPhoto = (event) => {
     event.preventDefault();
@@ -71,9 +72,11 @@ function updatePet() {
       {/* topic */}
       <div className="w-[90%] flex flex-row justify-between md:w-[85%] lg:w-[83%]">
         <div className="font-bold text-lg flex flex-row justify-start items-center gap-1">
-          <button>
-            <Image src={backIcon} />
-          </button>
+          <Link href="/account/pet/">
+            <button>
+              <Image src={backIcon} />
+            </button>
+          </Link>
           Your Pet
         </div>
       </div>
@@ -178,7 +181,7 @@ function updatePet() {
               <Input
                 placeholder="Age of your pet"
                 size="md"
-                type="number"
+                type="text"
                 value={age}
                 onChange={(event) => {
                   setAge(event.target.value);
@@ -206,7 +209,7 @@ function updatePet() {
             <FormControl isRequired>
               <FormLabel>Weight (Kilogram)</FormLabel>
               <Input
-                type="number"
+                type="text"
                 placeholder="Weight of your pet"
                 value={weight}
                 onChange={(event) => {
