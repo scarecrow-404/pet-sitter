@@ -113,8 +113,8 @@ const Search = () => {
             district,
             province,
             experience,
-            users( full_name )
-            pet_prefer( pet_type_master_id)
+            users( full_name ),
+            pet_prefer( pet_type_master_id),
             pet_type_master(name)
           `
         )
