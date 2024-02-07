@@ -81,7 +81,7 @@ const Navbar = () => {
         if (session) {
           setUserId(session.user.id);
           const user = await getUser(session);
-     
+
           setIsLoading(false);
           const image = user?.image_url;
           console.log(user?.image_url);
