@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Image from "next/image";
 import {
   FormControl,
@@ -9,6 +9,7 @@ import {
   Input,
   Select,
   Textarea,
+  Avatar,
 } from "@chakra-ui/react";
 import backIcon from "@/asset/images/backIcon.svg";
 import previewPet from "@/asset/images/previewPetPhoto.svg";
@@ -16,6 +17,7 @@ import previewPet from "@/asset/images/previewPetPhoto.svg";
 function createPet() {
   const [photo, setPhoto] = useState({});
   const [previewPetPhoto, setPreviewPetPhoto] = useState(previewPet);
+  const inputRefLogo = useRef(null);
   const [petName, setPetName] = useState("");
   const [petType, setPetType] = useState(""); // เป็น selector มา edit ถ้าต้องเปลี่ยนแปลงอะไร
   const [breed, setBreed] = useState("");
@@ -47,10 +49,13 @@ function createPet() {
       reader.readAsDataURL(file);
     }
   };
+  const handleClickImage = () => {
+    inputRefLogo.current.click();
+  };
   return (
-    <div className="flex flex-col justify-center items-center py-4 gap-5 max-w-[1440px] mx-auto border-2 lg:gap-8">
+    <div className="flex flex-col justify-center items-center py-6 gap-5 max-w-[1440px] mx-auto lg:gap-10 lg:py-14">
       {/* topic */}
-      <div className="border-2 w-[90%] flex flex-row justify-between py-3 md:w-[85%] lg:w-[850px]">
+      <div className="border-2 w-[90%] flex flex-row justify-between md:w-[85%] lg:w-[83%]">
         <div className="font-bold text-lg flex flex-row justify-start items-center gap-1">
           <button>
             <Image src={backIcon} />
@@ -59,52 +64,37 @@ function createPet() {
         </div>
       </div>
       {/* pet picture edit later */}
-      <div className="border-2 lg:w-[850px]">
-        <label htmlFor="profile">
-          <FormLabel></FormLabel>
-          {previewPetPhoto && (
-            <div className="photo">
-              <Image
-                className="block md:hidden lg:hidden cursor-pointer"
-                src={previewPetPhoto}
-                width={150}
-                height={150}
-                alt="Preview"
-              />
-              <Image
-                className="hidden md:block lg:hidden cursor-pointer"
-                src={previewPetPhoto}
-                width={200}
-                height={200}
-                alt="Preview"
-              />
-              <Image
-                className="hidden md:hidden lg:block cursor-pointer"
-                src={previewPetPhoto}
-                width={220}
-                height={220}
-                alt="Preview"
-              />
-            </div>
-          )}
-          <input
-            type="file"
-            id="profile"
-            name="profile"
-            accept="image/*"
-            onChange={handleUploadPhoto}
-            className="sr-only"
-          />
-        </label>
+      <div className="lg:w-[83%]">
+        <FormLabel></FormLabel>
+        {previewPetPhoto && (
+          <div className="photo">
+            <Avatar
+              src={previewPetPhoto}
+              size="2xl"
+              alt="Preview"
+              onClick={handleClickImage}
+            />
+          </div>
+        )}
+        <Input
+          type="file"
+          id="profile"
+          name="profile"
+          accept="image/*"
+          onChange={handleUploadPhoto}
+          ref={inputRefLogo}
+          hidden
+        />
       </div>
       {/* input for create pet profile */}
-      <div className="border-2 w-[90%] flex flex-col justify-between items-center gap-4 py-4 md:w-[85%] lg:gap-8 lg:w-[850px]">
-        <div className="w-11/12">
+      <div className="w-[90%] flex flex-col justify-between items-center gap-4 py-4 md:w-[85%] lg:gap-8 lg:w-[83%]">
+        <div className="w-11/12 lg:w-full">
           <FormControl isRequired>
             <FormLabel>Pet name</FormLabel>
             <Input
               type="text"
               placeholder="Your pet name"
+              pattern="^[a-zA-Z\s]*$"
               value={petName}
               minLength={6}
               maxLength={20}
@@ -115,7 +105,7 @@ function createPet() {
             />
           </FormControl>
         </div>
-        <div className="w-11/12 flex flex-col gap-4 lg:flex-row lg:gap-0 lg:justify-between">
+        <div className="w-11/12 flex flex-col gap-4 lg:flex-row lg:gap-0 lg:justify-between lg:w-full">
           <div className="w-full lg:w-[48%]">
             <FormControl isRequired>
               <FormLabel>Pet type</FormLabel>
@@ -150,7 +140,7 @@ function createPet() {
             </FormControl>
           </div>
         </div>
-        <div className="w-11/12 flex flex-col gap-4 lg:flex-row lg:gap-0 lg:justify-between">
+        <div className="w-11/12 flex flex-col gap-4 lg:flex-row lg:gap-0 lg:justify-between lg:w-full">
           <div className="w-full lg:w-[48%]">
             <FormControl isRequired>
               <FormLabel>Sex</FormLabel>
@@ -183,7 +173,7 @@ function createPet() {
             </FormControl>
           </div>
         </div>
-        <div className="w-11/12 flex flex-col gap-4 lg:flex-row lg:gap-0 lg:justify-between">
+        <div className="w-11/12 flex flex-col gap-4 lg:flex-row lg:gap-0 lg:justify-between lg:w-full">
           <div className="w-full lg:w-[48%]">
             <FormControl isRequired>
               <FormLabel>Color</FormLabel>
@@ -201,26 +191,37 @@ function createPet() {
           <div className="w-full lg:w-[48%]">
             <FormControl isRequired>
               <FormLabel>Weight (Kilogram)</FormLabel>
-              <Input type="number" placeholder="Weight of your pet" />
+              <Input
+                type="number"
+                placeholder="Weight of your pet"
+                value={weight}
+                onChange={(event) => {
+                  setWeight(event.target.value);
+                }}
+              />
             </FormControl>
           </div>
         </div>
-        <div className="w-11/12">
+        <div className="w-11/12 lg:w-full">
           <FormControl>
             <FormLabel>About</FormLabel>
             <Textarea
               type="text"
               size="md"
               placeholder="Describe more about your pet..."
-              maxLength={100}
+              maxLength={200}
+              value={about}
+              onChange={(event) => {
+                setAbout(event.target.value);
+              }}
             />
           </FormControl>
         </div>
-        <div className="border-2 py-2 w-11/12 flex justify-evenly lg:justify-between">
-          <button className="bg-sixthOrange p-2 px-5 text-sm rounded-3xl text-secondOrange md:text-xl">
+        <div className="py-2 w-11/12 flex justify-evenly lg:justify-between lg:w-full">
+          <button className="bg-sixthOrange p-2 px-5 text-sm font-medium rounded-3xl text-secondOrange md:text-xl">
             Cancel
           </button>
-          <button className="bg-secondOrange p-2 text-sm rounded-3xl text-white md:text-xl">
+          <button className="bg-secondOrange p-2 text-sm font-medium rounded-3xl text-white md:text-xl">
             Create Pet
           </button>
         </div>
