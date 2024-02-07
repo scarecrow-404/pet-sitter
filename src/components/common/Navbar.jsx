@@ -17,33 +17,65 @@ import {
 import { useUser } from "@/hooks/hooks";
 import { signOut } from "@/app/services/auth";
 import { useRouter } from "next/navigation";
-
+import supabase from "@/lib/utils/db";
+import { set } from "date-fns";
 const Navbar = () => {
-  const { user, setUser } = useUser();
-  const [isLogin, setIslogin] = useState(false);
+  const { user, setUser, userId, setUserId } = useUser();
 
-  // const Menu = () => {
-  //   return;
-  // };
-  // useEffect(() => {
-  //   const fetchSession = async () => {
-  //     const session = supabase.auth.session();
-  //     if (session) {
-  //       setUser(session.user);
-  //     } else {
-  //       setUser(null);
-  //     }
-  //   };
-  //   if (user) {
-  //     setIslogin(true);
-  //   }
-  //   fetchSession();
-  // }, [user]);
+  const [profileImage, setProfileImage] = useState(null);
+  async function getUser() {
+    const users = await supabase.from("users").select("*").eq("id", userId);
+    console.log(userId);
+    setUser(users.data[0]);
+    console.log(user);
+  }
+  useEffect(() => {
+    supabase.auth.onAuthStateChange((event, session) => {
+      console.log(`Supabase auth event: ${event}`);
+      console.log(session);
+
+      if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
+        if (session) {
+          setUserId(session.user.id);
+          getUser();
+          const image = user?.data[0]?.profile_image;
+          setProfileImage(image ?? mockPhoto);
+        }
+      } else if (event === "SIGNED_OUT") {
+        setUser(null);
+        setProfileImage(mockPhoto);
+      }
+    });
+  }, []);
 
   const router = useRouter();
+  const handleLogin = () => {
+    user ? router.push("/") : router.push("/login");
+  };
+  const handleProfileClick = () => {
+    router.push("/profile");
+  };
+  const handlePetClick = () => {
+    router.push("/profile");
+  };
+  const handleSitterClick = () => {
+    let sitterStatus = false;
+    if (user?.user_type === "sitter") {
+      sitterStatus = true;
+    }
+    if (sitterStatus) {
+      router.push("/sitter_management");
+    } else {
+      popUpSitter();
+    }
+  };
   const handleSignOut = () => {
     signOut();
     router.push("/");
+  };
+  const popUpSitter = () => {
+    console.log("popup");
+    return alert("You are not a sitter yet");
   };
 
   return (
@@ -59,23 +91,28 @@ const Navbar = () => {
               <MenuButton as="button">
                 <Box display="flex" justifyContent="center" alignItems="center">
                   <WrapItem>
-                    <Avatar size="md" boxSize="40px" name="" src={mockPhoto} />
+                    <Avatar
+                      size="md"
+                      boxSize="40px"
+                      name=""
+                      src={profileImage}
+                    />
                   </WrapItem>
                 </Box>
               </MenuButton>
               <MenuList>
-                <MenuItem>Profile</MenuItem>
-                <MenuItem>Yout Pet </MenuItem>
+                <MenuItem onClick={handleProfileClick}>Profile</MenuItem>
+                <MenuItem onClick={handlePetClick}>Yout Pet </MenuItem>
 
                 <MenuDivider />
 
-                <MenuItem>Sitter Mode</MenuItem>
+                <MenuItem onClick={handleSitterClick}>Sitter Mode</MenuItem>
                 <MenuItem onClick={handleSignOut}>Log out</MenuItem>
               </MenuList>
             </Menu>
           </>
         ) : (
-          <Link href="/login">Login</Link>
+          <button onClick={handleLogin}>Login</button>
         )}
         <Link href="/search">
           <button className="bg-secondOrange rounded-full p-2 text-white ml-6 hidden md:block">

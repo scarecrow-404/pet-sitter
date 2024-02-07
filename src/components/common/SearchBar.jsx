@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { usePathname } from "next/navigation";
 const SearchBar = () => {
-  const [search,setsearch]= useState()
+  const [search, setsearch] = useState();
   const [experianceQuery, setExperianceQuery] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchRating, setSearchRating] = useState("");
@@ -34,14 +34,15 @@ const SearchBar = () => {
       return setIsLandingPage(false);
     }
   };
-  const handleSearch = () => {
+  const handleSearch = (event) => {
+    event.preventDefault();
     const currentPath = pathname;
     console.log("handleSearch");
     console.log(inputType);
     console.log(searchRating);
     console.log(searchQuery);
     console.log(experianceQuery);
-    if (pathname.startsWith("/search")) {
+    if (currentPath.startsWith("/search")) {
       console.log("Already on search Page");
     } else {
       router.push("/search");
@@ -50,6 +51,7 @@ const SearchBar = () => {
   useEffect(() => {
     handlePathname();
   }, []);
+
   useEffect(() => {
     console.log(inputType);
     console.log(searchRating);
@@ -71,135 +73,135 @@ const SearchBar = () => {
   };
   return (
     <form onSubmit={handleSearch}>
-    <div className=" flex flex-col md:flex-wrap justify-center items-center m-2 gap-2 text-secondGray ">
-      <div className="flex flex-col gap-1 flex-wrap max-w-4xl flex-grow rounded-lg border-[1px] overflow-hidden shadow-lg">
-        {isLandingPage ? null : (
-          <div className="flex md:flex-row flex-wrap w-[100%] items-center p-4">
-            Search
-            <InputGroup>
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <InputRightElement
-                pointerEvents="none"
-                color="gray.300"
-                fontSize="1.2em"
-              >
-                <SearchIcon />
-              </InputRightElement>
-            </InputGroup>
-          </div>
-        )}
-        <div
-          className={`flex items-center gap-4 flex-wrap p-4 text-sm w-[100%] ${
-            isLandingPage ? "bg-fifthGray" : "bg-white"
-          } `}
-        >
-          Pet Type :
-          {petType.map((type, index) => {
-            return (
-              <div key={type} className="flex items-center gap-1 z-10">
-                <Checkbox
-                  background="white"
-                  isChecked={check[index]}
-                  size="sm"
-                  colorScheme="orange"
-                  value={type}
-                  zIndex={1}
-                  onChange={(event) => {
-                    if (event.target.checked) {
-                      HandleCheck(index);
-                      setInputType([...inputType, event.target.value]);
-                    }
-                    if (!event.target.checked) {
-                      const newArr = [...inputType];
-                      newArr.splice(inputType.indexOf(event.target.value), 1);
-                      HandleCheck(index);
-                      setInputType([...newArr]);
-                    }
-                  }}
-                ></Checkbox>
-                <p>{type}</p>
-              </div>
-            );
-          })}
-        </div>
-        <div className="flex flex-col md:flex-row flex-wrap md:items-center ">
+      <div className=" flex flex-col md:flex-wrap justify-center items-center m-2 gap-2 text-secondGray ">
+        <div className="flex flex-col gap-1 flex-wrap max-w-4xl flex-grow rounded-lg border-[1px] overflow-hidden shadow-lg">
+          {isLandingPage ? null : (
+            <div className="flex md:flex-row flex-wrap w-[100%] items-center p-4">
+              Search
+              <InputGroup>
+                <Input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <InputRightElement
+                  pointerEvents="none"
+                  color="gray.300"
+                  fontSize="1.2em"
+                >
+                  <SearchIcon />
+                </InputRightElement>
+              </InputGroup>
+            </div>
+          )}
           <div
-            className={`flex flex-wrap w-[100%]${
-              isLandingPage ? "md:flex-row" : "flex-col"
-            }`}
+            className={`flex items-center gap-4 flex-wrap p-4 text-sm w-[100%] ${
+              isLandingPage ? "bg-fifthGray" : "bg-white"
+            } `}
           >
-            <div className="flex items-center gap-2 flex-wrap text-sm p-4">
-              Rating:
-              <div className="flex gap-1 flex-wrap">
-                {sitterRating.map((rating) => {
-                  return (
-                    <label
-                      key={rating}
-                      className={`flex items-center gap-1 border-[1px] p-1 rounded-md cursor-pointer   ${
-                        searchRating == rating
-                          ? "border-secondOrange text-secondOrange"
-                          : "text-secondGray"
-                      }`}
-                    >
-                      <input
-                        className="sr-only"
-                        type="checkbox"
-                        value={rating}
-                        onChange={(event) => {
-                          setSearchRating(event.target.value);
-                        }}
-                      />
-                      {rating}
-                      {renderStar(rating)}
-                    </label>
-                  );
-                })}
-              </div>
-            </div>
-            {/* <div className="flex flex-col md:flex-row md:justify-around md:gap-5 p-2 w-[100%]"> */}
-            <lebel className="flex items-center text-sm p-2 ">
-              Experience :
-              <select
-                id="experiance"
-                className="border-[1px] p-1 rounded-md ml-2 text-sm"
-                value={experianceQuery}
-                onChange={(event) => {
-                  setExperianceQuery(event.target.value);
-                }}
-              >
-                <option value="0-2">0-2 Years</option>
-                <option value="3-5">3-5 Years</option>
-                <option value="5+">5+ years</option>
-              </select>
-            </lebel>
+            Pet Type :
+            {petType.map((type, index) => {
+              return (
+                <div key={type} className="flex items-center gap-1 z-10">
+                  <Checkbox
+                    background="white"
+                    isChecked={check[index]}
+                    size="sm"
+                    colorScheme="orange"
+                    value={type}
+                    zIndex={1}
+                    onChange={(event) => {
+                      if (event.target.checked) {
+                        HandleCheck(index);
+                        setInputType([...inputType, event.target.value]);
+                      }
+                      if (!event.target.checked) {
+                        const newArr = [...inputType];
+                        newArr.splice(inputType.indexOf(event.target.value), 1);
+                        HandleCheck(index);
+                        setInputType([...newArr]);
+                      }
+                    }}
+                  ></Checkbox>
+                  <p>{type}</p>
+                </div>
+              );
+            })}
+          </div>
+          <div className="flex flex-col md:flex-row flex-wrap md:items-center ">
             <div
-              className={`flex text-sm  m-2 ${
-                isLandingPage ? "justify-end" : "justify-center gap-2"
-              } `}
+              className={`flex flex-wrap w-[100%]${
+                isLandingPage ? "md:flex-row" : "flex-col"
+              }`}
             >
-              <button
-                className={`bg-fifthOrange rounded-full p-4 max-h-12 text-secondOrange mr-3 text-center ${
-                  isLandingPage ? "hidden" : ""
-                }`}
-                onClick={clearSearch}
+              <div className="flex items-center gap-2 flex-wrap text-sm p-4">
+                Rating:
+                <div className="flex gap-1 flex-wrap">
+                  {sitterRating.map((rating) => {
+                    return (
+                      <label
+                        key={rating}
+                        className={`flex items-center gap-1 border-[1px] p-1 rounded-md cursor-pointer   ${
+                          searchRating == rating
+                            ? "border-secondOrange text-secondOrange"
+                            : "text-secondGray"
+                        }`}
+                      >
+                        <input
+                          className="sr-only"
+                          type="checkbox"
+                          value={rating}
+                          onChange={(event) => {
+                            setSearchRating(event.target.value);
+                          }}
+                        />
+                        {rating}
+                        {renderStar(rating)}
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+              {/* <div className="flex flex-col md:flex-row md:justify-around md:gap-5 p-2 w-[100%]"> */}
+              <lebel className="flex items-center text-sm p-2 ">
+                Experience :
+                <select
+                  id="experiance"
+                  className="border-[1px] p-1 rounded-md ml-2 text-sm"
+                  value={experianceQuery}
+                  onChange={(event) => {
+                    setExperianceQuery(event.target.value);
+                  }}
+                >
+                  <option value="0-2">0-2 Years</option>
+                  <option value="3-5">3-5 Years</option>
+                  <option value="5+">5+ years</option>
+                </select>
+              </lebel>
+              <div
+                className={`flex text-sm  m-2 ${
+                  isLandingPage ? "justify-end" : "justify-center gap-2"
+                } `}
               >
-                Clear
-              </button>
-              <button
-                className="bg-secondOrange rounded-full p-3 max-h-12 text-white mr-3 "
-                onClick={handleSearch}
-              >
-                Search
-              </button>
+                <button
+                  className={`bg-fifthOrange rounded-full p-4 max-h-12 text-secondOrange mr-3 text-center ${
+                    isLandingPage ? "hidden" : ""
+                  }`}
+                  onClick={clearSearch}
+                >
+                  Clear
+                </button>
+                <button
+                  className="bg-secondOrange rounded-full p-3 max-h-12 text-white mr-3 "
+                  onClick={handleSearch}
+                >
+                  Search
+                </button>
+              </div>
+              {/* </div> */}
             </div>
-            {/* </div> */}
           </div>
         </div>
       </div>
-    </div>
     </form>
   );
 };

@@ -9,6 +9,10 @@ export default function withAuth(Component) {
     const router = useRouter();
     const [userSession, setUserSession] = useState(null);
     const { setUser, setUserId, userId } = useUser();
+    function getUser() {
+      const user = supabase.from("users").select("*").eq("id", userId);
+      setUser(user);
+    }
     useEffect(() => {
       const fetchSession = async () => {
         const {
@@ -24,7 +28,7 @@ export default function withAuth(Component) {
           console.log(session);
           if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
             if (session) {
-              setUser(session.user);
+              getUser();
               console.log(userId);
             }
           } else if (event === "SIGNED_OUT") {
