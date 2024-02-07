@@ -58,38 +58,57 @@ const Search = () => {
     if (error || !data) {
       console.log(error);
     }
-    setSitterData(data)
-    console.log("1eapppppppppppp",data)}
+    
+  };
+}
 
- else if(expStart && expEnd && petQuery.length==0 && !ratingQuery){
-console.log("2if")
-    let { data, error } = await supabase.from("pet_sitter")
-    .select(`
+  console.log(idSitter);
+
+  async function getSitterData(expStart, expEnd, petQuery, ratingQuery) {
+    console.log("fetchhhhhhhhhhhh");
+    console.log("expppppppp", expStart, expEnd);
+    console.log("petttttt", petQuery);
+    console.log("ratingggggg", ratingQuery);
+
+    let query = supabase
+  .from('pet_sitter')
+  .select(`
     id,
     sitter_name,
     district,
     province,
-    experience,
-    users( full_name )
-  `).gt( "experience" , expStart).lte("experience" , expEnd)
+    users(full_name),
+    pet_prefer(pet_type_master_id)
+  `)
 
-    if (error || !data) {
+
+    if (expStart && expEnd) {
+      query = query.gte("experience", expStart).lte("experience", expEnd);
+    }
+    if (expStart && !expEnd) {
+      query = query.gte("experience", expStart);
+    }
+    if(petQuery) {query = query.contains("pet_master_type_id", (1))}
+
+    try {
+      const { data, error } = await query;
+      if (!data) {
+        console.log("no data");
+      }
+      setSitterData(data);
+      console.log("1eapppppppppppp", data);
+    } catch (error) {
       console.log(error);
     }
-    setSitterData(data)
-    console.log("2eapppppppppppp",data)
   }
-}
-
-// console.log(sitterData)
   
+  useEffect(() => {
+    console.log("useeffect")
+    splitExpNum(expQuery);
 
-useEffect(()=>{
-  splitExpNum(expQuery)
-  getSitterData(expStart,expEnd, petQuery,ratingQuery) 
+    getSitterData(expStart, expEnd, petQuery, ratingQuery)
+  }, [search]);
 
-},[search])
- 
   function splitPage(numpage) {
     const pageArr = [];
 

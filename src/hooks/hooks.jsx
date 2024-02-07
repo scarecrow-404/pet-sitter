@@ -9,17 +9,14 @@ const UserContext = createContext();
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
   const [userId, setUserId] = useState(null);
-  const [search, setSearch] = useState({});
-
+  const [search,setSearch]=useState({})
   useEffect(() => {
     const session = supabase.auth.getSession().session;
     setUser(session?.user);
   }, []); // The empty array means this effect runs once on mount and never again
 
   return (
-    <UserContext.Provider
-      value={{ user, setUser, userId, setUserId, search, setSearch }}
-    >
+    <UserContext.Provider value={{ user, setUser, userId, setUserId,search,setSearch }}>
       {children}
     </UserContext.Provider>
   );
