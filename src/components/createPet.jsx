@@ -11,10 +11,13 @@ import {
   Textarea,
   Avatar,
 } from "@chakra-ui/react";
+import Link from "next/link";
 import backIcon from "@/asset/images/backIcon.svg";
 import previewPet from "@/asset/images/previewPetPhoto.svg";
-
+import { useUser } from "@/hooks/hooks";
 function createPet() {
+  const { userId } = useUser();
+  console.log(userId);
   const [photo, setPhoto] = useState({});
   const [previewPetPhoto, setPreviewPetPhoto] = useState(previewPet);
   const inputRefLogo = useRef(null);
@@ -30,7 +33,7 @@ function createPet() {
   const handleUploadPhoto = (event) => {
     event.preventDefault();
     const file = event.target.files[0];
-
+ 
     if (Object.keys(photo).length > 1) {
       alert("Can't upload more than 1 image");
       return true;
@@ -57,9 +60,11 @@ function createPet() {
       {/* topic */}
       <div className="w-[90%] flex flex-row justify-between md:w-[85%] lg:w-[83%]">
         <div className="font-bold text-lg flex flex-row justify-start items-center gap-1">
-          <button>
-            <Image src={backIcon} />
-          </button>
+          <Link href="/account/pet">
+            <button>
+              <Image src={backIcon} alt="back" />
+            </button>
+          </Link>
           Your Pet
         </div>
       </div>
@@ -221,9 +226,11 @@ function createPet() {
           <button className="bg-sixthOrange p-2 px-5 text-sm font-medium rounded-3xl text-secondOrange md:text-xl">
             Cancel
           </button>
-          <button className="bg-secondOrange p-2 text-sm font-medium rounded-3xl text-white md:text-xl">
-            Create Pet
-          </button>
+          <Link href="/account/pet">
+            <button className="bg-secondOrange p-2 text-sm font-medium rounded-3xl text-white md:text-xl">
+              Create Pet
+            </button>
+          </Link>
         </div>
       </div>
     </div>
