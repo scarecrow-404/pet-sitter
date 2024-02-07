@@ -10,21 +10,11 @@ import {
   Select,
   Textarea,
   Avatar,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogContent,
-  AlertDialogOverlay,
-  AlertDialogCloseButton,
-  useDisclosure,
-  Button,
 } from "@chakra-ui/react";
 import backIcon from "@/asset/images/backIcon.svg";
 import previewPet from "@/asset/images/previewPetPhoto.svg";
-import deletePet from "@/asset/images/deletePetIcon.svg";
 
-function updatePet() {
+function createPet() {
   const [photo, setPhoto] = useState({});
   const [previewPetPhoto, setPreviewPetPhoto] = useState(previewPet);
   const inputRefLogo = useRef(null);
@@ -62,10 +52,6 @@ function updatePet() {
   const handleClickImage = () => {
     inputRefLogo.current.click();
   };
-  // modal to click delete pet
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const cancelRef = React.useRef();
-
   return (
     <div className="flex flex-col justify-center items-center py-6 gap-5 max-w-[1440px] mx-auto lg:gap-10 lg:py-14">
       {/* topic */}
@@ -231,66 +217,16 @@ function updatePet() {
             />
           </FormControl>
         </div>
-        <div className="w-11/12 py-2 lg:w-full">
-          <button
-            onClick={onOpen}
-            className="text-secondOrange text-sm font-medium flex items-center gap-1 md:text-base"
-          >
-            <Image
-              src={deletePet}
-              alt="delete-button"
-              className="inline-block"
-            />{" "}
-            Delete Pet
-          </button>
-
-          <AlertDialog
-            isOpen={isOpen}
-            leastDestructiveRef={cancelRef}
-            onClose={onClose}
-          >
-            <AlertDialogOverlay>
-              <AlertDialogContent>
-                <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                  Delete Confirmation
-                </AlertDialogHeader>
-
-                <AlertDialogBody>
-                  Are you sure to delete this pet?
-                </AlertDialogBody>
-
-                <AlertDialogFooter>
-                  <div className="w-full flex justify-between ">
-                    <button
-                      ref={cancelRef}
-                      onClick={onClose}
-                      className="bg-sixthOrange py-3 px-5 text-sm font-medium rounded-3xl text-secondOrange"
-                    >
-                      Cancel
-                    </button>
-                    {/* add handleDelete later */}
-                    <button
-                      onClick={onClose}
-                      className="bg-secondOrange py-3 px-5 text-sm font-medium rounded-3xl text-white"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialogOverlay>
-          </AlertDialog>
-        </div>
         <div className="py-2 w-11/12 flex justify-evenly lg:justify-between lg:w-full">
           <button className="bg-sixthOrange p-2 px-5 text-sm font-medium rounded-3xl text-secondOrange md:text-xl">
             Cancel
           </button>
           <button className="bg-secondOrange p-2 text-sm font-medium rounded-3xl text-white md:text-xl">
-            Update Pet
+            Create Pet
           </button>
         </div>
       </div>
     </div>
   );
 }
-export default updatePet;
+export default createPet;
