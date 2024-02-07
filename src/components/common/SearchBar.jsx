@@ -13,13 +13,14 @@ import {
 } from "@chakra-ui/react";
 import { usePathname } from "next/navigation";
 import { useUser} from "@/hooks/hooks"
+import { supabase } from "@/lib/db";
 const SearchBar = () => {
   const {search,setSearch}= useUser()
   const [experianceQuery, setExperianceQuery] = useState("0-2");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchRating, setSearchRating] = useState("");
   const [inputType, setInputType] = useState([]);
-  const petType = ["Dog", "Cat", "Bird", "Rabbit"];
+  const [petType,setPettype]=useState([])
   const sitterRating = [5, 4, 3, 2, 1];
   const pathname = usePathname();
   const [isLandingPage, setIsLandingPage] = useState(true);
@@ -35,8 +36,22 @@ const SearchBar = () => {
       return setIsLandingPage(false);
     }
   };
-  const handleSearch = (e) => {
-    e.preventDefault()
+
+const getPet = async()=>{
+  try {
+    const { data, error } = await supabase.from("pet_type_master").select("*")
+    setPettype(data)
+}catch(error){
+  console.log(error)
+}}
+
+
+
+
+
+
+  const handleSearch = (event) => {
+    event.preventDefault()
     const currentPath = pathname;
     console.log("handleSearch");
     console.log(inputType);
@@ -53,11 +68,15 @@ const SearchBar = () => {
   };
   useEffect(() => {
     handlePathname();
+    getPet()
   }, []);
+
   useEffect(() => {
     console.log(inputType);
     console.log(searchRating);
   }, [inputType, searchRating]);
+
+
   function renderStar(starNumber) {
     let stars = [];
     for (let i = 0; i < starNumber; i++) {
@@ -66,7 +85,7 @@ const SearchBar = () => {
     return stars;
   }
   const clearSearch = () => {
-    setExperianceQuery("");
+    setExperianceQuery("0-2");
     setSearchQuery("");
     setSearchRating("");
     setInputType([]);
@@ -102,14 +121,15 @@ const SearchBar = () => {
         >
           Pet Type :
           {petType.map((type, index) => {
+       
             return (
-              <div key={type} className="flex items-center gap-1 z-10">
+              <div key={type.id} className="flex items-center gap-1 z-10 bg-yellow-100">
                 <Checkbox
                   background="white"
                   isChecked={check[index]}
                   size="sm"
                   colorScheme="orange"
-                  value={type}
+                  value={type.id}
                   zIndex={1}
                   onChange={(event) => {
                     if (event.target.checked) {
@@ -124,7 +144,7 @@ const SearchBar = () => {
                     }
                   }}
                 ></Checkbox>
-                <p>{type}</p>
+                <p>{type.name}</p>
               </div>
             );
           })}
