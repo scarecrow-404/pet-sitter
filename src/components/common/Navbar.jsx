@@ -23,22 +23,26 @@ const Navbar = () => {
   const { user, setUser, userId, setUserId } = useUser();
 
   const [profileImage, setProfileImage] = useState(null);
-  async function getUser() {
-    const users = await supabase.from("users").select("*").eq("id", userId);
-    console.log(userId);
-    setUser(users.data[0]);
-    console.log(user);
+  async function getUser(session) {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", session.user.id);
+    // console.log(session.user.id);
+    // console.log(data);
+    setUser(data[0]);
+    // console.log(user);
   }
   useEffect(() => {
     supabase.auth.onAuthStateChange((event, session) => {
       console.log(`Supabase auth event: ${event}`);
-      console.log(session);
+      //console.log(session);
 
       if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
         if (session) {
           setUserId(session.user.id);
-          getUser();
-          const image = user?.data[0]?.profile_image;
+          getUser(session);
+          const image = user?.profile_image;
           setProfileImage(image ?? mockPhoto);
         }
       } else if (event === "SIGNED_OUT") {

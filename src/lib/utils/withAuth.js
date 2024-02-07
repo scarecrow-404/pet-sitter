@@ -25,11 +25,11 @@ export default function withAuth(Component) {
         setUserId(session?.user?.id);
         supabase.auth.onAuthStateChange((event, session) => {
           console.log(`Supabase auth event: ${event}`);
-          console.log(session);
+          // console.log(session);
           if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
             if (session) {
               getUser();
-              console.log(userId);
+              //console.log(userId);
             }
           } else if (event === "SIGNED_OUT") {
             setUser(null);
