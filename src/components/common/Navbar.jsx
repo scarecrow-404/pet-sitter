@@ -32,8 +32,6 @@ import supabase from "@/lib/utils/db";
 import LoadingImage from "@/asset/images/paw-1.1s-200px.svg";
 import ReactModal from "react-modal";
 import PopUpSitterConfirm from "../PopupSitterConfirm";
-import { set } from "date-fns";
-import { is } from "date-fns/locale";
 const Navbar = () => {
   const { user, setUser, userId, setUserId } = useUser();
   const [isLoading, setIsLoading] = useState(true);
@@ -79,6 +77,7 @@ const Navbar = () => {
       if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
         console.log(session);
         if (session) {
+          setIsLoading(true);
           setUserId(session.user.id);
           const user = await getUser(session);
           setIsLoading(false);
