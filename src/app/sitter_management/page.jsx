@@ -37,6 +37,7 @@ import deleteButton from "@/asset/images/delete.svg";
 import deleteButtonHover from "@/asset/images/deleteHover.svg";
 import frameFray from "@/asset/images/photoFrameOutlineRounded.svg";
 import upload from "@/asset/images/uploadMin10.svg";
+import withAuth from "@/lib/utils/withAuth";
 const InputThaiAddress = CreateInput();
 const SitterManagement = () => {
   const [optionPetType, setOptionPetType] = useState([]);
@@ -637,4 +638,4 @@ const SitterManagement = () => {
   );
 };
 
-export default SitterManagement;
+export default withAuth(SitterManagement);

@@ -12,7 +12,6 @@ import { useRouter } from "next/router";
 function CardSitter(props) {
   const [petId, setPetId] = useState([]);
   let id = props.id;
-  
 
   async function getPetprefer(id) {
     let { data, error } = await supabase
@@ -25,7 +24,7 @@ function CardSitter(props) {
     setPetId(data);
     //console.log("Petidddd",data);
   }
- // console.log(Array.isArray(petId))
+  // console.log(Array.isArray(petId))
   useEffect(() => {
     getPetprefer(id);
   }, []);
@@ -87,28 +86,40 @@ function CardSitter(props) {
               </div>
               <div className=" flex   gap-1 pt-2">
                 {petId.map((eachId) => {
-                  //console.log("eachid", eachId); 
-                  if (eachId.pet_type_master_id=== 1) {
+                  //console.log("eachid", eachId);
+                  if (eachId.pet_type_master_id === 1) {
                     return (
-                      <p className=" text-[10px]  border-solid border bg-secondGreen rounded-2xl  border-firstGreen pl-2 pr-2 text-firstGreen">
+                      <p
+                        key={1}
+                        className=" text-[10px]  border-solid border bg-secondGreen rounded-2xl  border-firstGreen pl-2 pr-2 text-firstGreen"
+                      >
                         Dog
                       </p>
                     );
                   } else if (eachId.pet_type_master_id === 2) {
                     return (
-                      <p className=" text-[10px]  border-solid border bg-secondPink rounded-2xl  border-firstPink pl-2 pr-2 text-firstPink">
+                      <p
+                        key={2}
+                        className=" text-[10px]  border-solid border bg-secondPink rounded-2xl  border-firstPink pl-2 pr-2 text-firstPink"
+                      >
                         Cat
                       </p>
                     );
                   } else if (eachId.pet_type_master_id === 3) {
                     return (
-                      <p className=" text-[10px]  border-solid border bg-secondLigthBlue rounded-2xl  border-firstLigthBlue pl-2 pr-2 text-firstLigthBlue">
+                      <p
+                        key={3}
+                        className=" text-[10px]  border-solid border bg-secondLigthBlue rounded-2xl  border-firstLigthBlue pl-2 pr-2 text-firstLigthBlue"
+                      >
                         Bird
                       </p>
                     );
                   } else if (eachId.pet_type_master_id === 4) {
                     return (
-                      <p className=" text-[10px]  border-solid border bg-secondYellow rounded-2xl  border-firstYellow pl-2 pr-2 text-firstYellow">
+                      <p
+                        key={4}
+                        className=" text-[10px]  border-solid border bg-secondYellow rounded-2xl  border-firstYellow pl-2 pr-2 text-firstYellow"
+                      >
                         Rabbit
                       </p>
                     );

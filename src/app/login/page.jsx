@@ -11,7 +11,7 @@ import Googleicon from "@/asset/images/Googleicon.svg";
 import { useUser } from "@/hooks/hooks";
 import { signIn } from "@/app/services/auth";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { signInWithProvider } from "@/app/services/auth";}
+import { signInWithProvider } from "@/app/services/auth";
 
 const LoginPage = () => {
   const [values, setValues] = useState({
@@ -49,13 +49,12 @@ const LoginPage = () => {
       router.push("/");
     }
   }, [user]);
-  
+
   async function handleValidation(event) {
     event.preventDefault();
     setErrors(validation(values));
     if (Object.keys(errors).length === 0) {
       let result = await signIn(values.email, values.password);
-      
 
       console.log(result.user);
 
