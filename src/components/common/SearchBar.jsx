@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { usePathname } from "next/navigation";
 import { useUser} from "@/hooks/hooks"
-import { supabase } from "@/lib/db";
+import supabase  from "@/lib/utils/db";
 const SearchBar = () => {
   const {search,setSearch}= useUser()
   const [experianceQuery, setExperianceQuery] = useState("0-2");
@@ -50,7 +50,7 @@ const getPet = async()=>{
 
 
 
-  const handleSearch = (event) => {
+  const handleSearch = async (event) => {
     event.preventDefault()
     const currentPath = pathname;
     console.log("handleSearch");
@@ -58,18 +58,20 @@ const getPet = async()=>{
     console.log(searchRating);
     console.log(searchQuery);
     console.log(experianceQuery);
-    setSearch({"exp":experianceQuery,"rating":searchRating,"pet": inputType});
-    console.log(search);
+    await setSearch({"exp":experianceQuery,"rating":searchRating,"pet": inputType});
+   
     if (pathname.startsWith("/search")) {
       console.log("Already on search Page");
     } else {
       router.push("/search");
     }
   };
+
+  console.log("frombrigth",search);
   useEffect(() => {
     handlePathname();
     getPet()
-  }, []);
+  }, [search]);
 
   useEffect(() => {
     console.log(inputType);
