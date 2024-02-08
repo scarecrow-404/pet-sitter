@@ -49,7 +49,6 @@ const LoginPage = () => {
       router.push("/");
     }
   }, [user]);
-
   async function handleValidation(event) {
     event.preventDefault();
     setErrors(validation(values));
