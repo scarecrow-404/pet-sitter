@@ -11,11 +11,8 @@ import Googleicon from "@/asset/images/Googleicon.svg";
 import { useUser } from "@/hooks/hooks";
 import { signIn } from "@/app/services/auth";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-<<<<<<< HEAD
+
 import { signInWithProvider } from "@/app/services/auth";
-=======
-import { signInWithProvider } from "@/app/services/auth";}
->>>>>>> 3accec1 (feat:add check session while in landing page)
 
 const LoginPage = () => {
   const [values, setValues] = useState({
@@ -53,6 +50,7 @@ const LoginPage = () => {
       router.push("/");
     }
   }, [user]);
+
   async function handleValidation(event) {
     event.preventDefault();
     setErrors(validation(values));
@@ -65,7 +63,6 @@ const LoginPage = () => {
       //   .from("users")
       //   .select("*")
       //   .eq("id", result.user.id);
-
 
       // console.log(user);
 
