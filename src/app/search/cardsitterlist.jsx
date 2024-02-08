@@ -6,7 +6,7 @@ import iconLocation from "@/asset/images/icon=map-marker.svg";
 import Footer from "@/components/common/Footer";
 import { useState, useEffect } from "react";
 import star from "@/asset/images/star1.svg";
-import { supabase } from "@/lib/db";
+import supabase  from "@/lib/utils/db";
 import { useRouter } from "next/router";
 
 function CardSitter(props) {
