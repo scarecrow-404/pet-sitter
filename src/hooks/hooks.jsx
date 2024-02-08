@@ -12,9 +12,9 @@ export function UserProvider({ children }) {
   const [search, setSearch] = useState({});
 
   useEffect(() => {
-    const session = supabase.auth.getSession().session;
+    const session = supabase.auth.getSession();
     setUser(session?.user);
-  }, []); // The empty array means this effect runs once on mount and never again
+  }, []);
 
   return (
     <UserContext.Provider

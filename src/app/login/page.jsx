@@ -11,7 +11,7 @@ import Googleicon from "@/asset/images/Googleicon.svg";
 import { useUser } from "@/hooks/hooks";
 import { signIn } from "@/app/services/auth";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { data } from "jquery";
+import { signInWithProvider } from "@/app/services/auth";}
 
 const LoginPage = () => {
   const [values, setValues] = useState({
@@ -43,47 +43,19 @@ const LoginPage = () => {
     return errors;
   }
 
-  // useEffect(() => {
-  //   async function getUser() {
-  //     const {
-  //       data: { user },
-  //     } = await supabase.auth.api.getUser();
-  //     setUser(user);
   //   }
   useEffect(() => {
     if (user) {
       router.push("/");
     }
   }, [user]);
-  //   getUser();
-  //   if (user) {
-  //     router.push("/");
-  //   }
-  // }, []);
-  // const [prevPath, setPrevPath] = useState("");
-
-  // useEffect(() => {
-  //   setPrevPath(document.referrer);
-  // }, []);
+  
   async function handleValidation(event) {
     event.preventDefault();
     setErrors(validation(values));
     if (Object.keys(errors).length === 0) {
       let result = await signIn(values.email, values.password);
-      // const {
-      //   data: { user },
-      // } = await supabase.auth.getUser();
-
-      // const { data, insertError } = await supabase.from("users").insert([
-      //   {
-      //     email: values.email,
-      //     phone_number: values.phone,
-      //     user_type: "user",
-
-      //     full_name: values.name,
-      //   },
-      // ]);
-      // console.log(data);
+      
 
       console.log(result.user);
 
@@ -181,18 +153,18 @@ const LoginPage = () => {
 
               <div className="text-center">
                 <div className="flex gap-[12px] justify-between">
-                  <div className="flex justify-center gap-[10px] bg-[#F6F6F9] text-black w-1/2 rounded-[99px] px-[24px] py-[12px] h-[34px] sm:h-[48px]">
+                  <button className="flex justify-center gap-[10px] bg-[#F6F6F9] text-black w-1/2 rounded-[99px] px-[24px] py-[12px] h-[34px] sm:h-[48px]">
                     <span className="flex items-center">
                       <Image src={Facebookicon} alt="Facebook_icon" />
                     </span>
                     <span className="sm:block hidden">Facebook</span>
-                  </div>
-                  <div className="flex justify-center gap-[10px] bg-[#F6F6F9] text-black w-1/2 rounded-[99px] px-[24px] py-[6px] sm:py-[12px] h-[34px] sm:h-[48px]">
+                  </button>
+                  <button className="flex justify-center gap-[10px] bg-[#F6F6F9] text-black w-1/2 rounded-[99px] px-[24px] py-[6px] sm:py-[12px] h-[34px] sm:h-[48px]">
                     <span>
                       <Image src={Googleicon} alt="Google_icon" />
                     </span>
                     <span className="sm:block hidden">Gmail</span>
-                  </div>
+                  </button>
                 </div>
               </div>
 
