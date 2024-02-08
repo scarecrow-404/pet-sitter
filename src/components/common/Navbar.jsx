@@ -69,7 +69,6 @@ const Navbar = () => {
     const session = supabase.auth.getSession();
 
     if (session && session.user) {
-      setIsLoading(true);
       setUserId(session.user.id);
       // getUser(session).finally(() => setIsLoading(false));
       getUser(session);
@@ -82,7 +81,6 @@ const Navbar = () => {
       if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
         console.log(session);
         if (session) {
-          setIsLoading(true);
           setUserId(session.user.id);
           const user = await getUser(session);
           setIsLoading(false);
