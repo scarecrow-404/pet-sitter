@@ -21,48 +21,30 @@ const Search = () => {
 
  
 
-  const expQuery = search.exp;
+  const expQuery = search.exp ? search.exp : '0-2';
 
   const petQuery = search.pet ? [...search.pet] : ['1','2','3','4'];
 
-  const ratingQuery = search.rating;
+  const ratingQuery = search.rating ? search.rating : "5";
 
   const splitExpNum = (num) => {
-    if (num?.length == 3) {
+    console.log("nummmmmmmmm",num)
+    if (num.length == 3) {
       const split = num.split("-");
+      console.log("split1",split[0], split[1]);
       setExpStart(split[0]);
       setExpEnd(split[1]);
+
     }
-    if (num?.length == 2) {
+    if (num.length == 2) {
       const split = num.split("+");
+      console.log("split2",split[0], split[1]);
       setExpStart(split[0]);
       setExpEnd("");
     }
-  };
-  console.log("expppppppp", expStart, expEnd);
-
-  console.log(idSitter);
-
-  async function getSitterData(expStart, expEnd, petQuery, ratingQuery) {
-    console.log("fetchhhhhhhhhhhh");
-    console.log("expppppppp", expStart, expEnd);
-    console.log("petttttt", petQuery);
-    console.log("ratingggggg", ratingQuery);
-    if (!expStart && !expEnd && !petQuery && !ratingQuery) {
-      console.log("1if");
-      let { data, error } = await supabase.from("pet_sitter").select(`
-    id,
-    sitter_name,
-    district,
-    province,
-    users( full_name )
-  `);
-    if (error || !data) {
-      console.log(error);
-    }
     
   };
-}
+  
 
   console.log(idSitter);
 
