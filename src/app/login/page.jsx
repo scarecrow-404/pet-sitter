@@ -58,13 +58,12 @@ const LoginPage = () => {
 
       console.log(result.user);
 
-      let { data: users, error } = await supabase
-        .from("users")
-        .select("*")
-        .eq("id", result.user.id);
+      // let { data: users, error } = await supabase
+      //   .from("users")
+      //   .select("*")
+      //   .eq("id", result.user.id);
 
-      console.log(user);
-      setUser(users[0]);
+      // setUser(users[0]);
       console.log(userId);
     }
   }

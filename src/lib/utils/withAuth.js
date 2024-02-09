@@ -15,7 +15,7 @@ export default function withAuth(Component) {
         .select("*")
         .eq("id", userId);
       setUser(data[0]);
-      setIsLoading(false);
+
       return data[0]; // return the user data
     }
     useEffect(() => {
