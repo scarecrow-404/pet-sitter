@@ -85,7 +85,6 @@ const Navbar = () => {
           setIsLoading(false);
           const image = user?.image_url;
           console.log(user?.image_url);
-
           setProfileImage(image ?? mockPhoto);
           if (user?.user_type === "sitter") {
             console.log(user?.user_type);
