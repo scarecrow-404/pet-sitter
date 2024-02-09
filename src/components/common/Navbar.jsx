@@ -70,9 +70,7 @@ const Navbar = () => {
 
     if (session && session.user) {
       setUserId(session.user.id);
-      // getUser(session).finally(() => setIsLoading(false));
-      getUser(session);
-      setIsLoading(false);
+      getUser(session).finally(() => setIsLoading(false));
     }
 
     supabase.auth.onAuthStateChange(async (event, session) => {
