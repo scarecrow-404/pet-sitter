@@ -61,6 +61,7 @@ const Navbar = () => {
     setUser(data[0]);
 
     setIsLoading(false);
+
     return data[0]; // return the user data
   }
 
@@ -69,9 +70,7 @@ const Navbar = () => {
 
     if (session && session.user) {
       setUserId(session.user.id);
-      // getUser(session).finally(() => setIsLoading(false));
-      getUser(session);
-      setIsLoading(false);
+      getUser(session).finally(() => setIsLoading(false));
     }
 
     supabase.auth.onAuthStateChange(async (event, session) => {
@@ -82,10 +81,15 @@ const Navbar = () => {
         if (session) {
           setUserId(session.user.id);
           const user = await getUser(session);
+     
+          setIsLoading(false);
           const image = user?.image_url;
+          console.log(user?.image_url);
+
           setProfileImage(image ?? mockPhoto);
           if (user?.user_type === "sitter") {
             console.log(user?.user_type);
+            console.log(user);
             setIsPetSitter(true);
           }
           setIsLoading(false);
@@ -104,10 +108,10 @@ const Navbar = () => {
     user ? router.push("/") : router.push("/login");
   };
   const handleProfileClick = () => {
-    router.push("/profile");
+    router.push("/account");
   };
   const handlePetClick = () => {
-    router.push("/profile");
+    router.push("/account/pet");
   };
   const handleSitterClick = () => {
     router.push("/sitter_management");

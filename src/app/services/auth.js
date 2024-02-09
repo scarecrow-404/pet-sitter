@@ -14,16 +14,6 @@ export async function signUp(email, password, values) {
     },
   });
   console.log(user, session, error);
-  // if (user) {
-  //   const { data, error } = await supabase.from("profiles").insert([
-  //     {
-  //       id: user.id,
-  //       full_name: "John",
-  //       avatar_url: "27",
-  //     },
-  //   ]);
-  //   console.log(data);
-  // }
 
   console.log("Check your email to complete sign up.");
 }
@@ -70,6 +60,19 @@ export async function signInWithProvider(provider) {
 
   if (error) {
     console.error("Error signing in:", error);
+    return error;
+  }
+
+  return user;
+}
+
+export async function signUpWithProvider(provider) {
+  const { user, session, error } = await supabase.auth.signUp({
+    provider,
+  });
+
+  if (error) {
+    console.error("Error signing up:", error);
     return error;
   }
 
