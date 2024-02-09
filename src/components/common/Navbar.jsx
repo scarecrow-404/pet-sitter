@@ -81,9 +81,11 @@ const Navbar = () => {
         if (session) {
           setUserId(session.user.id);
           const user = await getUser(session);
+     
           setIsLoading(false);
           const image = user?.image_url;
           console.log(user?.image_url);
+
           setProfileImage(image ?? mockPhoto);
           if (user?.user_type === "sitter") {
             console.log(user?.user_type);

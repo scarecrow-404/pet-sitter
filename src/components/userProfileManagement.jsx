@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import previewImg from "@/asset/images/Frame427321094.svg";
 import {
@@ -9,47 +9,105 @@ import {
   FormHelperText,
   Input,
 } from "@chakra-ui/react";
+import supabase from "@/lib/utils/db";
+import { useUser } from "@/hooks/hooks";
 
 function UserManagementProfile() {
-  const [photo, setPhoto] = useState({});
-  const [previewPhoto, setPreviewPhoto] = useState(previewImg);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [IdNumber, setIdNumber] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
+  const [photo, setPhoto] = useState({});
+  const [imageUrl, setImageUrl] = useState(previewImg);
+  const { userId } = useUser();
 
-  // upload photo
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!userId) {
+        console.error("userId is null");
+        return;
+      }
+      const { data: user, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", userId);
+
+      if (error) {
+        console.error("Error fetching user data:", error);
+      } else {
+        setName(user[0].full_name);
+        setEmail(user[0].email);
+        setPhone(user[0].phone_number);
+        setIdNumber(user[0].personal_id);
+        setDateOfBirth(user[0].date_of_birth);
+        setImageUrl(user[0].image_url || previewImg);
+      }
+    };
+    fetchUserData();
+  }, [userId]);
+
   const handleUploadPhoto = (event) => {
-    event.preventDefault();
     const file = event.target.files[0];
-
-    if (Object.keys(photo).length > 1) {
-      alert("Can't upload more than 1 image");
-      return true;
-    }
-
-    if (file && file.size <= 10 * 1024 * 1024) {
-      const uniqueId = Date.now();
-      setPhoto({
-        [uniqueId]: file,
-      });
-
-      const reader = new FileReader();
-      reader.onload = () => {
-        setPreviewPhoto(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
+    const url = URL.createObjectURL(file);
+    setPhoto({ [file.name]: file });
+    setImageUrl(url);
   };
-  // use for check useState (if connected to db already ,pls delete)
-  const handleSubmit = (event) => {
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    alert(
-      `Update name: ${name} email: ${email} phone: ${phone} ID number: ${IdNumber} date: ${dateOfBirth}`
-    );
-  };
 
+    let imageUrl = null;
+
+    // Upload photo
+    if (Object.keys(photo).length > 0) {
+      const file = Object.values(photo)[0];
+      const filePath = `public/${userId}/${file.name}`;
+      let { data, error: uploadError } = await supabase.storage
+        .from("images")
+        .upload(filePath, file);
+      console.log(data);
+      if (uploadError) {
+        console.error("Error uploading photo:", uploadError);
+        return;
+      }
+
+      // Get URL of uploaded photo
+      let url = supabase.storage.from("images").getPublicUrl(data.path);
+      console.log(url.data.publicUrl);
+      if (!url.data.publicUrl) {
+        console.error(
+          "Error getting photo URL: File does not exist or bucket is not public",
+          url.data.publicUrl
+        );
+        return;
+      }
+
+      imageUrl = url.data.publicUrl
+    }
+
+    // Update user data
+    const updates = {
+      full_name: name,
+      email: email,
+      phone_number: phone,
+      personal_id: IdNumber,
+      date_of_birth: dateOfBirth,
+      image_url: imageUrl,
+      updated_at: new Date(),
+    };
+
+    const { error } = await supabase
+      .from("users")
+      .update(updates)
+      .eq("id", userId);
+
+    if (error) {
+      console.error("Error updating user:", error);
+    } else {
+      console.log("User updated successfully");
+    }
+  };
   return (
     // form
     <div className="flex flex-col xl:items-start xl:pl-12 mx-auto py-6 lg:gap-10 min-w-[375px] w-full lg:max-w-[1440px]">
@@ -60,25 +118,25 @@ function UserManagementProfile() {
       <div className="flex justify-start items-start lg:max-w-[750px] pl-5 ">
         <label htmlFor="profile">
           <FormLabel></FormLabel>
-          {previewPhoto && (
+          {imageUrl && (
             <div className="photo">
               <Image
                 className="block md:hidden lg:hidden cursor-pointer"
-                src={previewPhoto}
+                src={imageUrl}
                 width={150}
                 height={150}
                 alt="Preview"
               />
               <Image
                 className="hidden md:block lg:hidden cursor-pointer"
-                src={previewPhoto}
+                src={imageUrl}
                 width={200}
                 height={200}
                 alt="Preview"
               />
               <Image
                 className="hidden md:hidden lg:block cursor-pointer"
-                src={previewPhoto}
+                src={imageUrl}
                 width={220}
                 height={220}
                 alt="Preview"
@@ -133,10 +191,13 @@ function UserManagementProfile() {
                 type="tel"
                 placeholder="Your phone"
                 maxLength={10}
-                value={phone
-                  .replace(/\D/g, "")
-                  .replace(/^(\d{3,3})(\d{3,3})(\d{4,4}).*$/, "$1 $2 $3")
-                  .trim()}
+                value={
+                  phone &&
+                  phone
+                    .replace(/\D/g, "")
+                    .replace(/^(\d{3,3})(\d{3,3})(\d{4,4}).*$/, "$1 $2 $3")
+                    .trim()
+                }
                 onChange={(event) => {
                   setPhone(event.target.value);
                 }}
@@ -152,12 +213,15 @@ function UserManagementProfile() {
                 type="text"
                 placeholder="Your ID number"
                 maxLength={13}
-                value={IdNumber.replace(/\D/g, "")
-                  .replace(
-                    /^(\d{1,1})(\d{4,4})(\d{5,5})(\d{2,2})(\d{1,1}).*$/,
-                    "$1 $2 $3 $4 $5"
-                  )
-                  .trim()}
+                value={
+                  IdNumber &&
+                  IdNumber.replace(/\D/g, "")
+                    .replace(
+                      /^(\d{1,1})(\d{4,4})(\d{5,5})(\d{2,2})(\d{1,1}).*$/,
+                      "$1 $2 $3 $4 $5"
+                    )
+                    .trim()
+                }
                 onChange={(event) => {
                   setIdNumber(event.target.value);
                 }}

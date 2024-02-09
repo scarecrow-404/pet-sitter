@@ -63,6 +63,9 @@ const LoginPage = () => {
       //   .select("*")
       //   .eq("id", result.user.id);
 
+
+      // console.log(user);
+
       // setUser(users[0]);
       console.log(userId);
     }
