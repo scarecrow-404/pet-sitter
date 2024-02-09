@@ -11,6 +11,7 @@ import { useParams } from "next/navigation";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 import supabase from "@/lib/utils/db";
+
 const SitterProfile = () => {
   const images = [{ url: avatar }, { url: avatar2 }, { url: avatar3 }];
   const [detailUser, setDetailUser] = useState([]);
@@ -49,6 +50,8 @@ const SitterProfile = () => {
     setDetailUser(filterData);
 
   }
+
+  console.log("ssss", detailUser);
 
   useEffect(() => {
     getSitterData();

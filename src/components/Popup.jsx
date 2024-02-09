@@ -11,16 +11,11 @@ import { useRouter } from "next/navigation";
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
 
 function PopupBooking() {
-  // const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [startTime, setStartTime] = useState("");
-  // const [endTime, setEndTime] = useState("");
-  // const [date, setDate] = useState("");
+
   const { bookingData, setBookingData } = useUser();
   const router = useRouter();
 
-  // function handleClick(){
-  //   const path =""
-  // }
+
   const openModal = () => {
     setBookingData({ ...bookingData, isModalOpen: true });
   };
