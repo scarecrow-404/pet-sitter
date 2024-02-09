@@ -4,33 +4,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { CreateInput } from "thai-address-autocomplete-react";
 import Image from "next/image";
 import { Sidebar, TopBar } from "@/components/sidebar";
-import {
-  AsyncCreatableSelect,
-  AsyncSelect,
-  CreatableSelect,
-  Select,
-} from "chakra-react-select";
-import {
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
-  FormHelperText,
-  Icon,
-  Form,
-  Input,
-  Textarea,
-  NumberInput,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  MenuItemOption,
-  MenuGroup,
-  MenuOptionGroup,
-  MenuDivider,
-  IconButton,
-  Avatar,
-} from "@chakra-ui/react";
+import { Select } from "chakra-react-select";
+import { FormControl, FormLabel, Input, Textarea } from "@chakra-ui/react";
 import supabase from "@/lib/utils/db";
 import Frame427321094 from "@/asset/images/Frame427321094.svg";
 import deleteButton from "@/asset/images/delete.svg";
@@ -40,11 +15,10 @@ import upload from "@/asset/images/uploadMin10.svg";
 import withAuth from "@/lib/utils/withAuth";
 const InputThaiAddress = CreateInput();
 import { useUser } from "@/hooks/hooks";
-import withAuth from "@/lib/utils/withAuth";
 
 const SitterManagement = () => {
   const [optionPetType, setOptionPetType] = useState([]);
-  const { userId ,user} = useUser();
+  const { userId, user } = useUser();
   //profile
   const [fullName, setFullName] = useState("");
   const [experience, setExperience] = useState(null);
@@ -147,7 +121,7 @@ const SitterManagement = () => {
       const { data: user, error } = await supabase
         .from("pet_sitter")
         .select("*")
-        .eq("id", userId);
+        .eq("user_id", userId);
 
       if (error) {
         console.error("Error fetching user data:", error);
@@ -171,14 +145,20 @@ const SitterManagement = () => {
     };
     fetchUserData();
     fetchPetSitterData();
+    fetchPetTypes();
   }, [userId]);
   const handleUploadPhoto = (event) => {
     const file = event.target.files[0];
+    if (!file) {
+      console.error("No file selected");
+      return;
+    }
+
     const url = URL.createObjectURL(file);
     setPhoto({ [file.name]: file });
     setImageUrl(url);
   };
-  const updatesUser = async (event) => {
+  const updatesUser = async () => {
     let imageUrl = null;
 
     // Upload photo
@@ -224,7 +204,23 @@ const SitterManagement = () => {
       console.log("User updated successfully");
     }
   };
-  const updatesPetSitter = async (event) => {
+  const updatesPetSitter = async () => {
+    const { data: existingPetSitter, error: fetchError } = await supabase
+      .from("pet_sitter")
+      .select("bank_acc_number")
+      .eq("bank_acc_number", accountNumber);
+
+    if (fetchError) {
+      console.error("Error fetching pet sitter:", fetchError);
+      return;
+    }
+
+    if (existingPetSitter.length > 0) {
+      console.error(
+        "A pet sitter with this bank account number already exists."
+      );
+      return;
+    }
     const updatesPetSitter = {
       introduction: introduction,
       address_detail: addressDetail,
@@ -238,16 +234,17 @@ const SitterManagement = () => {
       service: services,
       place: myPlace,
       experience: parseFloat(experience.value),
-      pet_type: petType.map((item) => item.value).join(", "),
+      pet_type: petType ? petType.map((item) => item.value).join(", ") : null,
       account_name: accountName,
       account_type: accountType,
       etcs: etcs,
+      updated_at: new Date(),
     };
 
     const { error } = await supabase
       .from("pet_sitter")
       .update(updatesPetSitter)
-      .eq("id", userId);
+      .eq("user_id", userId);
     if (error) {
       console.error("Error updating user:", error);
     } else {
@@ -257,8 +254,13 @@ const SitterManagement = () => {
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    updatesUser();
-    updatesPetSitter();
+    try {
+      await updatesPetSitter();
+      alert("Update successfully");
+    } catch (error) {
+      alert("Update failed" + error.message);
+    }
+    // await updatesUser();
   };
   //upload petimage
   const handlePetImageChange = (event) => {
@@ -285,43 +287,11 @@ const SitterManagement = () => {
     delete petImage[petImageKey];
     setPetImage({ ...petImage });
   };
-  const handleExperience = (experience) => {
-    setExperience(experience);
-  };
+
   const handlePetType = (petType) => {
     setPetType(petType);
   };
 
-  async function fetchDataProfile() {
-    let { data: pet_sitter, error } = await supabase
-      .from("pet_sitter")
-      .select("*")
-      .eq("userId", userId);
-
-    if (error) {
-      console.error("Error reading records:", error);
-      return;
-    } else {
-      setFullName(pet_sitter[0].fullName);
-      setExperience(pet_sitter[0].experience);
-      setPhoneNumber(pet_sitter[0].phoneNumber);
-      setEmail(pet_sitter[0].email);
-      setIntroduction(pet_sitter[0].introduction);
-      setTradeName(pet_sitter[0].tradeName);
-      setServices(pet_sitter[0].services);
-      setMyPlace(pet_sitter[0].myPlace);
-      setAddressDetail(pet_sitter[0].addressDetail);
-      setProvince(pet_sitter[0].province);
-      setDistrict(pet_sitter[0].district);
-      setSubDistrict(pet_sitter[0].subDistrict);
-      setPostCode(pet_sitter[0].postCode);
-      setAccountNumber(pet_sitter[0].accountNumber);
-      setAccountName(pet_sitter[0].accountName);
-      setAccountType(pet_sitter[0].accountType);
-      setBankName(pet_sitter[0].bankName);
-      setEtcs(pet_sitter[0].etcs);
-    }
-  }
   // Read records pet_type_master
   async function fetchPetTypes() {
     let { data: pet_type_master, error } = await supabase
@@ -339,13 +309,6 @@ const SitterManagement = () => {
 
     setOptionPetType(options);
   }
-  useEffect(() => {
-    fetchDataProfile();
-    fetchDataProfile().then((exp) => {
-      setExperience({ value: exp, label: exp }); // Assuming the Select component expects an object with value and label properties
-    });
-    fetchPetTypes();
-  }, []);
 
   const options = [
     { value: "0", label: "0" },
@@ -359,6 +322,12 @@ const SitterManagement = () => {
     { value: "4.5", label: "4.5" },
     { value: "5", label: "5++" },
   ];
+  const handleExperience = (selectedOption) => {
+    setExperience(selectedOption.value);
+  };
+  const selectedExperience = options.find(
+    (option) => option.value === experience
+  );
   return (
     <div className="flex bg-sixthGray justify-center">
       <div className="hidden bg-sixthGray lg:block relative">
@@ -379,7 +348,7 @@ const SitterManagement = () => {
         </div>
         <div className="bg-white rounded-xl p-5 mb-5">
           <div className="pb-6">Basic Information</div>
-          <div className="flex flex-col gap-2 mt-2">
+          <div className="flex flex-col gap-2 mt-2 w-80">
             <label htmlFor="profile">
               <FormLabel></FormLabel>
               {imageUrl && (
@@ -441,7 +410,7 @@ const SitterManagement = () => {
                   options={options}
                   placeholder="Select Experience"
                   closeMenuOnSelect={true}
-                  value={experience}
+                  value={selectedExperience}
                   onChange={handleExperience}
                   id="experience"
                 />
@@ -730,7 +699,10 @@ const SitterManagement = () => {
           </div>
         </div>
         <div className="flex justify-center pb-7 md:hidden">
-          <button className="bg-secondOrange rounded-3xl w-80 h-10">
+          <button
+            onClick={handleFormSubmit}
+            className="bg-secondOrange rounded-3xl w-80 h-10"
+          >
             Update
           </button>
         </div>
