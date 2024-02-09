@@ -135,19 +135,22 @@ export function Sidebar({ active }) {
   );
 }
 
-export function TopBar({}) {
+export function TopBar() {
   const { user, setUser } = useUser();
-
+  const handleLogin = () => {
+    user ? router.push("/") : router.push("/login");
+  };
   const router = useRouter();
   const handleSignOut = () => {
     signOut();
     router.push("/");
   };
-  return (user ? (
+
+  return user ? (
     <div className="headBar flex items-center gap-5 p-5 bg-white justify-between">
       <div className="flex flex-col items-center md:flex-row md:gap-5">
         <Image src={profile} width={40} height={40} alt="profile" />
-        <p>โต้ง</p>
+        <p>{user.user_metadata.full_name}</p>
       </div>
       <div className="lg:hidden">
         <Menu>
@@ -173,33 +176,6 @@ export function TopBar({}) {
       </div>
     </div>
   ) : (
-    <div className="headBar flex items-center gap-5 p-5 bg-white justify-between">
-      <div className="flex flex-col items-center md:flex-row md:gap-5">
-        <Image src={profile} width={40} height={40} alt="profile" />
-        <p>Jane Maison</p>
-      </div>
-      <div className="lg:hidden">
-        <Menu>
-          <MenuButton
-            as={IconButton}
-            aria-label="Options"
-            icon={<HamburgerIcon />}
-            variant="outline"
-          />
-          <MenuList>
-            <Link href="/sitter_management">
-              <MenuItem>Pet Sitter Profile</MenuItem>
-            </Link>
-            <Link href="/sitter_management/booking_list">
-              <MenuItem>Booking List</MenuItem>
-            </Link>
-            <Link href="/sitter_management/payment">
-              <MenuItem>Payout Option</MenuItem>
-            </Link>
-            <MenuItem>Log Out</MenuItem>
-          </MenuList>
-        </Menu>
-      </div>
-    </div>
-  )
-)}
+    <button onClick={handleLogin}>Login</button>
+  );
+}
