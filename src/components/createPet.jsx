@@ -284,10 +284,11 @@ function createPet() {
           </FormControl>
         </div>
         <div className="py-2 w-11/12 flex justify-evenly lg:justify-between lg:w-full">
-          <button className="bg-sixthOrange p-2 px-5 text-sm font-medium rounded-3xl text-secondOrange md:text-xl">
-            Cancel
-          </button>
-
+          <Link href="/account/pet/">
+            <button className="bg-sixthOrange p-2 px-5 text-sm font-medium rounded-3xl text-secondOrange md:text-xl">
+              Cancel
+            </button>
+          </Link>
           <button
             onClick={handleSubmit}
             className="bg-secondOrange p-2 text-sm font-medium rounded-3xl text-white md:text-xl"
