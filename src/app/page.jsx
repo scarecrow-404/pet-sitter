@@ -79,13 +79,13 @@ export default function Home() {
             <div className="flex flex-col gap-2">
               <div className="flex gap-3">
                 <Image src={topicStar2} alt="topic-star-2" />
-                <h1 className="font-bold text-base md:text-lg">
-                  House Sitting
-                </h1>
+                <h1 className="font-bold text-base md:text-lg">Safety First</h1>
               </div>
               <p className="text-secondGray text-sm pl-4 md:text-base lg:pl-9 lg:text-sm">
-                Your sitter takes care of your pets and your home. Your pets
-                will get all the attention they need without leaving home.
+                Your pet's safety is our top priority. Our pet sitters are
+                trained in pet first aid and are equipped to handle any
+                unexpected situations. Rest easy knowing that your pets are in
+                capable and caring hands.
               </p>
             </div>
             <div className="flex flex-col gap-2">
