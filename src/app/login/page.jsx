@@ -11,6 +11,7 @@ import Googleicon from "@/asset/images/Googleicon.svg";
 import { useUser } from "@/hooks/hooks";
 import { signIn } from "@/app/services/auth";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+
 import { signInWithProvider } from "@/app/services/auth";
 
 const LoginPage = () => {
@@ -49,7 +50,6 @@ const LoginPage = () => {
       router.push("/");
     }
   }, [user]);
-
   async function handleValidation(event) {
     event.preventDefault();
     setErrors(validation(values));
@@ -62,7 +62,6 @@ const LoginPage = () => {
       //   .from("users")
       //   .select("*")
       //   .eq("id", result.user.id);
-
 
       // console.log(user);
 
