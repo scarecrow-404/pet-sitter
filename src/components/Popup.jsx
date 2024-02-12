@@ -16,22 +16,20 @@ function PopupBooking() {
   // const [endTime, setEndTime] = useState("");
   // const [date, setDate] = useState("");
   const { bookingData, setBookingData } = useUser();
-  const [date, setDate] = useState(new Date());
-
   const router = useRouter();
 
+  // function handleClick(){
+  //   const path =""
+  // }
   const openModal = () => {
-    // setIsModalOpen(true);
     setBookingData({ ...bookingData, isModalOpen: true });
   };
 
   const closeModal = () => {
-    // setIsModalOpen(false);
     setBookingData({ ...bookingData, isModalOpen: false });
   };
-  const handleDate = () => {
-    setDate(date);
-    setBookingData({ ...bookingData, date: date });
+  const handleDate = (selectDate) => {
+    setBookingData({ ...bookingData, date: selectDate });
   };
   const handleStartTimeChange = (time) => {
     // setStartTime(time);
@@ -73,10 +71,23 @@ function PopupBooking() {
                 <p>Select date and time you want to schedule the service.</p>
                 <div className="flex gap-[16px]">
                   <Image src={iconCalenda} alt="" />
+
                   <SingleDatepicker
+                    propsConfigs={{
+                      dayOfMonthBtnProps: {
+                        defaultBtnProps: { _hover: { bg: "#FF7037" } },
+                        selectedBtnProps: {
+                          bg: "#FF7037",
+                          color: "black",
+                          _hover: {
+                            bg: "#FF7037.100",
+                          },
+                        },
+                      },
+                    }}
                     name="date-input"
-                    date={date}
-                    onDateChange={setDate}
+                    date={bookingData.date}
+                    onDateChange={handleDate}
                   />
                 </div>
                 <label className="flex gap-[16px] ">
@@ -92,15 +103,6 @@ function PopupBooking() {
                     className="placeholder:italic placeholder:text-slate-400 w-[186px] h-[45px] border border-gray-400/40 p-[12px] rounded-lg max-sm:w-[80px] max-sm:text-[14px]"
                     onSelectTime={handleEndTimeChange}
                   />
-                  {/* <input
-                    className=" placeholder:italic placeholder:text-slate-400 w-[186px] h-[40px] border border-gray-400/40 p-[12px] rounded-lg max-sm:w-[80px] max-sm:text-[14px]"
-                    placeholder="--:-- --"
-                  ></input>
-                  <p className="flex items-center">-</p>
-                  <input
-                    className=" placeholder:italic placeholder:text-slate-400 w-[186px] h-[40px] border border-gray-400/40 p-[12px] rounded-lg max-sm:w-[80px] max-sm:text-[14px]"
-                    placeholder="--:-- --"
-                  ></input> */}
                 </label>
                 <div className="pt-[20px]">
                   <button
