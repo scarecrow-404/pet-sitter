@@ -11,6 +11,13 @@ export function UserProvider({ children }) {
   const [userId, setUserId] = useState(null);
   const [search, setSearch] = useState({});
 
+  const [bookingData, setBookingData] = useState({
+    isModalOpen: false,
+    startTime: "",
+    endTime: "",
+    date: new Date(),
+  });
+
   useEffect(() => {
     const session = supabase.auth.getSession();
     setUser(session?.user);
@@ -18,7 +25,7 @@ export function UserProvider({ children }) {
 
   return (
     <UserContext.Provider
-      value={{ user, setUser, userId, setUserId, search, setSearch }}
+      value={{ user, setUser, userId, setUserId, bookingData, setBookingData }}
     >
       {children}
     </UserContext.Provider>
