@@ -26,165 +26,42 @@ import {
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useUser } from "@/hooks/hooks";
+import supabase from "@/lib/utils/db";
 export default function petList() {
-  const dataPet = [
-    {
-      pet_id: 1,
-      name: "Daisy",
-      petType: "Dog",
-      Breed: "Beagle",
-      Sex: "Female",
-      Age: "0.6 Month",
-      Color: "White,black and brown",
-      Weight: "2 Kg",
-      About: "Woof Woof",
-      Image: "https://bit.ly/code-beast",
-    },
-    {
-      pet_id: 2,
-      name: "Max",
-      petType: "Rabbit",
-      Breed: "Labrador Retriever",
-      Sex: "Male",
-      Age: "2 years",
-      Color: "Yellow",
-      Weight: "30 kg",
-      About: "A friendly and playful dog. Loves to swim!",
-      Image: "https://example.com/max.jpg",
-    },
-    {
-      pet_id: 3,
-      name: "Luna",
-      petType: "Cat",
-      Breed: "Siamese",
-      Sex: "Female",
-      Age: "1.5 years",
-      Color: "Brown",
-      Weight: "4 kg",
-      About: "An elegant and independent cat.",
-      Image: "https://example.com/luna.jpg",
-    },
-    {
-      pet_id: 4,
-      name: "Rocky",
-      petType: "Bird",
-      Breed: "German Shepherd",
-      Sex: "Male",
-      Age: "3 years",
-      Color: "Black and tan",
-      Weight: "35 kg",
-      About: "A loyal and protective dog. Great for families!",
-      Image: "https://example.com/rocky.jpg",
-    },
-
-    {
-      pet_id: 5,
-      name: "Milo",
-      petType: "Cat",
-      Breed: "Maine Coon",
-      Sex: "Male",
-      Age: "1 year",
-      Color: "Orange and white",
-      Weight: "6 kg",
-      About: "A large and friendly cat with a fluffy coat.",
-      Image: "https://example.com/milo.jpg",
-    },
-    {
-      pet_id: 6,
-      name: "Bella",
-      petType: "Dog",
-      Breed: "Poodle",
-      Sex: "Female",
-      Age: "4 years",
-      Color: "White",
-      Weight: "8 kg",
-      About: "An intelligent and energetic dog.",
-      Image: "https://example.com/bella.jpg",
-    },
-    {
-      pet_id: 7,
-      name: "Simba",
-      petType: "Cat",
-      Breed: "Bengal",
-      Sex: "Male",
-      Age: "6 months",
-      Color: "Spotted",
-      Weight: "3 kg",
-      About: "A playful and adventurous cat.",
-      Image: "https://example.com/simba.jpg",
-    },
-    {
-      pet_id: 8,
-      name: "Charlie",
-      petType: "Rabbit",
-      Breed: "Golden Retriever",
-      Sex: "Male",
-      Age: "2 years",
-      Color: "Golden",
-      Weight: "25 kg",
-      About: "A friendly and gentle dog. Loves to fetch!",
-      Image: "https://example.com/charlie.jpg",
-    },
-    {
-      pet_id: 9,
-      name: "Lily",
-      petType: "Cat",
-      Breed: "Persian",
-      Sex: "Female",
-      Age: "3 years",
-      Color: "White",
-      Weight: "5 kg",
-      About: "A calm and luxurious cat with long fur.",
-      Image: "https://example.com/lily.jpg",
-    },
-    {
-      pet_id: 10,
-      name: "Oscar",
-      petType: "Bird",
-      Breed: "Dachshund",
-      Sex: "Male",
-      Age: "1.5 years",
-      Color: "Brown",
-      Weight: "6 kg",
-      About: "A small and lively dog with a long body.",
-      Image: "https://example.com/oscar.jpg",
-    },
-    {
-      pet_id: 11,
-      name: "Mia",
-      petType: "Cat",
-      Breed: "Ragdoll",
-      Sex: "Female",
-      Age: "2 years",
-      Color: "Blue point",
-      Weight: "4 kg",
-      About: "A gentle and affectionate cat.",
-      Image: "https://example.com/mia.jpg",
-    },
-  ];
   const router = useRouter();
+  const [dataPets, setDataPets] = useState([]);
+  const { userId } = useUser();
+  useEffect(() => {
+    if (userId) {
+      fetchPets();
+    }
+  }, [userId]);
+  const fetchPets = async () => {
+    const { data: pets, error } = await supabase
+      .from("pet")
+      .select("*")
+      .eq("user_id", userId);
+
+    if (error) {
+      console.error("Error fetching pets data:", error);
+    } else {
+      setDataPets(pets);
+    }
+  };
+  console.log(dataPets);
   const handleClick = (item) => {
-    const path = `/account/pet/${item.pet_id}`;
+    const path = `/account/pet/${item.id}`;
 
     const queryString = new URLSearchParams({
-      id: item.pet_id,
-      name: item.name,
-      petType: item.petType,
-      Breed: item.Breed,
-      Sex: item.Sex,
-      Age: item.Age,
-      Color: item.Color,
-      Weight: item.Weight,
-      About: item.About,
-      Image: item.Image,
+      id: item.id,
     }).toString();
 
     const url = String(path) + "?" + queryString;
 
     router.push(url);
   };
-  //state for pet database
-  const [dataPets, setDatapets] = useState(dataPet);
+  console.log(dataPets);
   return (
     <div className="flex flex-col justify-center items-center py-4 gap-5 max-w-[1440px] mx-auto">
       {/* topic */}
@@ -207,16 +84,16 @@ export default function petList() {
             return (
               <div
                 onClick={() => handleClick(item)}
-                key={item.pet_id}
+                key={item.id}
                 className=" mb-5 border rounded-lg w-[210px] h-[240px] flex flex-col justify-center items-center gap-6 cursor-pointer"
               >
                 <Avatar
                   size="xl"
                   name={item.name}
-                  src={item.Image}
+                  src={item.image_url}
                   className=""
                 />
-                <div className="flex flex-col justify-center">
+                <div className="flex flex-col justify-center items-center">
                   <p className="mx-auto">{item.name}</p>
                   <p
                     className={` border rounded-xl w-fit px-3 ${

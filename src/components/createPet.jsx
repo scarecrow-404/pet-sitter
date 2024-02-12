@@ -11,16 +11,18 @@ import {
   Textarea,
   Avatar,
 } from "@chakra-ui/react";
+import supabase from "@/lib/utils/db";
+import previewImg from "@/asset/images/Frame427321094.svg";
 import Link from "next/link";
 import backIcon from "@/asset/images/backIcon.svg";
 import previewPet from "@/asset/images/previewPetPhoto.svg";
 import { useUser } from "@/hooks/hooks";
+import { useRouter } from "next/navigation";
 function createPet() {
   const { userId } = useUser();
-  console.log(userId);
+  const router = useRouter();
   const [photo, setPhoto] = useState({});
-  const [previewPetPhoto, setPreviewPetPhoto] = useState(previewPet);
-  const inputRefLogo = useRef(null);
+
   const [petName, setPetName] = useState("");
   const [petType, setPetType] = useState(""); // เป็น selector มา edit ถ้าต้องเปลี่ยนแปลงอะไร
   const [breed, setBreed] = useState("");
@@ -29,32 +31,76 @@ function createPet() {
   const [color, setColor] = useState("");
   const [weight, setWeight] = useState("");
   const [about, setAbout] = useState("");
-
+  const [imageUrl, setImageUrl] = useState(previewImg);
   const handleUploadPhoto = (event) => {
-    event.preventDefault();
     const file = event.target.files[0];
+    const url = URL.createObjectURL(file);
+    setPhoto({ [file.name]: file });
+    setImageUrl(url);
+  };
+  const handleSubmit = async (event) => {
+    try {
+      await createNewPet();
 
-    if (Object.keys(photo).length > 1) {
-      alert("Can't upload more than 1 image");
-      return true;
-    }
-
-    if (file && file.size <= 10 * 1024 * 1024) {
-      const uniqueId = Date.now();
-      setPhoto({
-        [uniqueId]: file,
-      });
-
-      const reader = new FileReader();
-      reader.onload = () => {
-        setPreviewPetPhoto(reader.result);
-      };
-      reader.readAsDataURL(file);
+      router.push("/account/pet/");
+    } catch (error) {
+      alert("Error creating pet: " + error.message);
     }
   };
-  const handleClickImage = () => {
-    inputRefLogo.current.click();
+  const createNewPet = async () => {
+    let imageUrl = null;
+
+    // Upload photo
+    if (Object.keys(photo).length > 0) {
+      const file = Object.values(photo)[0];
+      const filePath = `public/${userId}/pet/${file.name}`;
+      let { data, error: uploadError } = await supabase.storage
+        .from("images")
+        .upload(filePath, file);
+      console.log(data);
+      if (uploadError) {
+        console.error("Error uploading photo:", uploadError);
+        return;
+      }
+
+      // Get URL of uploaded photo
+      let url = supabase.storage.from("images").getPublicUrl(data.path);
+      console.log(url.data.publicUrl);
+      if (!url.data.publicUrl) {
+        console.error(
+          "Error getting photo URL: File does not exist or bucket is not public",
+          url.data.publicUrl
+        );
+        return;
+      }
+
+      imageUrl = url.data.publicUrl;
+    }
+
+    const petData = {
+      name: petName,
+      breed: breed,
+      petType: petType,
+      sex: sex,
+      age: age,
+      color: color,
+      weight: weight,
+      about: about,
+      image_url: imageUrl, // assuming this is the URL of the image
+      user_id: userId, // assuming userId is available in this scope
+      // add other necessary fields
+    };
+
+    const { data, error } = await supabase.from("pet").insert([petData]);
+
+    if (error) {
+      console.error("Error creating pet: ", error);
+      return null;
+    } else {
+      console.log("Pet created successfully", data);
+    }
   };
+
   return (
     <div className="flex flex-col justify-center items-center py-6 gap-5 max-w-[1440px] mx-auto lg:gap-10 lg:py-14">
       {/* topic */}
@@ -70,26 +116,41 @@ function createPet() {
       </div>
       {/* pet picture edit later */}
       <div className="lg:w-[83%]">
-        <FormLabel></FormLabel>
-        {previewPetPhoto && (
-          <div className="photo">
-            <Avatar
-              src={previewPetPhoto}
-              size="2xl"
-              alt="Preview"
-              onClick={handleClickImage}
-            />
-          </div>
-        )}
-        <Input
-          type="file"
-          id="profile"
-          name="profile"
-          accept="image/*"
-          onChange={handleUploadPhoto}
-          ref={inputRefLogo}
-          hidden
-        />
+        <label htmlFor="profile">
+          {imageUrl && (
+            <div className="photo">
+              <Image
+                className="block md:hidden lg:hidden cursor-pointer"
+                src={imageUrl}
+                width={150}
+                height={150}
+                alt="Preview"
+              />
+              <Image
+                className="hidden md:block lg:hidden cursor-pointer"
+                src={imageUrl}
+                width={200}
+                height={200}
+                alt="Preview"
+              />
+              <Image
+                className="hidden md:hidden lg:block cursor-pointer"
+                src={imageUrl}
+                width={220}
+                height={220}
+                alt="Preview"
+              />
+            </div>
+          )}
+          <input
+            type="file"
+            id="profile"
+            name="profile"
+            accept="image/*"
+            onChange={handleUploadPhoto}
+            className="sr-only"
+          />
+        </label>
       </div>
       {/* input for create pet profile */}
       <div className="w-[90%] flex flex-col justify-between items-center gap-4 py-4 md:w-[85%] lg:gap-8 lg:w-[83%]">
@@ -102,7 +163,7 @@ function createPet() {
               pattern="^[a-zA-Z\s]*$"
               value={petName}
               minLength={6}
-              maxLength={20}
+              maxLength={40}
               onChange={(event) => {
                 setPetName(event.target.value);
               }}
@@ -223,14 +284,17 @@ function createPet() {
           </FormControl>
         </div>
         <div className="py-2 w-11/12 flex justify-evenly lg:justify-between lg:w-full">
-          <button className="bg-sixthOrange p-2 px-5 text-sm font-medium rounded-3xl text-secondOrange md:text-xl">
-            Cancel
-          </button>
-          <Link href="/account/pet">
-            <button className="bg-secondOrange p-2 text-sm font-medium rounded-3xl text-white md:text-xl">
-              Create Pet
+          <Link href="/account/pet/">
+            <button className="bg-sixthOrange p-2 px-5 text-sm font-medium rounded-3xl text-secondOrange md:text-xl">
+              Cancel
             </button>
           </Link>
+          <button
+            onClick={handleSubmit}
+            className="bg-secondOrange p-2 text-sm font-medium rounded-3xl text-white md:text-xl"
+          >
+            Create Pet
+          </button>
         </div>
       </div>
     </div>
