@@ -11,6 +11,7 @@ import Googleicon from "@/asset/images/Googleicon.svg";
 import { useUser } from "@/hooks/hooks";
 import { signIn } from "@/app/services/auth";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import Link from "next/link";
 
 import { signInWithProvider } from "@/app/services/auth";
 
@@ -169,7 +170,12 @@ const LoginPage = () => {
               </div>
 
               <div className="text-center mt-[10px] ">
-                <p> Don't have any account? Register</p>
+                <p>
+                  Don't have any account?{" "}
+                  <Link href="/register">
+                    <span className="text-secondOrange">Register</span>
+                  </Link>
+                </p>
               </div>
             </form>
           </div>

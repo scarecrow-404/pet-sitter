@@ -11,6 +11,7 @@ import Googleicon from "@/asset/images/Googleicon.svg";
 import { signUp } from "@/app/services/auth";
 import { useRouter } from "next/navigation";
 import { signUpWithProvider } from "@/app/services/auth";
+import Link from "next/link";
 const RegisterPage = () => {
   const router = useRouter();
   const [values, setValues] = useState({
@@ -216,7 +217,12 @@ const RegisterPage = () => {
               </div>
 
               <div className="text-center">
-                <p>Already have an account? Login</p>
+                <p>
+                  Already have an account?{" "}
+                  <Link href="/login">
+                    <span className="text-secondOrange">Login</span>
+                  </Link>
+                </p>
               </div>
             </form>
           </div>
