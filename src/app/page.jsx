@@ -27,7 +27,7 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <main className="flex min-h-4/6 flex-col items-center justify-between gap-10 my-3 lg:gap-20 lg:my-6">
+      <main className="flex min-h-4/6 flex-col items-center justify-between gap-10 my-3 max-w-[1440px] mx-auto lg:gap-20 lg:my-6">
         <div className="w-full flex flex-row justify-center items-center lg:w-11/12">
           <div className="w-[23%] relative top-7 md:top-0 md:w-[25%] lg:w-[25%]">
             <Image
@@ -79,13 +79,13 @@ export default function Home() {
             <div className="flex flex-col gap-2">
               <div className="flex gap-3">
                 <Image src={topicStar2} alt="topic-star-2" />
-                <h1 className="font-bold text-base md:text-lg">
-                  House Sitting
-                </h1>
+                <h1 className="font-bold text-base md:text-lg">Safety First</h1>
               </div>
               <p className="text-secondGray text-sm pl-4 md:text-base lg:pl-9 lg:text-sm">
-                Your sitter takes care of your pets and your home. Your pets
-                will get all the attention they need without leaving home.
+                Your pet's safety is our top priority. Our pet sitters are
+                trained in pet first aid and are equipped to handle any
+                unexpected situations. Rest easy knowing that your pets are in
+                capable and caring hands.
               </p>
             </div>
             <div className="flex flex-col gap-2">
@@ -191,7 +191,7 @@ export default function Home() {
             className="w-[30%] absolute bottom-0 left-0 md:w-[23%] lg:rounded-bl-xl"
           />
         </div>
-      </main>{" "}
+      </main>
       <Footer />
     </>
   );
