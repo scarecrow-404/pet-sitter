@@ -10,11 +10,12 @@ export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
   const [userId, setUserId] = useState(null);
   const [search, setSearch] = useState({});
+
   const [bookingData, setBookingData] = useState({
     isModalOpen: false,
     startTime: "",
     endTime: "",
-    date: "",
+    date: new Date(),
   });
 
   useEffect(() => {
@@ -23,7 +24,9 @@ export function UserProvider({ children }) {
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, setUser, userId, setUserId, bookingData, setBookingData }}>
+    <UserContext.Provider
+      value={{ user, setUser, userId, setUserId, bookingData, setBookingData }}
+    >
       {children}
     </UserContext.Provider>
   );
