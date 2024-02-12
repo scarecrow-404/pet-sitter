@@ -11,7 +11,6 @@ export function UserProvider({ children }) {
   const [userId, setUserId] = useState(null);
   const [search, setSearch] = useState({});
 
-
   const [bookingData, setBookingData] = useState({
     isModalOpen: false,
     startTime: "",
