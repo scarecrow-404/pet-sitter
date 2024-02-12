@@ -7,7 +7,6 @@ import { Sidebar, TopBar } from "@/components/sidebar";
 import { Select } from "chakra-react-select";
 import { FormControl, FormLabel, Input, Textarea } from "@chakra-ui/react";
 import supabase from "@/lib/utils/db";
-import Frame427321094 from "@/asset/images/Frame427321094.svg";
 import deleteButton from "@/asset/images/delete.svg";
 import deleteButtonHover from "@/asset/images/deleteHover.svg";
 import frameFray from "@/asset/images/photoFrameOutlineRounded.svg";
@@ -15,7 +14,7 @@ import upload from "@/asset/images/uploadMin10.svg";
 import withAuth from "@/lib/utils/withAuth";
 const InputThaiAddress = CreateInput();
 import { useUser } from "@/hooks/hooks";
-
+import previewImg from "@/asset/images/Frame427321094.svg";
 const SitterManagement = () => {
   const [optionPetType, setOptionPetType] = useState([]);
   const { userId, user } = useUser();
@@ -34,8 +33,8 @@ const SitterManagement = () => {
   const [myPlace, setMyPlace] = useState("");
   const [logo, setLogo] = useState({});
   const [photo, setPhoto] = useState({});
-  const [imageUrl, setImageUrl] = useState(Frame427321094);
-  const [previewUrl, setPreviewUrl] = useState(Frame427321094);
+  const [imageUrl, setImageUrl] = useState(previewImg);
+  const [previewUrl, setPreviewUrl] = useState(previewImg);
   const [previewUrlPet, setPreviewUrlPet] = useState();
   const [petImage, setPetImage] = useState({});
 
@@ -243,7 +242,7 @@ const SitterManagement = () => {
 
     const { error } = await supabase
       .from("pet_sitter")
-      .update(updatesPetSitter)
+      .upsert(updatesPetSitter, { conflictFields: ["user_id"] })
       .eq("user_id", userId);
     if (error) {
       console.error("Error updating user:", error);
@@ -350,7 +349,6 @@ const SitterManagement = () => {
           <div className="pb-6">Basic Information</div>
           <div className="flex flex-col gap-2 mt-2 w-80">
             <label htmlFor="profile">
-              <FormLabel></FormLabel>
               {imageUrl && (
                 <div className="photo">
                   <Image
