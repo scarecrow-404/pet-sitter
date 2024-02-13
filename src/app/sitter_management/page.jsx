@@ -242,7 +242,7 @@ const SitterManagement = () => {
 
     const { error } = await supabase
       .from("pet_sitter")
-      .upsert(updatesPetSitter, { conflictFields: ["user_id"] })
+      .update(updatesPetSitter)
       .eq("user_id", userId);
     if (error) {
       console.error("Error updating user:", error);
