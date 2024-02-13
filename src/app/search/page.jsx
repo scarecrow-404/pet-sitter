@@ -8,21 +8,29 @@ import { useUser } from "@/hooks/hooks";
 
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
-import { set } from "date-fns";
+
 
 
 const Search = () => {
   const { search, setSearch } = useUser();
   const [sitterData, setSitterData] = useState([]);
   const [idSitter, setIdSitter] = useState("");
-  const [pages, setPage] = useState(1);
   const [expStart, setExpStart] = useState(0);
   const [expEnd, setExpEnd] = useState(10);
   const [loading,setloading] = useState()
+  const [page, setPage] = useState(1);
+  const [lengthReview, setLengthReview] = useState(1);
 
-
-
- 
+  const reviewsPerPage = 5;
+  const nextPage = () => {
+    setPage(page + 1);
+  };
+  const previousPage = () => {
+    if (page <= 1) {
+      setPage(1);
+    }
+    setPage(page - 1);
+  };
 
   const expQuery = search.exp ? search.exp : '0-10';
 
@@ -35,8 +43,20 @@ const Search = () => {
   const keyword = search.keyword? search.keyword : '';
   
 
+
+ async function getTaotalPage(){
+  try {
+    let { data, error } = await supabase.from("pet_sitter_render").select("*")
+    console.log("total",data)
+    if(!data|| error){
+      console.log("nodata",error)
+    }
+    setLengthReview(Math.ceil(data.length / reviewsPerPage))
+ }catch(error){
+  console.log(error,"error total page")
+ }}
+
   const splitExpNum = (num) => {
-    console.log("nummmmmmmmm",num)
     if (num.length >= 3) {
       const split = num.split("-");
       console.log("split1",split[0], split[1]);
@@ -71,24 +91,27 @@ const Search = () => {
   }
   
 
-  async function getSitterData(expStart, expEnd, petQuery, ratingStart,ratingEnd,keyword) {
-    console.log("fetchhhhhhhhhhhh", petQuery,expStart, expEnd,ratingStart,ratingEnd,keyword);
+  async function getSitterData(expStart, expEnd, petQuery, ratingStart,ratingEnd,keyword,reviewsPerPage,page) {
+ 
 
     try {
       let { data, error } = await supabase
-      .rpc('fetch_data', {
-        exp_end:expEnd,
-        exp_start:expStart,
-        key:keyword,
-        pet:petQuery ,
-        rate_end:ratingEnd,
-        rate_start:ratingStart,
-      })
+  .rpc('fetch_data', {
+    exp_end:expEnd,
+    exp_start:expStart,
+    key:keyword, 
+    page:page, 
+    pet:petQuery, 
+    rate_end:ratingEnd, 
+    rate_start:ratingStart, 
+    reviews_perpage:reviewsPerPage,
+  })
       if (!data || error) {
-        console.log("nodata",error);
+        console.log(error);
       }
-      console.log("1eapppppppppppp",data)
+   
       const fetchSitter = filterSitterData(data)
+      console.log("data",fetchSitter)
       setSitterData(fetchSitter)
       
     } catch (error) {
@@ -98,10 +121,10 @@ const Search = () => {
 
  
   useEffect(() => {
-
+getTaotalPage()
     splitExpNum(expQuery);
-    getSitterData(expStart, expEnd, petQuery, ratingStart,ratingEnd,keyword)
-  }, [search]);
+    getSitterData(expStart, expEnd, petQuery, ratingStart,ratingEnd,keyword,reviewsPerPage,page)
+  }, [search,page]);
 
   function splitPage(numpage) {
     const pageArr = [];
@@ -131,12 +154,13 @@ const Search = () => {
                 fullname={item.full_name}
                 id={item.id}
                 image={item.image_url? item.image_url:""}
+                rating={item.rating}
               />
             ))}
           </div>
         </section>
-        <div className="flex gap-2">
-          <a href="#">pevious</a>
+        {/* <div className="flex gap-2">
+          <button href="#">pevious</button>
           {splitPage(10).map((item, index) => {
             return (
               <a href="#" key={index}>
@@ -144,8 +168,28 @@ const Search = () => {
               </a>
             );
           })}
-          <a href="#">next</a>
-        </div>
+          <button href="#">next</button>
+        </div> */}
+        <div className="pagination flex gap-4">
+              <button
+                className="previous-button"
+                onClick={previousPage}
+                disabled={page === 1} // ปิดปุ่มก่อนหน้าเมื่ออยู่ที่หน้าแรก
+              >
+                Previous
+              </button>
+              <div className="pages">
+                {page}/{lengthReview}
+                {/* แสดงหน้าปัจจุบัน / จำนวนหน้าทั้งหมด */}
+              </div>
+              <button
+                className="next-button"
+                onClick={nextPage}
+                disabled={page === lengthReview} // ปิดปุ่มถัดไปเมื่ออยู่ที่หน้าสุดท้าย
+              >
+                Next
+              </button>
+            </div>
       </section>
       <Footer />
     </>
