@@ -9,7 +9,9 @@ import {
   Button,
   MenuItem,
 } from "@chakra-ui/react";
+import profileIcon from "@/asset/images/profileIcon.svg";
 import { useDisclosure } from "@chakra-ui/react";
+import Image from "next/image";
 import React from "react";
 import { useUser } from "@/hooks/hooks";
 import { useRouter } from "next/navigation";
@@ -35,7 +37,21 @@ export default function PopUpSitterConfirm() {
   };
   return (
     <>
-      <MenuItem onClick={onOpen}>Sitter Mode</MenuItem>
+      <MenuItem onClick={onOpen}>
+        <Image
+          src={profileIcon}
+          alt="pet sitter component icon 1"
+          height={8}
+          width={8}
+        />
+        <Image
+          src={profileIcon}
+          alt="petsitter component icon 2 "
+          height={8}
+          width={8}
+        />
+        Sitter Mode
+      </MenuItem>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
