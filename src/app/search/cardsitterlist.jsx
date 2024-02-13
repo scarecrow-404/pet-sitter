@@ -22,6 +22,13 @@ function CardSitter(props) {
     router.push(url);
   }
 
+  function renderStar(starNumber) {
+    let stars = [];
+    for (let i = 0; i < starNumber; i++) {
+      stars.push(<Image key={i} src={star} alt="star" className=" w-[12px]" />);
+    }
+    return stars;
+  }
 
 
 
@@ -91,7 +98,7 @@ function CardSitter(props) {
                   <p className=" font-bold text-xs">By {props.fullname}</p>
                 </div>
                 <div className="flex items-center gap-1  absolute right-2 top-1 ">
-                  {renderStar(5)}
+                {renderStar(props.rating)}
                 </div>
               </div>
               <div className=" flex  items-center text-center pt-2 justify-start gap-1">
