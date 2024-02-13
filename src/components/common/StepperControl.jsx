@@ -1,21 +1,21 @@
 import React from "react";
 
-function StepperControl({ handleClick, currentStep, steps }) {
+function StepperControl({ handlePrev, currentStep, steps, handleNext }) {
   return (
     <div className="flex justify-center items-end">
-      <div className="container flex justify-around mt-[16px] mb-[8px]">
+      <div className="container flex justify-around mb-[8px]">
         <button
-          className={`py-[12px] px-[24px] rounded-[99px] font-semibold cursor-pointer hover:text-white transition duration-200 ease-in-out text-[#FF7037] bg-[#FFF1EC]
+          className={`py-[12px] px-[24px] rounded-[99px] text-[16px] font-[700] leading-[24px] cursor-pointer hover:text-white transition duration-200 ease-in-out text-[#FF7037] bg-[#FFF1EC]
           ${currentStep === 1 ? "opacity-30 cursor-not-allowed" : ""}`}
-          onClick={() => handleClick()}
+          onClick={handlePrev}
         >
           Back
         </button>
 
         <button
-          className="py-[12px] px-[24px] rounded-[99px] font-semibold cursor-pointer hover:text-white transition duration-200 ease-in-out text-[#FFF1EC] bg-[#FF7037]
+          className="py-[12px] px-[24px] rounded-[99px] text-[16px] font-[700] leading-[24px] cursor-pointer hover:text-white transition duration-200 ease-in-out text-[#FFF1EC] bg-[#FF7037]
         "
-          onClick={() => handleClick("next")}
+          onClick={handleNext}
         >
           {currentStep === steps.length ? "Confirm Booking" : "Next"}
         </button>

@@ -13,9 +13,9 @@ export default function withAuth(Component) {
       const { data, error } = await supabase
         .from("users")
         .select("*")
-        .eq("id", session.user.id);
+        .eq("id", userId);
       setUser(data[0]);
-      setIsLoading(false);
+
       return data[0]; // return the user data
     }
     useEffect(() => {
@@ -32,7 +32,7 @@ export default function withAuth(Component) {
           console.log(`Supabase auth event: ${event}`);
           // console.log(session);
           if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
-            const currentSession = supabase.auth.session; // use supabase.auth.session, not supabase.auth.session()
+            const currentSession = supabase.auth.session; // use supabase.auth.session,
             if (currentSession) {
               setUserId(currentSession.user.id);
               const user = await getUser(currentSession);

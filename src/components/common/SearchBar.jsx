@@ -153,13 +153,13 @@ const getPet = async()=>{
               );
             })}
           </div>
-          <div className="flex flex-col md:flex-row flex-wrap md:items-center ">
+          <div className="flex flex-col md:flex-row flex-wrap md:items-center md:justify-center">
             <div
               className={`flex flex-wrap w-[100%]${
                 isLandingPage ? "md:flex-row" : "flex-col"
               }`}
             >
-              <div className="flex items-center gap-2 flex-wrap text-sm p-4">
+              <div className="flex items-center gap-2 flex-wrap text-sm p-4 md:px-1 lg:px-4">
                 Rating:
                 <div className="flex gap-1 flex-wrap">
                   {sitterRating.map((rating) => {
@@ -204,8 +204,10 @@ const getPet = async()=>{
                 </select>
               </lebel>
               <div
-                className={`flex text-sm  m-2 ${
-                  isLandingPage ? "justify-end" : "justify-center gap-2"
+                className={`flex text-sm  m-2  ${
+                  isLandingPage
+                    ? "justify-end md:m-[2px] lg:items-center px-2"
+                    : "justify-center gap-2"
                 } `}
               >
                 <button
@@ -217,7 +219,7 @@ const getPet = async()=>{
                   Clear
                 </button>
                 <button
-                  className="bg-secondOrange rounded-full p-3 max-h-12 text-white mr-3 "
+                  className="bg-secondOrange rounded-full p-3 max-h-12 text-white mr-3 md:mr-0 md:py-0 md:px-2 lg:p-3"
                   onClick={handleSearch}
                 >
                   Search

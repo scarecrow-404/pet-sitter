@@ -56,7 +56,7 @@ export async function GET(request) {
   if (code) {
     const { session, error } = await supabase.auth.exchangeCodeForSession(code);
     if (session) {
-      supabase.auth.setAuth(session.access_token); // set the session token
+      supabase.auth.setAuth(session.access_token);
     } else {
       console.error(error);
     }

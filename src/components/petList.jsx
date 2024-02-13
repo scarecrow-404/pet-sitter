@@ -2,178 +2,122 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import previewPet from "@/asset/images/catforsitterlist.jpg";
-function petList() {
-  // pls edit when sfetch data
-  // // useState for rendering pet list
-  // const [petList, setPetList] = useState([]);
-  // // function for get pet list from db
-  // const getPEtList = async () => {
-  //   const result = await axios.get("");
-  //   setPetList(result.data.data);
-  // };
+import {
+  Input,
+  Button,
+  Avatar,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  AlertDialogCloseButton,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  Lorem,
+  Box,
+} from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useUser } from "@/hooks/hooks";
+import supabase from "@/lib/utils/db";
+export default function petList() {
+  const router = useRouter();
+  const [dataPets, setDataPets] = useState([]);
+  const { userId } = useUser();
+  useEffect(() => {
+    if (userId) {
+      fetchPets();
+    }
+  }, [userId]);
+  const fetchPets = async () => {
+    const { data: pets, error } = await supabase
+      .from("pet")
+      .select("*")
+      .eq("user_id", userId);
 
-  // useEffect(() => {
-  //   getPEtList(), [];
-  // });
-  // for change type
-  // if (petList.type === Cat) {
-  //   return (
-  //     <div className="border-2 border-firstPink bg-secondPink text-firstPink px-5 py-1 rounded-3xl font-medium">
-  //       Cat
-  //     </div>
-  //   );
-  // } else if (petList.type === Dog) {
-  //   return (
-  //     <div className="border-2 border-firstGreen bg-secondGreen text-firstGreen px-5 py-1 rounded-3xl font-medium">
-  //       Dog
-  //     </div>
-  //   );
-  // } else if (petList.type === Bird) {
-  //   return (
-  //     <div className="border-2 border-firstLigthBlue bg-secondLigthBlue text-firstLigthBlue px-5 py-1 rounded-3xl font-medium">
-  //       Bird
-  //     </div>
-  //   );
-  // } else if (petList.type === Rabbit) {
-  //   return (
-  //     <div className="border-2 border-thirdOrange bg-secondYellow text-thirdOrange px-5 py-1 rounded-3xl font-medium">
-  //       Rabbit
-  //     </div>
-  //   );
-  // } else {
-  //   return (
-  //     <div className="border-2 border-firstGray bg-fifthGray text-firstGray px-5 py-1 rounded-3xl font-medium">
-  //       {petList.type}
-  //     </div>
-  //   );
-  // }
+    if (error) {
+      console.error("Error fetching pets data:", error);
+    } else {
+      setDataPets(pets);
+    }
+  };
+  console.log(dataPets);
+  const handleClick = (item) => {
+    const path = `/account/pet/${item.id}`;
+
+    const queryString = new URLSearchParams({
+      id: item.id,
+    }).toString();
+
+    const url = String(path) + "?" + queryString;
+
+    router.push(url);
+  };
+  console.log(dataPets);
   return (
     <div className="flex flex-col justify-center items-center py-4 gap-5 max-w-[1440px] mx-auto">
       {/* topic */}
       <div className="w-11/12 flex flex-row justify-between p-3">
         <div className="font-bold text-lg">Your Pet</div>
         <div>
-          <button className="bg-secondOrange p-2 text-sm rounded-3xl text-white">
-            Create Pet
-          </button>
+          <Link href="/account/pet/create_pet">
+            <button className="bg-secondOrange p-2 text-sm rounded-3xl text-white">
+              Create Pet
+            </button>
+          </Link>
         </div>
       </div>
       {/* area for map petlist */}
       <div className="flex flex-col justify-center items-center w-11/12 py-5 gap-5 md:flex-row md:flex-wrap md:gap-3 md:justify-start md:px-5">
         {/* map here */}
-        <div className="border border-fifthGray w-[210px] flex flex-col items-center py-6 gap-2 rounded-xl">
-          <div className="pet-photo">
-            <Image
-              src={previewPet}
-              alt="preview-pet"
-              className="rounded-full w-[110px] h-[110px]"
-            />
-          </div>
-          <div className="text-lg font-semibold">Cat</div>
-          <div className="border-2 border-firstPink bg-secondPink text-firstPink px-5 py-1 rounded-3xl font-medium">
-            Cat
-          </div>
-        </div>
 
-        <div className="border border-fifthGray w-[210px] flex flex-col items-center py-6 gap-2 rounded-xl">
-          <div className="pet-photo">
-            <Image
-              src={previewPet}
-              alt="preview-pet"
-              className="rounded-full w-[110px] h-[110px]"
-            />
-          </div>
-          <div className="text-lg font-semibold">Cat</div>
-          <div className="border-2 border-firstGreen bg-secondGreen text-firstGreen px-5 py-1 rounded-3xl font-medium">
-            Dog
-          </div>
-        </div>
-
-        <div className="border border-fifthGray w-[210px] flex flex-col items-center py-6 gap-2 rounded-xl">
-          <div className="pet-photo">
-            <Image
-              src={previewPet}
-              alt="preview-pet"
-              className="rounded-full w-[110px] h-[110px]"
-            />
-          </div>
-          <div className="text-lg font-semibold">Cat</div>
-          <div className="border-2 border-firstLigthBlue bg-secondLigthBlue text-firstLigthBlue px-5 py-1 rounded-3xl font-medium">
-            Bird
-          </div>
-        </div>
-
-        <div className="border border-fifthGray w-[210px] flex flex-col items-center py-6 gap-2 rounded-xl">
-          <div className="pet-photo">
-            <Image
-              src={previewPet}
-              alt="preview-pet"
-              className="rounded-full w-[110px] h-[110px]"
-            />
-          </div>
-          <div className="text-lg font-semibold">Cat</div>
-          <div className="border-2 border-firstLigthBlue bg-secondLigthBlue text-firstLigthBlue px-5 py-1 rounded-3xl font-medium">
-            Bird
-          </div>
-        </div>
-
-        <div className="border border-fifthGray w-[210px] flex flex-col items-center py-6 gap-2 rounded-xl">
-          <div className="pet-photo">
-            <Image
-              src={previewPet}
-              alt="preview-pet"
-              className="rounded-full w-[110px] h-[110px]"
-            />
-          </div>
-          <div className="text-lg font-semibold">Cat</div>
-          <div className="border-2 border-thirdOrange bg-secondYellow text-thirdOrange px-4 py-1 rounded-3xl font-medium">
-            Rabbit
-          </div>
-        </div>
-
-        <div className="border border-fifthGray w-[210px] flex flex-col items-center py-6 gap-2 rounded-xl">
-          <div className="pet-photo">
-            <Image
-              src={previewPet}
-              alt="preview-pet"
-              className="rounded-full w-[110px] h-[110px]"
-            />
-          </div>
-          <div className="text-lg font-semibold">Cat</div>
-          <div className="border-2 border-firstLigthBlue bg-secondLigthBlue text-firstLigthBlue px-5 py-1 rounded-3xl font-medium">
-            Bird
-          </div>
-        </div>
-
-        <div className="border border-fifthGray w-[210px] flex flex-col items-center py-6 gap-2 rounded-xl">
-          <div className="pet-photo">
-            <Image
-              src={previewPet}
-              alt="preview-pet"
-              className="rounded-full w-[110px] h-[110px]"
-            />
-          </div>
-          <div className="text-lg font-semibold">Cat</div>
-          <div className="border-2 border-firstLigthBlue bg-secondLigthBlue text-firstLigthBlue px-5 py-1 rounded-3xl font-medium">
-            Bird
-          </div>
-        </div>
-
-        <div className="border border-fifthGray w-[210px] flex flex-col items-center py-6 gap-2 rounded-xl">
-          <div className="pet-photo">
-            <Image
-              src={previewPet}
-              alt="preview-pet"
-              className="rounded-full w-[110px] h-[110px]"
-            />
-          </div>
-          <div className="text-lg font-semibold">Cat</div>
-          <div className="border-2 border-firstLigthBlue bg-secondLigthBlue text-firstLigthBlue px-5 py-1 rounded-3xl font-medium">
-            Bird
-          </div>
-        </div>
+        {dataPets.length > 0 ? (
+          dataPets.map((item) => {
+            return (
+              <div
+                onClick={() => handleClick(item)}
+                key={item.id}
+                className=" mb-5 border rounded-lg w-[210px] h-[240px] flex flex-col justify-center items-center gap-6 cursor-pointer"
+              >
+                <Avatar
+                  size="xl"
+                  name={item.name}
+                  src={item.image_url}
+                  className=""
+                />
+                <div className="flex flex-col justify-center items-center">
+                  <p className="mx-auto">{item.name}</p>
+                  <p
+                    className={` border rounded-xl w-fit px-3 ${
+                      item.petType === "Dog"
+                        ? "border-firstGreen text-firstGreen bg-secondGreen"
+                        : item.petType === "Cat"
+                        ? "bg-secondPink text-firstPink border-firstPink"
+                        : item.petType === "Bird"
+                        ? "bg-secondLigthBlue text-firstLigthBlue border-firstLigthBlue"
+                        : item.petType === "Rabbit"
+                        ? " bg-fifthOrange text-thirdOrange border-thirdOrange"
+                        : null
+                    } `}
+                  >
+                    {item.petType}
+                  </p>
+                </div>
+              </div>
+            );
+          })
+        ) : (
+          <div>There is no pet</div>
+        )}
       </div>
     </div>
   );
 }
-export default petList;

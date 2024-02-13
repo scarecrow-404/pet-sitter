@@ -1,6 +1,7 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   FormControl,
   FormLabel,
@@ -20,13 +21,19 @@ import {
   useDisclosure,
   Button,
 } from "@chakra-ui/react";
+import previewImg from "@/asset/images/Frame427321094.svg";
 import backIcon from "@/asset/images/backIcon.svg";
 import previewPet from "@/asset/images/previewPetPhoto.svg";
 import deletePet from "@/asset/images/deletePetIcon.svg";
+import { useUser } from "@/hooks/hooks";
+import { useRouter } from "next/navigation";
+import supabase from "@/lib/utils/db";
 
-function updatePet() {
+function updatePet({ searchParams }) {
+  const { userId } = useUser();
+  const router = useRouter();
   const [photo, setPhoto] = useState({});
-  const [previewPetPhoto, setPreviewPetPhoto] = useState(previewPet);
+  const [imageUrl, setImageUrl] = useState(previewImg);
   const inputRefLogo = useRef(null);
   const [petName, setPetName] = useState("");
   const [petType, setPetType] = useState(""); // เป็น selector มา edit ถ้าต้องเปลี่ยนแปลงอะไร
@@ -36,32 +43,129 @@ function updatePet() {
   const [color, setColor] = useState("");
   const [weight, setWeight] = useState("");
   const [about, setAbout] = useState("");
+  useEffect(() => {
+    const fetchPetData = async () => {
+      const { data, error } = await supabase
+        .from("pet")
+        .select("*")
+        .eq("id", searchParams.id)
+        .single();
+
+      if (error) {
+        console.error("Error fetching pet data: ", error);
+        return;
+      }
+
+      // Set the state with the fetched data
+      setPetName(data.name);
+      setPetType(data.petType);
+      setBreed(data.breed);
+      setSex(data.sex);
+      setAge(data.age);
+      setColor(data.color);
+      setWeight(data.weight);
+      setAbout(data.about);
+
+      setImageUrl(data.image_url);
+    };
+
+    fetchPetData();
+  }, [searchParams.id||userId]);
 
   const handleUploadPhoto = (event) => {
-    event.preventDefault();
     const file = event.target.files[0];
-
-    if (Object.keys(photo).length > 1) {
-      alert("Can't upload more than 1 image");
-      return true;
-    }
-
-    if (file && file.size <= 10 * 1024 * 1024) {
-      const uniqueId = Date.now();
-      setPhoto({
-        [uniqueId]: file,
-      });
-
-      const reader = new FileReader();
-      reader.onload = () => {
-        setPreviewPetPhoto(reader.result);
-      };
-      reader.readAsDataURL(file);
+    if (file) {
+      const url = URL.createObjectURL(file);
+      if (url) {
+        setPhoto({ [file.name]: file });
+        setImageUrl(url);
+      }
     }
   };
-  const handleClickImage = () => {
-    inputRefLogo.current.click();
+  const handleSubmit = async (event) => {
+    try {
+      await updatePet(searchParams.id);
+      router.push("/account/pet/");
+    } catch (error) {
+      alert("Error creating pet: " + error.message);
+    }
   };
+  const handleDelete = async (event) => {
+    try {
+      const { data, error } = await supabase
+        .from("pet")
+        .delete()
+        .eq("id", searchParams.id);
+
+      if (error) {
+        console.error("Error: ", error);
+      } else {
+        console.log("Deleted data: ", data);
+        onClose();
+        router.push("/account/pet/");
+      }
+    } catch (error) {}
+  };
+  const updatePet = async (petId) => {
+    let imageUrl = null;
+    // Upload photo
+    if (Object.keys(photo).length > 0) {
+      const file = Object.values(photo)[0];
+      const filePath = `public/${userId}/pet/${file.name}`;
+      let { data, error: uploadError } = await supabase.storage
+        .from("images")
+        .upload(filePath, file);
+      console.log(data);
+      if (uploadError) {
+        console.error("Error uploading photo:", uploadError);
+        return;
+      }
+
+      // Get URL of uploaded photo
+      let url = supabase.storage.from("images").getPublicUrl(data.path);
+      console.log(url.data.publicUrl);
+      if (!url.data.publicUrl) {
+        console.error(
+          "Error getting photo URL: File does not exist or bucket is not public",
+          url.data.publicUrl
+        );
+        return;
+      }
+
+      imageUrl = url.data.publicUrl;
+    }
+    // if (!imageUrl) {
+    //   console.error("Image URL is null");
+    //   return;
+    // }
+    const petData = {
+      name: petName,
+      breed: breed,
+      petType: petType,
+      sex: sex,
+      age: age,
+      color: color,
+      weight: weight,
+      about: about,
+      image_url: imageUrl, // assuming this is the URL of the image
+      user_id: userId,
+      updated_at: new Date(), // assuming userId is available in this scope
+      // add other necessary fields
+    };
+
+    const { data, error } = await supabase
+      .from("pet")
+      .update(petData)
+      .eq("id", petId);
+
+    if (error) {
+      console.error("Error creating pet: ", error);
+      return null;
+    } else {
+      console.log("Pet created successfully", data);
+    }
+  };
+
   // modal to click delete pet
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = React.useRef();
@@ -71,34 +175,48 @@ function updatePet() {
       {/* topic */}
       <div className="w-[90%] flex flex-row justify-between md:w-[85%] lg:w-[83%]">
         <div className="font-bold text-lg flex flex-row justify-start items-center gap-1">
-          <button>
-            <Image src={backIcon} />
-          </button>
+          <Link href="/account/pet/">
+            <button>
+              <Image src={backIcon} alt="back" />
+            </button>
+          </Link>
           Your Pet
         </div>
       </div>
       {/* pet picture edit later */}
       <div className="lg:w-[83%]">
-        <FormLabel></FormLabel>
-        {previewPetPhoto && (
-          <div className="photo">
-            <Avatar
-              src={previewPetPhoto}
-              size="2xl"
-              alt="Preview"
-              onClick={handleClickImage}
-            />
-          </div>
-        )}
-        <Input
-          type="file"
-          id="profile"
-          name="profile"
-          accept="image/*"
-          onChange={handleUploadPhoto}
-          ref={inputRefLogo}
-          hidden
-        />
+        <label htmlFor="profile">
+          <FormLabel></FormLabel>
+          {imageUrl ? (
+            <div className="photo">
+              <Avatar
+                className="cursor-pointer"
+                src={imageUrl}
+                width={200}
+                height={200}
+                alt="Preview"
+              />
+            </div>
+          ) : (
+            <div className="photo">
+              <Avatar
+                className="cursor-pointer"
+                src={imageUrl}
+                width={200}
+                height={200}
+                alt="Preview"
+              />
+            </div>
+          )}
+          <input
+            type="file"
+            id="profile"
+            name="profile"
+            accept="image/*"
+            onChange={handleUploadPhoto}
+            className="sr-only"
+          />
+        </label>
       </div>
       {/* input for create pet profile */}
       <div className="w-[90%] flex flex-col justify-between items-center gap-4 py-4 md:w-[85%] lg:gap-8 lg:w-[83%]">
@@ -178,7 +296,7 @@ function updatePet() {
               <Input
                 placeholder="Age of your pet"
                 size="md"
-                type="number"
+                type="text"
                 value={age}
                 onChange={(event) => {
                   setAge(event.target.value);
@@ -206,7 +324,7 @@ function updatePet() {
             <FormControl isRequired>
               <FormLabel>Weight (Kilogram)</FormLabel>
               <Input
-                type="number"
+                type="text"
                 placeholder="Weight of your pet"
                 value={weight}
                 onChange={(event) => {
@@ -270,7 +388,7 @@ function updatePet() {
                     </button>
                     {/* add handleDelete later */}
                     <button
-                      onClick={onClose}
+                      onClick={handleDelete}
                       className="bg-secondOrange py-3 px-5 text-sm font-medium rounded-3xl text-white"
                     >
                       Delete
@@ -282,10 +400,15 @@ function updatePet() {
           </AlertDialog>
         </div>
         <div className="py-2 w-11/12 flex justify-evenly lg:justify-between lg:w-full">
-          <button className="bg-sixthOrange p-2 px-5 text-sm font-medium rounded-3xl text-secondOrange md:text-xl">
-            Cancel
-          </button>
-          <button className="bg-secondOrange p-2 text-sm font-medium rounded-3xl text-white md:text-xl">
+          <Link href="/account/pet/">
+            <button className="bg-sixthOrange p-2 px-5 text-sm font-medium rounded-3xl text-secondOrange md:text-xl">
+              Cancel
+            </button>
+          </Link>
+          <button
+            onClick={handleSubmit}
+            className="bg-secondOrange p-2 text-sm font-medium rounded-3xl text-white md:text-xl"
+          >
             Update Pet
           </button>
         </div>

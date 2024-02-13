@@ -10,6 +10,8 @@ import Facebookicon from "@/asset/images/Facebookicon.svg";
 import Googleicon from "@/asset/images/Googleicon.svg";
 import { signUp } from "@/app/services/auth";
 import { useRouter } from "next/navigation";
+import { signUpWithProvider } from "@/app/services/auth";
+import Link from "next/link";
 const RegisterPage = () => {
   const router = useRouter();
   const [values, setValues] = useState({
@@ -71,16 +73,13 @@ const RegisterPage = () => {
     setErrors(validation(values));
     if (Object.keys(errors).length === 0) {
       const user = signUp(values.email, values.password, values);
-      // const result = supabase.from("user_data").insert([
-      //   {
-      //     auth_id: user.id,
-      //     full_name: values.name,
-      //     email: values.email,
-      //   },
-      // ]);
       console.log(values);
       router.push("/login");
     }
+  }
+  async function handleOAuth(provider) {
+    let result = await signUpWithProvider(provider);
+    console.log(result);
   }
 
   return (
@@ -194,23 +193,36 @@ const RegisterPage = () => {
 
               <div className="text-center">
                 <div className="flex gap-[12px] justify-between">
-                  <div className="flex justify-center gap-[10px] bg-[#F6F6F9] text-black w-1/2 rounded-[99px] px-[24px] py-[12px] h-[34px] sm:h-[48px]">
+                  <button
+                    value="facebook"
+                    className="flex justify-center gap-[10px] bg-[#F6F6F9] text-black w-1/2 rounded-[99px] px-[24px] py-[12px] h-[34px] sm:h-[48px]"
+                    onClick={() => handleOAuth(values)}
+                  >
                     <span className="flex items-center">
                       <Image src={Facebookicon} alt="Facebook_icon" />
                     </span>
                     <span className="sm:block hidden">Facebook</span>
-                  </div>
-                  <div className="flex justify-center gap-[10px] bg-[#F6F6F9] text-black w-1/2 rounded-[99px] px-[24px] py-[6px] sm:py-[12px] h-[34px] sm:h-[48px]">
+                  </button>
+                  <button
+                    value="google"
+                    className="flex justify-center gap-[10px] bg-[#F6F6F9] text-black w-1/2 rounded-[99px] px-[24px] py-[6px] sm:py-[12px] h-[34px] sm:h-[48px]"
+                    onClick={() => handleOAuth(values)}
+                  >
                     <span>
                       <Image src={Googleicon} alt="Google_icon" />
                     </span>
                     <span className="sm:block hidden">Gmail</span>
-                  </div>
+                  </button>
                 </div>
               </div>
 
               <div className="text-center">
-                <p>Already have an account? Login</p>
+                <p>
+                  Already have an account?{" "}
+                  <Link href="/login">
+                    <span className="text-secondOrange">Login</span>
+                  </Link>
+                </p>
               </div>
             </form>
           </div>

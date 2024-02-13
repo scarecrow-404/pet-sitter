@@ -14,40 +14,8 @@ export async function signUp(email, password, values) {
     },
   });
   console.log(user, session, error);
-  // if (user) {
-  //   const { data, error } = await supabase.from("profiles").insert([
-  //     {
-  //       id: user.id,
-  //       full_name: "John",
-  //       avatar_url: "27",
-  //     },
-  //   ]);
-  //   console.log(data);
-  // }
 
   console.log("Check your email to complete sign up.");
-
-  // const { data, insertError } = await supabase
-  //   .from("profiles")
-  //   .insert([{ email: values.email, full_name: values.name }], {
-  //     returning: "minimal", // Don't return the value after inserting
-  //   });
-  // const { data, insertError } = await supabase.from("users").insert([
-  //   {
-  //     email: values.email,
-  //     phone_number: values.phone,
-  //     user_type: "user",
-
-  //     full_name: values.name,
-  //   },
-  // ]);
-  // console.log(data, insertError ?? null);
-
-  // if (insertError) {
-  //   console.error("Error inserting values:", insertError);
-  //   console.error("Error details:", insertError.details);
-  //   return;
-  // }
 }
 
 export async function signIn(email, password) {
@@ -72,4 +40,41 @@ export async function signOut() {
   }
 
   console.log("User signed out");
+}
+
+export async function resetPassword(email) {
+  const { data, error } = await supabase.auth.api.resetPasswordForEmail(email);
+  if (error) {
+    console.error("Error resetting password:", error);
+    return error;
+  }
+
+  console.log("Password recovery email sent");
+  return data;
+}
+
+export async function signInWithProvider(provider) {
+  const { user, session, error } = await supabase.auth.signIn({
+    provider,
+  });
+
+  if (error) {
+    console.error("Error signing in:", error);
+    return error;
+  }
+
+  return user;
+}
+
+export async function signUpWithProvider(provider) {
+  const { user, session, error } = await supabase.auth.signUp({
+    provider,
+  });
+
+  if (error) {
+    console.error("Error signing up:", error);
+    return error;
+  }
+
+  return user;
 }

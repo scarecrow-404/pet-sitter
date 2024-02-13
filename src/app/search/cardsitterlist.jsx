@@ -14,12 +14,14 @@ function CardSitter(props) {
   const [petId, setPetId] = useState([]);
   let id = props.id;
 
+
   const router = useRouter();
   function HandleClick (props){
     const path = `/search/${props}`;
     const url =String(path)
     router.push(url);
   }
+
 
 
 
@@ -36,8 +38,6 @@ function CardSitter(props) {
     setPetId(data);
   
   }
-    
-    
 
   useEffect(() => {
     getPetprefer(id);
@@ -106,29 +106,37 @@ function CardSitter(props) {
                 </p>
               </div>
               <div className=" flex   gap-1 pt-2">
+
                 {petId.map((eachId,index) => {
                   //console.log("eachid", eachId); 
                   if (eachId.pet_type_master_id=== 1) {
                     return (
                       <p key={index} className=" text-[10px]  border-solid border bg-secondGreen rounded-2xl  border-firstGreen pl-2 pr-2 text-firstGreen">
+
                         Dog
                       </p>
                     );
                   } else if (eachId.pet_type_master_id === 2) {
                     return (
+
                       <p key={index} className=" text-[10px]  border-solid border bg-secondPink rounded-2xl  border-firstPink pl-2 pr-2 text-firstPink">
+
                         Cat
                       </p>
                     );
                   } else if (eachId.pet_type_master_id === 3) {
                     return (
+
                       <p  key={index} className=" text-[10px]  border-solid border bg-secondLigthBlue rounded-2xl  border-firstLigthBlue pl-2 pr-2 text-firstLigthBlue">
+
                         Bird
                       </p>
                     );
                   } else if (eachId.pet_type_master_id === 4) {
                     return (
+
                       <p key={index} className=" text-[10px]  border-solid border bg-secondYellow rounded-2xl  border-firstYellow pl-2 pr-2 text-firstYellow">
+
                         Rabbit
                       </p>
                     );
