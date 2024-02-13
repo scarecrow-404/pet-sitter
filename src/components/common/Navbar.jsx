@@ -77,7 +77,6 @@ const Navbar = () => {
       console.log(`Supabase auth event: ${event}`);
 
       if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
-        console.log(session);
         if (session) {
           setUserId(session.user.id);
           const user = await getUser(session);

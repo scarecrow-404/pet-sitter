@@ -7,9 +7,7 @@ module.exports = {
     "./src/**/*.{html,js}",
     "./node_modules/tw-elements/dist/js/**/*.js",
 
-
     "./src/public/**/*.html",
-
   ],
   theme: {
     extend: {
