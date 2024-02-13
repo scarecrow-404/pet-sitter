@@ -18,7 +18,11 @@ const Booking = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const steps = ["Your Pet", "Information", "Payment"];
   const [errors, setErrors] = useState({});
-  const [buttonPopup, setButtonPopup] = useState(false);
+
+  const [paymentMethod, setPaymentMethod] = useState({
+    creditCard: true,
+    cash: false,
+  });
 
   const [values, setValues] = useState({
     pets_id: "",
@@ -119,14 +123,9 @@ const Booking = () => {
         setErrors({ ...checkStep3 });
       } else {
         setErrors({});
-        setButtonPopup(true);
+        setCurrentStep(newStep + 1);
       }
     }
-  };
-
-  const closePopup = () => {
-    setButtonPopup(false);
-    console.log(buttonPopup);
   };
 
   const handleClick = () => {
@@ -146,12 +145,9 @@ const Booking = () => {
   }, [values]);
 
   return (
-    <div className="bg-[#FAFAFB]">
+    <div className="bg-[#FAFAFB] ">
       <div className="bg-[#FAFAFB] h-full ">
         <Navbar />
-        <div className="fixed z-20">
-          <PopupBooking trigger={buttonPopup} closePopup={closePopup} />
-        </div>
         <div className="flex lg:flex-row flex-col">
           <div className="w-full flex lg:flex-row flex-col justify-center 2xl:w-[1440px] lg:mx-auto pt-[40px] md:px-[80px] gap-[16px]">
             <div className="bg-[#FFFFFF] flex flex-col md:w-full h-auto mb-[20px] pb-[20px] ">

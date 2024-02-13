@@ -10,13 +10,22 @@ export default function withAuth(Component) {
     const [userSession, setUserSession] = useState(null);
     const { setUser, setUserId, userId } = useUser();
     async function getUser(session) {
-      const { data, error } = await supabase
-        .from("users")
-        .select("*")
-        .eq("id", userId);
-      setUser(data[0]);
+      if (!session) {
+        console.log("not session");
+        return null;
+      } else if (!session.user) {
+        console.log("not session.user");
+        return null;
+      } else {
+        console.log("in else condition");
+        const { data, error } = await supabase
+          .from("users")
+          .select("*")
+          .eq("id", session.user.id);
+        console.log(error);
 
-      return data[0]; // return the user data
+        return data[0];
+      }
     }
     useEffect(() => {
       const fetchSession = async () => {
@@ -26,16 +35,21 @@ export default function withAuth(Component) {
         } = await supabase.auth.getSession();
 
         setUserSession(session);
-        setUser(session?.user);
+
         setUserId(session?.user?.id);
+        const user = await getUser(session);
+        setUser(user);
         supabase.auth.onAuthStateChange(async (event, session) => {
           console.log(`Supabase auth event: ${event}`);
           // console.log(session);
           if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
-            const currentSession = supabase.auth.session; // use supabase.auth.session,
+            const currentSession = supabase.auth.session;
+            // use supabase.auth.session,
             if (currentSession) {
               setUserId(currentSession.user.id);
+              console.log(currentSession);
               const user = await getUser(currentSession);
+
               setUser(user);
             }
           } else if (event === "SIGNED_OUT") {

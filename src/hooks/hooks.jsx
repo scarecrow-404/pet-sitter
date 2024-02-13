@@ -2,6 +2,7 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { getUser } from "@supabase/auth-helpers-nextjs";
 import supabase from "@/lib/utils/db";
+import { set } from "date-fns";
 // Create a context
 const UserContext = createContext();
 
@@ -11,14 +12,16 @@ export function UserProvider({ children }) {
   const [userId, setUserId] = useState(null);
   const [search, setSearch] = useState({});
 
-  useEffect(() => {
-    const session = supabase.auth.getSession();
-    setUser(session?.user);
-  }, []);
+  const [bookingData, setBookingData] = useState({
+    isModalOpen: false,
+    startTime: "",
+    endTime: "",
+    date: new Date(),
+  });
 
   return (
     <UserContext.Provider
-      value={{ user, setUser, userId, setUserId, search, setSearch }}
+      value={{ user, setUser, userId, setUserId, bookingData, setBookingData }}
     >
       {children}
     </UserContext.Provider>
@@ -33,4 +36,14 @@ export function useUser() {
     throw new Error("useUser must be used within a UserProvider");
   }
   return context;
+}
+
+async function getUserFromQuery(session) {
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", "fed4e73e-0600-4fa7-acff-25d9bf80b66e");
+  console.log(error);
+  console.log(data);
+  return data[0];
 }

@@ -3,136 +3,128 @@ import React from "react";
 import { useState, useEffect } from "react";
 import CardSitter from "@/app/search/cardsitterlist.jsx";
 import SearchBar from "@/components/common/SearchBar";
-import { supabase } from "@/lib/db";
+import supabase  from "@/lib/utils/db";
 import { useUser } from "@/hooks/hooks";
 
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 
+
+
 const Search = () => {
   const { search, setSearch } = useUser();
   const [sitterData, setSitterData] = useState([]);
   const [idSitter, setIdSitter] = useState("");
-  const [pages, setPage] = useState(1);
-  const [expStart, setExpStart] = useState();
-  const [expEnd, setExpEnd] = useState();
+  const [expStart, setExpStart] = useState(0);
+  const [expEnd, setExpEnd] = useState(10);
+  const [loading,setloading] = useState()
+  const [page, setPage] = useState(1);
+  const [lengthReview, setLengthReview] = useState(1);
 
-  console.log("searchhhhhhhhh", search);
+  const reviewsPerPage = 5;
+  const nextPage = () => {
+    setPage(page + 1);
+  };
+  const previousPage = () => {
+    if (page <= 1) {
+      setPage(1);
+    }
+    setPage(page - 1);
+  };
 
-  const expQuery = search.exp;
+  const expQuery = search.exp ? search.exp : '0-10';
 
-  const petQuery = search.pet;
+  const petQuery = search.pet.length? [...search.pet] : [1,2,3,4];
 
-  const ratingQuery = search.rating;
+  const ratingStart = search.rating ? Number(search.rating) : 0;
+
+  const ratingEnd = ratingStart? ratingStart + 1: 6;
+
+  const keyword = search.keyword? search.keyword : '';
+  
+
+
+ async function getTaotalPage(){
+  try {
+    let { data, error } = await supabase.from("pet_sitter_render").select("*")
+    console.log("total",data)
+    if(!data|| error){
+      console.log("nodata",error)
+    }
+    setLengthReview(Math.ceil(data.length / reviewsPerPage))
+ }catch(error){
+  console.log(error,"error total page")
+ }}
 
   const splitExpNum = (num) => {
-    if (num?.length == 3) {
+    if (num.length >= 3) {
       const split = num.split("-");
+      console.log("split1",split[0], split[1]);
       setExpStart(split[0]);
       setExpEnd(split[1]);
+
     }
-    if (num?.length == 2) {
+    if (num.length == 2) {
       const split = num.split("+");
+      console.log("split2",split[0], split[1]);
       setExpStart(split[0]);
-      setExpEnd("");
+      setExpEnd(100);
     }
+    
   };
-  console.log("expppppppp", expStart, expEnd);
+  
 
   console.log(idSitter);
+  function filterSitterData (array){
+    const arr =[]
+    const sitterArr =[]
+    array.filter((item)=>{
+      const index = arr.indexOf(item.id);
+      if(index==-1){
 
-  async function getSitterData(expStart, expEnd, petQuery, ratingQuery) {
-    console.log("fetchhhhhhhhhhhh");
-    console.log("expppppppp", expStart, expEnd);
-    console.log("petttttt", petQuery);
-    console.log("ratingggggg", ratingQuery);
-    if (!expStart && !expEnd && !petQuery && !ratingQuery) {
-      console.log("1if");
-      let { data, error } = await supabase.from("pet_sitter").select(`
-    id,
-    sitter_name,
-    district,
-    province,
-    users( full_name )
-  `);
-      if (error || !data) {
-        console.log(error);
+       arr.push(item.id)
+       sitterArr.push(item)
       }
-      setSitterData(data);
-      console.log("1eapppppppppppp", data);
-    } else if (expStart && expEnd && petQuery.length == 0 && !ratingQuery) {
-      console.log("2if");
-      let { data, error } = await supabase
-        .from("pet_sitter")
-        .select(
-          `
-    id,
-    sitter_name,
-    district,
-    province,
-    experience,
-    users( full_name )
-  `
-        )
-        .gte("experience", expStart)
-        .lte("experience", expEnd);
+    }
+    )
+    return sitterArr
+  }
+  
 
-      if (error || !data) {
-        console.log(error);
-      }
-      setSitterData(data);
-      console.log("2eapppppppppppp", data);
-    } else if (expStart && !expEnd && petQuery.length == 0 && !ratingQuery) {
-      console.log("2if");
+  async function getSitterData(expStart, expEnd, petQuery, ratingStart,ratingEnd,keyword,reviewsPerPage,page) {
+ 
+
+    try {
       let { data, error } = await supabase
-        .from("pet_sitter")
-        .select(
-          `
-        id,
-        sitter_name,
-        district,
-        province,
-        experience,
-        users( full_name )
-      `
-        )
-        .gt("experience", expStart);
-      if (error || !data) {
+  .rpc('fetch_data', {
+    exp_end:expEnd,
+    exp_start:expStart,
+    key:keyword, 
+    page:page, 
+    pet:petQuery, 
+    rate_end:ratingEnd, 
+    rate_start:ratingStart, 
+    reviews_perpage:reviewsPerPage,
+  })
+      if (!data || error) {
         console.log(error);
       }
-      setSitterData(data);
-      console.log("3eapppppppppppp", data);
-    } else if (expStart && expEnd && petQuery.length !== 0 && !ratingQuery) {
-      console.log("2if");
-      let { data, error } = await supabase
-        .from("pet_sitter")
-        .select(
-          `
-            id,
-            sitter_name,
-            district,
-            province,
-            experience,
-            users( full_name ),
-            pet_prefer( pet_type_master_id),
-            pet_type_master(name)
-          `
-        )
-        .eq("pet_type_master_id", 1);
-      if (error || !data) {
-        console.log(error);
-      }
-      setSitterData(data);
-      console.log("4eapppppppppppp", data);
+   
+      const fetchSitter = filterSitterData(data)
+      console.log("data",fetchSitter)
+      setSitterData(fetchSitter)
+      
+    } catch (error) {
+      console.log(error);
     }
   }
 
-  // console.log(sitterData)
-
+ 
   useEffect(() => {
+getTaotalPage()
     splitExpNum(expQuery);
-    getSitterData(expStart, expEnd, petQuery, ratingQuery);
-  }, [search]);
+    getSitterData(expStart, expEnd, petQuery, ratingStart,ratingEnd,keyword,reviewsPerPage,page)
+  }, [search,page]);
 
   function splitPage(numpage) {
     const pageArr = [];
@@ -159,14 +151,16 @@ const Search = () => {
                 sittername={item.sitter_name}
                 district={item.district}
                 province={item.province}
-                fullname={item.users?.full_name}
+                fullname={item.full_name}
                 id={item.id}
+                image={item.image_url? item.image_url:""}
+                rating={item.rating}
               />
             ))}
           </div>
         </section>
-        <div className="flex gap-2">
-          <a href="#">pevious</a>
+        {/* <div className="flex gap-2">
+          <button href="#">pevious</button>
           {splitPage(10).map((item, index) => {
             return (
               <a href="#" key={index}>
@@ -174,8 +168,28 @@ const Search = () => {
               </a>
             );
           })}
-          <a href="#">next</a>
-        </div>
+          <button href="#">next</button>
+        </div> */}
+        <div className="pagination flex gap-4">
+              <button
+                className="previous-button"
+                onClick={previousPage}
+                disabled={page === 1} // ปิดปุ่มก่อนหน้าเมื่ออยู่ที่หน้าแรก
+              >
+                Previous
+              </button>
+              <div className="pages">
+                {page}/{lengthReview}
+                {/* แสดงหน้าปัจจุบัน / จำนวนหน้าทั้งหมด */}
+              </div>
+              <button
+                className="next-button"
+                onClick={nextPage}
+                disabled={page === lengthReview} // ปิดปุ่มถัดไปเมื่ออยู่ที่หน้าสุดท้าย
+              >
+                Next
+              </button>
+            </div>
       </section>
       <Footer />
     </>

@@ -77,7 +77,6 @@ const Navbar = () => {
       console.log(`Supabase auth event: ${event}`);
 
       if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
-        console.log(session);
         if (session) {
           setUserId(session.user.id);
           const user = await getUser(session);
@@ -125,7 +124,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className="flex items-center justify-between bg-white p-4 sticky top-0 z-20">
+    <div className="flex items-center justify-between bg-white p-4 sticky top-0 z-20 max-w-[1440px] mx-auto">
       <Link href="/">
         <Image src={blackLogo} alt="logo" className=" w-fit md:w-52" />
       </Link>
@@ -199,7 +198,7 @@ const Navbar = () => {
                       height={8}
                       width={8}
                     />
-                    <p className="ml-2">Sitter Management</p>
+                    <p className="ml-2">Sitter Mode</p>
                   </MenuItem>
                 ) : (
                   <PopUpSitterConfirm />

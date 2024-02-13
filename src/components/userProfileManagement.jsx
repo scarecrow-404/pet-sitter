@@ -8,6 +8,7 @@ import {
   FormErrorMessage,
   FormHelperText,
   Input,
+  Avatar,
 } from "@chakra-ui/react";
 import supabase from "@/lib/utils/db";
 import { useUser } from "@/hooks/hooks";
@@ -83,7 +84,7 @@ function UserManagementProfile() {
         return;
       }
 
-      imageUrl = url.data.publicUrl
+      imageUrl = url.data.publicUrl;
     }
 
     // Update user data
@@ -117,25 +118,10 @@ function UserManagementProfile() {
       {/* profile pic */}
       <div className="flex justify-start items-start lg:max-w-[750px] pl-5 ">
         <label htmlFor="profile">
-          <FormLabel></FormLabel>
           {imageUrl && (
             <div className="photo">
-              <Image
-                className="block md:hidden lg:hidden cursor-pointer"
-                src={imageUrl}
-                width={150}
-                height={150}
-                alt="Preview"
-              />
-              <Image
-                className="hidden md:block lg:hidden cursor-pointer"
-                src={imageUrl}
-                width={200}
-                height={200}
-                alt="Preview"
-              />
-              <Image
-                className="hidden md:hidden lg:block cursor-pointer"
+              <Avatar
+                className="cursor-pointer"
                 src={imageUrl}
                 width={220}
                 height={220}

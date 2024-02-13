@@ -9,7 +9,9 @@ import {
   Button,
   MenuItem,
 } from "@chakra-ui/react";
+import profileIcon from "@/asset/images/profileIcon.svg";
 import { useDisclosure } from "@chakra-ui/react";
+import Image from "next/image";
 import React from "react";
 import { useUser } from "@/hooks/hooks";
 import { useRouter } from "next/navigation";
@@ -29,13 +31,36 @@ export default function PopUpSitterConfirm() {
         .eq("id", userId)
         .select();
       console.log(data);
-      router.push("/sitter_management");
     }
+    const { data: petSitterData, error: petSitterError } = await supabase
+      .from("pet_sitter")
+      .upsert([{ user_id: userId }], { returning: "minimal" });
+
+    if (petSitterError) {
+      console.error(petSitterError);
+    }
+
+    router.push("/sitter_management");
     onClose();
   };
+
   return (
     <>
-      <MenuItem onClick={onOpen}>Sitter Mode</MenuItem>
+      <MenuItem onClick={onOpen}>
+        <Image
+          src={profileIcon}
+          alt="pet sitter component icon 1"
+          height={8}
+          width={8}
+        />
+        <Image
+          src={profileIcon}
+          alt="petsitter component icon 2 "
+          height={8}
+          width={8}
+        />
+        Become Pet Sitter
+      </MenuItem>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />

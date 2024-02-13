@@ -30,7 +30,7 @@ const Carousel = ({ images, picNum }) => {
   };
 
   return (
-    <div className="w-full relative h-fit">
+    <div className=" relative h-fit max-w-screen overflow-hidden">
       <Slider ref={sliderRef} {...settings}>
         {images.map((image, index) => (
           <div key={index} className="relative flex">
@@ -38,20 +38,20 @@ const Carousel = ({ images, picNum }) => {
               <Image
                 src={image.url}
                 alt={`slide-${index}`}
-                className=" w-[500px] h-[300px] object-cover px-3"
+                className="w-full max-w-[500px] h-[300px] object-cover px-3"
               />
             ) : (
               <Image
                 src={image}
                 alt={`slide-${index}`}
-                className="w-[500px] h-[300px] "
+                className="w-full max-w-[500px] h-[300px] "
               />
             )}
           </div>
         ))}
       </Slider>
       <button
-        className="absolute w-[40px] h-[40px] top-1/2 transform -translate-y-1/2  bg-white text-black p-2 rounded-full left-[40px] cursor-pointer"
+        className="absolute w-[40px] h-[40px] top-1/2 transform -translate-y-1/2  bg-white text-black p-2 rounded-full left-0 ml-[40px] cursor-pointer"
         onClick={goToPrev}
       >
         <div className="flex justify-center">
@@ -59,7 +59,7 @@ const Carousel = ({ images, picNum }) => {
         </div>
       </button>
       <button
-        className="absolute w-[40px] h-[40px] top-1/2 transform -translate-y-1/2  bg-white text-black p-2 rounded-full right-[40px] cursor-pointer "
+        className="absolute w-[40px] h-[40px] top-1/2 transform -translate-y-1/2  bg-white text-black p-2 rounded-full right-0 mr-[40px] cursor-pointer "
         onClick={goToNext}
       >
         <div className="flex justify-center">

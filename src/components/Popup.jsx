@@ -4,32 +4,35 @@ import iconCalenda from "@/asset/images/CalendaIcon.svg";
 import iconClock from "@/asset/images/iconClock.svg";
 import iconX from "@/asset/images/iconX.svg";
 import ReactModal from "react-modal";
-import { Datepicker } from "flowbite-react";
 import TimePicker from "./TimePicker";
-import { FormControl, Input } from "@chakra-ui/react";
+import { useUser } from "@/hooks/hooks";
+import { useRouter } from "next/navigation";
+import { SingleDatepicker } from "chakra-dayzed-datepicker";
 
 function PopupBooking() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
-  const [date, setDate] = useState("");
+
+  const { bookingData, setBookingData } = useUser();
+  const router = useRouter();
+
 
   const openModal = () => {
-    setIsModalOpen(true);
+    setBookingData({ ...bookingData, isModalOpen: true });
   };
 
   const closeModal = () => {
-    setIsModalOpen(false);
+    setBookingData({ ...bookingData, isModalOpen: false });
   };
-  const handleDate = (date) => {
-    setDate(date);
+  const handleDate = (selectDate) => {
+    setBookingData({ ...bookingData, date: selectDate });
   };
   const handleStartTimeChange = (time) => {
-    setStartTime(time);
+    // setStartTime(time);
+    setBookingData({ ...bookingData, startTime: time });
   };
   const handleEndTimeChange = (time) => {
-    setEndTime(time);
+    // setEndTime(time);
     // Add any additional logic you need when the time changes
+    setBookingData({ ...bookingData, endTime: time });
   };
   return (
     <>
@@ -43,7 +46,7 @@ function PopupBooking() {
       </div>
       <div className="w-full">
         <ReactModal
-          isOpen={isModalOpen}
+          isOpen={bookingData.isModalOpen}
           onRequestClose={closeModal}
           className="flex top-1/2 left-1/2 items-center bg-white rounded-lg "
           overlayClassName="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center"
@@ -63,22 +66,23 @@ function PopupBooking() {
                 <div className="flex gap-[16px]">
                   <Image src={iconCalenda} alt="" />
 
-                  <FormControl>
-                    <Input
-                      placeholder="Select your date of birth"
-                      size="md"
-                      type="date"
-                      className="w-[412px] h-[40px] pl-[25px] border border-gray-400/40 p-[12px] rounded-lg  max-sm:w-[200px] max-sm:text-[14px]"
-                      onChange={{}}
-                    />
-                  </FormControl>
-
-                  {/* <Datepicker
-                    class="w-[412px] h-[40px] pl-[25px] border border-gray-400/40 p-[12px] rounded-lg  max-sm:w-[200px] max-sm:text-[14px] "
-                    onChange={(e) => {
-                      handleDate(e.target.value);
+                  <SingleDatepicker
+                    propsConfigs={{
+                      dayOfMonthBtnProps: {
+                        defaultBtnProps: { _hover: { bg: "#FF7037" } },
+                        selectedBtnProps: {
+                          bg: "#FF7037",
+                          color: "black",
+                          _hover: {
+                            bg: "#FF7037.100",
+                          },
+                        },
+                      },
                     }}
-                  /> */}
+                    name="date-input"
+                    date={bookingData.date}
+                    onDateChange={handleDate}
+                  />
                 </div>
                 <label className="flex gap-[16px] ">
                   <Image src={iconClock} alt="" />
@@ -90,21 +94,17 @@ function PopupBooking() {
 
                   <p className="flex items-center">-</p>
                   <TimePicker
-                    onSelectTime={handleEndTimeChange}
                     className="placeholder:italic placeholder:text-slate-400 w-[186px] h-[45px] border border-gray-400/40 p-[12px] rounded-lg max-sm:w-[80px] max-sm:text-[14px]"
+                    onSelectTime={handleEndTimeChange}
                   />
-                  {/* <input
-                    className=" placeholder:italic placeholder:text-slate-400 w-[186px] h-[40px] border border-gray-400/40 p-[12px] rounded-lg max-sm:w-[80px] max-sm:text-[14px]"
-                    placeholder="--:-- --"
-                  ></input>
-                  <p className="flex items-center">-</p>
-                  <input
-                    className=" placeholder:italic placeholder:text-slate-400 w-[186px] h-[40px] border border-gray-400/40 p-[12px] rounded-lg max-sm:w-[80px] max-sm:text-[14px]"
-                    placeholder="--:-- --"
-                  ></input> */}
                 </label>
                 <div className="pt-[20px]">
-                  <button className="bg-secondOrange w-full rounded-3xl p-[10px] hover:bg-thirdOrange focus:bg-firstOrange-400  active:bg-fifthOrange text-white ">
+                  <button
+                    className="bg-secondOrange w-full rounded-3xl p-[10px] hover:bg-thirdOrange focus:bg-firstOrange-400  active:bg-fifthOrange text-white "
+                    onClick={() => {
+                      router.push("/search/1/booking");
+                    }}
+                  >
                     Continue
                   </button>
                 </div>

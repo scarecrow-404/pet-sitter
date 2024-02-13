@@ -66,7 +66,9 @@ export function Sidebar({ active }) {
   return (
     <div className="w-60 h-[91vh] bg-sixthGray fixed">
       <div className="logo mx-6 my-6">
-        <Image src={logo} alt="logoInBlack" />
+        <Link href="/">
+          <Image src={logo} alt="logoInBlack" />
+        </Link>
       </div>
       <div className="flex flex-col justify-between h-full">
         <div>
@@ -145,12 +147,12 @@ export function TopBar() {
     signOut();
     router.push("/");
   };
-  console.log(user);
+
   return user ? (
     <div className="headBar flex items-center gap-5 p-5 bg-white justify-between">
       <div className="flex flex-col items-center md:flex-row md:gap-5">
         <Image src={profile} width={40} height={40} alt="profile" />
-        <p>{user?.user_metadata?.full_name}</p>
+        <p>{user.full_name}</p>
       </div>
       <div className="lg:hidden">
         <Menu>
