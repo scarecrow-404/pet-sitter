@@ -4,7 +4,6 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import star from "@/asset/images/Star2.svg";
 import PopupBooking from "./Popup";
-// import { supabase } from "@supabase/auth-ui-shared";
 import { Avatar } from "@chakra-ui/react";
 import { useParams } from "next/navigation";
 import supabase from "@/lib/utils/db";
@@ -12,23 +11,47 @@ import supabase from "@/lib/utils/db";
 function SitterDetail(props) {
   const [rating, setRating] = useState("");
   const [review, setReview] = useState([]);
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const [reviewsPerPage] = useState(5);
+  const [page, setPage] = useState(1);
+  const [lengthReview, setLengthReview] = useState(1);
   const params = useParams();
   const sitterRating = ["All Reviews", 5, 4, 3, 2, 1];
+
+  const nextPage = () => {
+    setPage(page + 1);
+  };
+  const previousPage = () => {
+    if (page <= 1) {
+      setPage(1);
+    }
+    setPage(page - 1);
+  };
+  const reviewsPerPage = 5;
+  // const totalPages = Math.ceil(lengthReview / reviewsPerPage);
+
+  async function getLengthReview() {
+    let { data, error } = await supabase
+      .from("review_render")
+      .select("*")
+      .eq("pet_sitter_id", params.sitterId)
+      .order("created_at", params.created_at);
+    if (error || !data) {
+      console.log(error);
+    }
+    setLengthReview(Math.ceil(data.length / reviewsPerPage));
+  }
+
   async function getReviewer() {
     let { data, error } = await supabase
       .from("review_render")
       .select("*")
-      .eq("pet_sitter_id", params.sitterId);
-
+      .eq("pet_sitter_id", params.sitterId)
+      .order("created_at", params.created_at)
+      .range((page - 1) * reviewsPerPage, page * reviewsPerPage - 1);
     if (error || !data) {
       console.log(error);
     }
     console.log(data);
     setReview(data);
-    // const filterData = filterSitterData(data);
-    // setDetailUser(filterData);
   }
 
   //เอาไว้ตัดทศนิยม
@@ -36,12 +59,12 @@ function SitterDetail(props) {
     let PlacedFloat = parseFloat(rating).toFixed(1);
     setRating(PlacedFloat);
   }
-  console.log("lol", review);
 
   useEffect(() => {
+    getLengthReview();
     getReviewer();
     ratingPrepare(props.rating);
-  }, []);
+  }, [page]);
 
   //เอาไว้แสดงรูปภาพดาวrating
   function renderStar(starNumber) {
@@ -68,20 +91,20 @@ function SitterDetail(props) {
         ({ data, error } = await supabase
           .from("review_render")
           .select("*")
-          .eq("pet_sitter_id", params.sitterId));
+          .eq("pet_sitter_id", params.sitterId)
+          .order("created_at", params.created_at)
+          .range((page - 1) * reviewsPerPage, page * reviewsPerPage - 1));
       } else {
         // Fetch reviews based on selected rating
+
         ({ data, error } = await supabase
           .from("review_render")
           .select("*")
           .eq("pet_sitter_id", params.sitterId)
-          .eq("rating", selectedRating));
+          .eq("rating", selectedRating)
+          .order("created_at", params.created_at)
+          .range((page - 1) * reviewsPerPage, page * reviewsPerPage - 1));
       }
-
-      if (error) {
-        throw error;
-      }
-
       if (!data || data.length === 0) {
         setReview([]);
       } else {
@@ -92,14 +115,7 @@ function SitterDetail(props) {
     }
   }
 
-  // const indexOfLastReview = currentPage * reviewsPerPage;
-  // const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
-  // const currentReviews = review.slice(indexOfFirstReview, indexOfLastReview);
-
-  // function paginate(pageNumber) {
-  //   setCurrentPage(pageNumber);
-  // }
-
+  console.log("review", review);
   return (
     <div className="mainDivDetailSitter lg:flex-row-reverse lg:flex h-full">
       <div className="p-[20px] gap-2 w-full lg:w-[35%]">
@@ -223,76 +239,88 @@ function SitterDetail(props) {
                 </div>
               </div>
             </div>
-            {review.map((item, index) => {
-              const months = [
-                "January",
-                "February",
-                "March",
-                "April",
-                "May",
-                "June",
-                "July",
-                "August",
-                "September",
-                "October",
-                "November",
-                "December",
-              ];
-              const createdAtDate = new Date(item.created_at);
-              const monthName = months[createdAtDate.getMonth()];
-              const day = createdAtDate.getDate();
-              const year = createdAtDate.getFullYear();
-              const formattedDate = `${monthName} ${day}, ${year}`;
+            <div className="reviewer">
+              {review.map((item, index) => {
+                const months = [
+                  "January",
+                  "February",
+                  "March",
+                  "April",
+                  "May",
+                  "June",
+                  "July",
+                  "August",
+                  "September",
+                  "October",
+                  "November",
+                  "December",
+                ];
+                const createdAtDate = new Date(item.created_at);
+                const monthName = months[createdAtDate.getMonth()];
+                const day = createdAtDate.getDate();
+                const year = createdAtDate.getFullYear();
+                const formattedDate = `${monthName} ${day}, ${year}`;
 
-              return (
-                <div key={index} className="flex flex-col p-[24px]">
-                  <div className="flex gap-3 ">
-                    <Avatar
-                      src={item.image_url}
-                      className="w-[60px]  rounded-[50%]"
-                      alt=""
-                    />
-                    <div>
-                      <p>
-                        {/* name of reviewer */}
-                        {item.full_name}
+                return (
+                  <div key={index} className="flex flex-col p-[24px]">
+                    <div className="flex gap-3 ">
+                      <Avatar
+                        src={item.image_url}
+                        className="w-[60px]  rounded-[50%]"
+                        alt=""
+                      />
+                      <div>
+                        <p>
+                          {/* name of reviewer */}
+                          {item.full_name}
+                        </p>
+                        <p>
+                          {/* date to created_at */}
+                          {formattedDate}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="py-[20px] ">
+                      <p className="flex">
+                        {renderStar(item.rating)}
+                        {/* star of review */}
                       </p>
                       <p>
-                        {/* date to created_at */}
-                        {formattedDate}
+                        {/* review comment */}
+                        {item.description}
                       </p>
                     </div>
+                    <hr></hr>
                   </div>
-                  <div className="py-[20px] ">
-                    <p className="flex">
-                      {renderStar(item.rating)}
-                      {/* star of review */}
-                    </p>
-                    <p>
-                      {/* review comment */}
-                      {item.description}
-                    </p>
-                  </div>
-                  <hr></hr>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
+
+            <div className="pagination flex gap-4">
+              <button
+                className="previous-button"
+                onClick={previousPage}
+                disabled={page === 1} // ปิดปุ่มก่อนหน้าเมื่ออยู่ที่หน้าแรก
+              >
+                Previous
+              </button>
+              <div className="pages">
+                {page}/{lengthReview}
+                {/* แสดงหน้าปัจจุบัน / จำนวนหน้าทั้งหมด */}
+              </div>
+              <button
+                className="next-button"
+                onClick={nextPage}
+                disabled={page === lengthReview} // ปิดปุ่มถัดไปเมื่ออยู่ที่หน้าสุดท้าย
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       </div>
-      {/* <div className="pagination ">
-        <ul className="flex justify-center gap-2">
-          {Array.from(
-            { length: Math.ceil(review.length / reviewsPerPage) },
-            (_, i) => i + 1
-          ).map((number) => (
-            <li key={number}>
-              <button onClick={() => paginate(number)}>{number}1/2</button>
-            </li>
-          ))}
-        </ul>
-      </div> */}
     </div>
   );
 }
+
 export default SitterDetail;

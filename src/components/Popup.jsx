@@ -7,7 +7,6 @@ import ReactModal from "react-modal";
 import TimePicker from "./TimePicker";
 import { useUser } from "@/hooks/hooks";
 import { useRouter } from "next/navigation";
-
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
 
 function PopupBooking() {
