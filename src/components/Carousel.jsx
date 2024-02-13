@@ -38,13 +38,13 @@ const Carousel = ({ images, picNum }) => {
               <Image
                 src={image.url}
                 alt={`slide-${index}`}
-                className=" w-[500px] h-[300px] object-cover px-3"
+                className="w-full md:w-[500px] h-[300px] object-cover px-3"
               />
             ) : (
               <Image
                 src={image}
                 alt={`slide-${index}`}
-                className="w-[500px] h-[300px] "
+                className="w-full md:w-[500px] h-[300px]"
               />
             )}
           </div>
