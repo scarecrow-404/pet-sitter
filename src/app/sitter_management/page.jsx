@@ -98,7 +98,7 @@ const SitterManagement = () => {
         console.error("userId is null");
         return;
       }
-      const { data: user, error } = await supabase
+      const { data, error } = await supabase
         .from("users")
         .select("*")
         .eq("id", userId);
@@ -106,10 +106,10 @@ const SitterManagement = () => {
       if (error) {
         console.error("Error fetching user data:", error);
       } else {
-        setFullName(user[0].full_name);
-        setEmail(user[0].email);
-        setPhoneNumber(user[0].phone_number);
-        setImageUrl(user[0].image_url || previewImg);
+        setFullName(data[0].full_name);
+        setEmail(data[0].email);
+        setPhoneNumber(data[0].phone_number);
+        setImageUrl(data[0].image_url || previewImg);
       }
     };
     const fetchPetSitterData = async () => {
@@ -117,7 +117,7 @@ const SitterManagement = () => {
         console.error("userId is null");
         return;
       }
-      const { data: user, error } = await supabase
+      const { data, error } = await supabase
         .from("pet_sitter")
         .select("*")
         .eq("user_id", userId);
@@ -125,21 +125,32 @@ const SitterManagement = () => {
       if (error) {
         console.error("Error fetching user data:", error);
       } else {
-        setIntroduction(user[0].introduction);
-        setAddressDetail(user[0].address_detail);
-        setDistrict(user[0].district);
-        setBankName(user[0].bank_name);
-        setAccountNumber(user[0].bank_acc_number);
-        setProvince(user[0].province);
-        setPostCode(user[0].post_code);
-        setTradeName(user[0].sitter_name);
-        setServices(user[0].service);
-        setMyPlace(user[0].place);
-        setExperience(user[0].experience);
-        setPetType(user[0].pet_type);
-        setAccountName(user[0].account_name);
-        setAccountType(user[0].account_type);
-        setEtcs(user[0].etcs);
+        const existingOption = optionPetType.find(
+          (option) => option.value === data[0].pet_type
+        );
+        if (data[0].experience !== null) {
+          const existingExperienceOption = options.find(
+            (option) => option.value === data[0].experience
+          );
+          setExperience(existingExperienceOption);
+        } else {
+          setExperience(null);
+        }
+        setIntroduction(data[0].introduction);
+        setAddressDetail(data[0].address_detail);
+        setDistrict(data[0].district);
+        setBankName(data[0].bank_name);
+        setAccountNumber(data[0].bank_acc_number);
+        setProvince(data[0].province);
+        setPostCode(data[0].post_code);
+        setTradeName(data[0].sitter_name);
+        setServices(data[0].service);
+        setMyPlace(data[0].place);
+        setExperience(existingExperienceOption);
+        setPetType(existingOption);
+        setAccountName(data[0].account_name);
+        setAccountType(data[0].account_type);
+        setEtcs(data[0].etcs);
       }
     };
     fetchUserData();
@@ -204,22 +215,22 @@ const SitterManagement = () => {
     }
   };
   const updatesPetSitter = async () => {
-    const { data: existingPetSitter, error: fetchError } = await supabase
-      .from("pet_sitter")
-      .select("bank_acc_number")
-      .eq("bank_acc_number", accountNumber);
+    // console.log("inside function");
+    // const { data: existingPetSitter, error: fetchError } = await supabase
+    //   .from("pet_sitter")
+    //   .select("bank_acc_number")
+    //   .eq("bank_acc_number", accountNumber);
+    // console.log("inside function after await");
+    // if (fetchError) {
+    //   console.log("Error fetching pet sitter:", fetchError);
+    //   return;
+    // }
 
-    if (fetchError) {
-      console.error("Error fetching pet sitter:", fetchError);
-      return;
-    }
-
-    if (existingPetSitter.length > 0) {
-      console.error(
-        "A pet sitter with this bank account number already exists."
-      );
-      return;
-    }
+    // if (existingPetSitter.length > 0) {
+    //   console.log("A pet sitter with this bank account number already exists.");
+    //   return;
+    // }
+    console.log("inside function");
     const updatesPetSitter = {
       introduction: introduction,
       address_detail: addressDetail,
@@ -242,8 +253,9 @@ const SitterManagement = () => {
 
     const { error } = await supabase
       .from("pet_sitter")
-      .upsert(updatesPetSitter, { conflictFields: ["user_id"] })
+      .update(updatesPetSitter)
       .eq("user_id", userId);
+    console.log("after await");
     if (error) {
       console.error("Error updating user:", error);
     } else {
@@ -253,8 +265,11 @@ const SitterManagement = () => {
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
+    console.log("summit push");
     try {
+      console.log("before await");
       await updatesPetSitter();
+      console.log("after await");
       alert("Update successfully");
     } catch (error) {
       alert("Update failed" + error.message);
@@ -324,9 +339,9 @@ const SitterManagement = () => {
   const handleExperience = (selectedOption) => {
     setExperience(selectedOption.value);
   };
-  const selectedExperience = options.find(
-    (option) => option.value === experience
-  );
+  const selectedExperience = experience
+    ? options.find((option) => option.value === experience)
+    : null;
   return (
     <div className="flex bg-sixthGray justify-center">
       <div className="hidden bg-sixthGray lg:block relative">
@@ -405,11 +420,15 @@ const SitterManagement = () => {
                 <FormLabel>Experience</FormLabel>
                 <Select
                   name="experience"
-                  options={options}
                   placeholder="Select Experience"
                   closeMenuOnSelect={true}
-                  value={selectedExperience}
+                  value={
+                    experience
+                      ? options.find((option) => option.value === experience)
+                      : null
+                  }
                   onChange={handleExperience}
+                  options={options}
                   id="experience"
                 />
               </FormControl>

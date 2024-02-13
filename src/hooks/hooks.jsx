@@ -2,6 +2,7 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { getUser } from "@supabase/auth-helpers-nextjs";
 import supabase from "@/lib/utils/db";
+import { set } from "date-fns";
 // Create a context
 const UserContext = createContext();
 
@@ -9,10 +10,7 @@ const UserContext = createContext();
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
   const [userId, setUserId] = useState(null);
-
-  const [searchKey,setSearchKey]=useState("")
-  const [search,setSearch]=useState({"exp":'0-10',"rating":0,"pet": [1,2,3,4],"keyword":''})
-
+  const [search, setSearch] = useState({});
 
   const [bookingData, setBookingData] = useState({
     isModalOpen: false,
@@ -21,18 +19,10 @@ export function UserProvider({ children }) {
     date: new Date(),
   });
 
-
-  useEffect(() => {
-    const session = supabase.auth.getSession();
-    setUser(session?.user);
-  }, []);
-
   return (
-
     <UserContext.Provider
-      value={{ user, setUser, userId, setUserId, bookingData, setBookingData,search,setSearch }}
+      value={{ user, setUser, userId, setUserId, bookingData, setBookingData }}
     >
-
       {children}
     </UserContext.Provider>
   );
@@ -46,4 +36,14 @@ export function useUser() {
     throw new Error("useUser must be used within a UserProvider");
   }
   return context;
+}
+
+async function getUserFromQuery(session) {
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", "fed4e73e-0600-4fa7-acff-25d9bf80b66e");
+  console.log(error);
+  console.log(data);
+  return data[0];
 }

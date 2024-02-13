@@ -77,7 +77,6 @@ const Navbar = () => {
       console.log(`Supabase auth event: ${event}`);
 
       if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
-        console.log(session);
         if (session) {
           setUserId(session.user.id);
           const user = await getUser(session);
@@ -199,7 +198,7 @@ const Navbar = () => {
                       height={8}
                       width={8}
                     />
-                    <p className="ml-2">Sitter Management</p>
+                    <p className="ml-2">Sitter Mode</p>
                   </MenuItem>
                 ) : (
                   <PopUpSitterConfirm />
