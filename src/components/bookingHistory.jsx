@@ -1,7 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaStar } from "react-icons/fa";
 import Image from "next/image";
+import moment from "moment";
 import {
   Modal,
   ModalOverlay,
@@ -11,11 +12,13 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
+  Avatar,
 } from "@chakra-ui/react";
 import previewPet from "@/asset/images/catforsitterlist.jpg";
 import callIcon from "@/asset/images/callIcon.svg";
 import verticalLine from "@/asset/images/VerticalLine.svg";
-
+import supabase from "@/lib/utils/db";
+import { useUser } from "@/hooks/hooks";
 function BookingHistory() {
   const [isOpenReview, setIsOpenReview] = useState(null);
   const [isOpenYourReview, setIsOpenYourReview] = useState(null);
@@ -23,6 +26,8 @@ function BookingHistory() {
   const [rating, setRating] = useState(null);
   const [hoverStar, setHoverStar] = useState(null);
   const [writeRating, setWriteRating] = useState("");
+  const [data, setData] = useState([]);
+  const { userId } = useUser();
 
   const openReview = (item) => {
     setRating(null); // Reset rating when opening the modal
@@ -41,85 +46,32 @@ function BookingHistory() {
     event.preventDefault();
     alert(`Rating: ${rating}, Review: ${writeRating}`);
   };
-
-  const data = [
-    {
-      id: 1,
-      Status: "Waiting for confirm",
-      Date: "Tue, 16 Aug 2023",
-      SitterName: "Happy House",
-      by: "Jane Maison",
-      DateAndTime: "25 Aug,2023 | 7 AM - 10 AM",
-      Duration: "3 hours",
-      Pet: "Bubba, Daisy",
-      discription: "Waiting Pet Sitter for confirm booking",
-      Image: previewPet,
-      transtionid: "122312",
-      total: "800 THB",
-      review: "good",
-    },
-    {
-      id: 2,
-      Status: "In service",
-      Date: "Tue, 16 Aug 2023",
-      SitterName: "Happy House",
-      by: "Jane Maison",
-      DateAndTime: "25 Aug,2023 | 7 AM - 10 AM",
-      Duration: "3 hours",
-      Pet: "Bubba, Daisy",
-      discription: "Your pet is already in Pet Sitter care!",
-      Image: previewPet,
-      transtionid: "122312",
-      total: "550 THB",
-      review: "aaaaaaaaaa",
-    },
-    {
-      id: 3,
-      Status: "Success",
-      Date: "Tue, 16 Aug 2023",
-      SitterName: "Happy House",
-      by: "Jane Maison",
-      DateAndTime: "25 Aug,2023 | 7 AM - 10 AM",
-      Duration: "3 hours",
-      Pet: "Bubba, Daisy",
-      discription: "Success date: Tue, 26 Apr 2023 | 11:03 AM",
-      Image: previewPet,
-      transtionid: "122312",
-      total: "930 THB",
-      review: "goodaaa",
-    },
-    {
-      id: 4,
-      Status: "Success",
-      Date: "Tue, 16 Aug 2023",
-      SitterName: "Happy House",
-      by: "Jane Maison",
-      DateAndTime: "25 Aug,2023 | 7 AM - 10 AM",
-      Duration: "3 hours",
-      Pet: "Bubba, Daisy",
-      discription: "Success date: Tue, 26 Apr 2023 | 11:03 AM",
-      Image: previewPet,
-      transtionid: "122312",
-      total: "9450 THB",
-      review: "",
-    },
-    {
-      id: 5,
-      Status: "Canceled",
-      Date: "Tue, 16 Aug 2023",
-      SitterName: "Happy House",
-      by: "Jane Maison",
-      DateAndTime: "25 Aug,2023 | 7 AM - 10 AM",
-      Duration: "3 hours",
-      Pet: "Bubba, Daisy",
-      discription: "Waiting Pet Sitter for confirm booking",
-      Image: previewPet,
-      transtionid: "122312",
-      total: "900 THB",
-      review: "",
-    },
-  ];
-
+  useEffect(() => {
+    if (userId) {
+      fetchData(userId);
+    }
+  }, [userId]);
+  async function fetchData() {
+    try {
+      if (!userId) {
+        console.error("User ID is null");
+        return;
+      }
+      const { data, error } = await supabase
+        .from("booking")
+        .select("*")
+        .eq("user_id", userId);
+      if (error) {
+        throw error;
+      }
+      console.log("Booking data1:", data);
+      setData(data);
+      return data;
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+    }
+  }
+  console.log("Booking data2:", data);
   return (
     <div className="flex flex-col justify-center items-center py-6 gap-5 max-w-[1440px] mx-auto lg:gap-10 lg:py-14">
       <div className="w-[90%] flex flex-row justify-between md:w-[85%] lg:w-[83%]">
@@ -136,7 +88,11 @@ function BookingHistory() {
               <div className="one flex flex-col gap-2 pb-2 border-b md:flex-row md:justify-between">
                 <div className="flex justify-between md:justify-start md:gap-1">
                   <div className="photo w-[80px] h-[80px] md:w-[65px] md:h-[65px]">
-                    <Image
+                    <Avatar
+                      // width={20}
+                      // height={20}
+                      width="auto"
+                      height="auto"
                       src={item.Image}
                       alt="preview-pet"
                       className="rounded-full w-[80px] h-[80px] md:w-[65px] md:h-[65px]"
@@ -153,38 +109,41 @@ function BookingHistory() {
                 </div>
                 <div className="flex flex-col gap-1 md:text-right md:gap-3 md:justify-center">
                   <div className="text-fourthGray text-[13px] font-medium md:text-[15px] lg:text-[17px]">
-                    Transaction date: {item.Date}
+                    Transaction date: {item.booking_date}
                   </div>
                   <div
                     className={`${
-                      item.Status === "Waiting for confirm"
+                      item.process_status === "Waiting for confirm"
                         ? "text-pink-500"
-                        : item.Status === "Waiting for service"
+                        : item.process_status === "Waiting for service"
                         ? "text-orange-300"
-                        : item.Status === "In service"
+                        : item.process_status === "In service"
                         ? "text-blue-500"
-                        : item.Status === "Success"
+                        : item.process_status === "Success"
                         ? "text-green-400"
-                        : item.Status === "Canceled"
+                        : item.process_status === "Canceled"
                         ? "text-red-400"
                         : null
                     } text-sm font-medium md:text-base lg:text-lg`}
                   >
-                    • {item.Status}
+                    • {item.process_status}
                   </div>
                 </div>
               </div>
+
               <div className="two flex flex-col gap-2 justify-center items-center md:flex-row">
                 <div className="w-full flex flex-col gap-1">
                   <div className="text-thirdGray text-[13px] font-medium lg:text-[15px]">
                     Date & Time:
                   </div>
                   <div className="text-sm font-medium lg:text-base">
-                    {item.DateAndTime}
+                    {item.booking_date}
                   </div>
                 </div>
                 <hr className="w-[80%] md:hidden" />
                 <Image
+                  width="auto"
+                  height="auto"
                   src={verticalLine}
                   alt="vertical-line"
                   className="hidden md:block"
@@ -193,12 +152,15 @@ function BookingHistory() {
                   <div className="text-thirdGray text-[13px] font-medium lg:text-[15px]">
                     Duration:
                   </div>
+
                   <div className="text-sm font-medium lg:text-base">
-                    {item.Duration}
+                    <Duration item={item} />
                   </div>
                 </div>
                 <hr className="w-[80%] md:hidden" />
                 <Image
+                  width="auto"
+                  height="auto"
                   src={verticalLine}
                   alt="vertical-line"
                   className="hidden md:block"
@@ -208,36 +170,38 @@ function BookingHistory() {
                     Pet:
                   </div>
                   <div className="text-sm font-medium lg:text-base">
-                    {item.Pet}
+                    {item.pet_sitter_id}
                   </div>
                 </div>
               </div>
             </div>
 
-            {item.Status === "Waiting for confirm" ? (
+            {item.process_status === "Waiting for confirm" ? (
               <div className="three flex justify-center bg-sixthGray rounded-lg py-3 md:py-4 md:justify-start md:px-6 lg:py-6">
                 <div className="text-thirdGray text-[13px] font-medium md:text-[15px] lg:text-[17px]">
-                  {item.discription}
+                  Waiting Pet Sitter for confirm booking
                 </div>
               </div>
-            ) : item.Status === "In service" ? (
+            ) : item.process_status === "In service" ? (
               <div className="three flex justify-evenly items-center bg-sixthGray rounded-lg py-3 gap-3 md:py-4 md:justify-between md:px-6 lg:py-6">
                 <div className="text-thirdGray text-[13px] font-medium md:text-[15px] lg:text-[17px]">
-                  {item.discription}
+                  Your pet is already in Pet Sitter care!
                 </div>
                 <button className="bg-sixthOrange p-2 rounded-full md:p-3">
                   <Image
+                    width="auto"
+                    height="auto"
                     src={callIcon}
                     alt="call-icon"
                     className="w-[10px] md:w-[15px]"
                   />
                 </button>
               </div>
-            ) : item.Status === "Success" && item.review === "" ? (
+            ) : item.process_status === "Success" && item.review === "" ? (
               <div className="three flex justify-evenly items-center gap-2 bg-secondGreen rounded-lg py-3 md:py-4 md:justify-between md:px-6 lg:py-6">
                 <div className="text-firstGreen text-[13px] font-medium flex flex-col md:text-[15px] lg:text-[17px] lg:gap-2">
                   <div>Success date:</div>
-                  <div>{item.Date}</div>
+                  <div>{item.booking_date}</div>
                 </div>
                 <button
                   onClick={() => openYourReview(item)}
@@ -246,7 +210,7 @@ function BookingHistory() {
                   Your Review
                 </button>
               </div>
-            ) : item.Status === "Success" && item.review !== "" ? (
+            ) : item.process_status === "Success" && item.review !== "" ? (
               <div className="three flex justify-evenly items-center gap-2 bg-secondGreen rounded-lg py-3 md:py-4 md:justify-between md:px-6 lg:py-6">
                 <div className="text-firstGreen text-[13px] font-medium md:text-[15px] lg:text-[17px] lg:gap-2">
                   <div>Success date:</div>
@@ -259,7 +223,13 @@ function BookingHistory() {
                   Review
                 </button>
               </div>
-            ) : item.Status === "Canceled" ? (
+            ) : item.process_status === "Canceled" ? (
+              <div className="three flex justify-center bg-sixthGray rounded-lg py-3 md:py-4 md:justify-start md:px-6 lg:py-6">
+                <div className="text-thirdGray text-[13px] font-medium md:text-[15px] lg:text-[17px]">
+                  {item.discription}
+                </div>
+              </div>
+            ) : item.process_status === "Waiting for service" ? (
               <div className="three flex justify-center bg-sixthGray rounded-lg py-3 md:py-4 md:justify-start md:px-6 lg:py-6">
                 <div className="text-thirdGray text-[13px] font-medium md:text-[15px] lg:text-[17px]">
                   {item.discription}
@@ -292,7 +262,7 @@ function BookingHistory() {
                       {[...Array(5)].map((star, index) => {
                         const currentRating = index + 1;
                         return (
-                          <label>
+                          <label key={index}>
                             <input
                               type="radio"
                               name="rating"
@@ -507,3 +477,20 @@ function BookingHistory() {
 }
 
 export default BookingHistory;
+function Duration({ item }) {
+  const startTime = item.start_time
+    ? moment(item.start_time, "HH:mm:ss")
+    : null;
+  const endTime = item.end_time ? moment(item.end_time, "HH:mm:ss") : null;
+
+  let duration = null;
+  if (startTime && endTime) {
+    duration = Math.floor(moment.duration(endTime.diff(startTime)).asHours());
+  } else {
+    console.error("Invalid start_time or end_time");
+  }
+
+  return (
+    <div className="text-sm font-medium lg:text-base">{duration} hours</div>
+  );
+}
