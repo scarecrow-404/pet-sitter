@@ -3,11 +3,13 @@ import React from "react";
 import { useState, useEffect } from "react";
 import CardSitter from "@/app/search/cardsitterlist.jsx";
 import SearchBar from "@/components/common/SearchBar";
-//import supabase  from "@/lib/utils/db";
+import supabase  from "@/lib/utils/db";
 import { useUser } from "@/hooks/hooks";
-import {pool} from "@/lib/utils/pool"
+
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
+import { set } from "date-fns";
+
 
 const Search = () => {
   const { search, setSearch } = useUser();
@@ -15,21 +17,27 @@ const Search = () => {
   const [idSitter, setIdSitter] = useState("");
   const [pages, setPage] = useState(1);
   const [expStart, setExpStart] = useState(0);
-  const [expEnd, setExpEnd] = useState(2);
+  const [expEnd, setExpEnd] = useState(10);
   const [loading,setloading] = useState()
+
 
 
  
 
-  const expQuery = search.exp ? search.exp : '0-2';
+  const expQuery = search.exp ? search.exp : '0-10';
 
-  const petQuery = search.pet ? [...search.pet] : ['1','2','3','4'];
+  const petQuery = search.pet.length? [...search.pet] : [1,2,3,4];
 
-  const ratingQuery = search.rating ? search.rating : "5";
+  const ratingStart = search.rating ? Number(search.rating) : 0;
+
+  const ratingEnd = ratingStart? ratingStart + 1: 6;
+
+  const keyword = search.keyword? search.keyword : '';
+  
 
   const splitExpNum = (num) => {
     console.log("nummmmmmmmm",num)
-    if (num.length == 3) {
+    if (num.length >= 3) {
       const split = num.split("-");
       console.log("split1",split[0], split[1]);
       setExpStart(split[0]);
@@ -40,89 +48,59 @@ const Search = () => {
       const split = num.split("+");
       console.log("split2",split[0], split[1]);
       setExpStart(split[0]);
-      setExpEnd("");
+      setExpEnd(100);
     }
     
   };
   
 
   console.log(idSitter);
+  function filterSitterData (array){
+    const arr =[]
+    const sitterArr =[]
+    array.filter((item)=>{
+      const index = arr.indexOf(item.id);
+      if(index==-1){
 
+       arr.push(item.id)
+       sitterArr.push(item)
+      }
+    }
+    )
+    return sitterArr
+  }
   
 
-  async function getSitterData(expStart, expEnd, petQuery, ratingQuery) {
-    console.log("fetchhhhhhhhhhhh");
-    console.log("petttttt", petQuery);
-    console.log("expppppppp inside", expStart, expEnd);
+  async function getSitterData(expStart, expEnd, petQuery, ratingStart,ratingEnd,keyword) {
+    console.log("fetchhhhhhhhhhhh", petQuery,expStart, expEnd,ratingStart,ratingEnd,keyword);
 
-
-
-let query = `select pet_sitter.id,
-      pet_sitter.sitter_name,
-      pet_sitter.district,
-      pet_sitter.province,
-      pet_sitter.experience,
-      users.full_name from pet_sitter`
-
-
-
-    // let query = await sql
-    //     SELECT 
-    //       pet_sitter.id,
-    //       pet_sitter.sitter_name,
-    //       pet_sitter.district,
-    //       pet_sitter.province,
-    //       pet_sitter.experience,
-    //       users.full_name
-    //     FROM 
-    //       pet_sitter
-    //   `
-    // });
-
-  //   let query = await supabase
-  // .from('pet_sitter')
-  // .select(`
-  //   id,
-  //   sitter_name,
-  //   district,
-  //   province,
-  //   experience,
-  //   users(full_name),
-  //   pet_prefer:pet_prefer(pet_type_master_id)
-  // `).eq('pet_prefer.pet_type_master_id',4)
-
-  //.eq('experience',1)
-  //.eq('pet_prefer.pet_type_master_id',1)
-
-
-    // if (expStart && expEnd) {
-    //   query = query.gte("experience", expStart).lte("experience", expEnd);
-    // }
-    // if (expStart && !expEnd) {
-    //   query = query.gte("experience", expStart);
-    // }
-    // if(petQuery) {query = query.in("users.full_name",['ying'])};
     try {
-      const data = await pool.query(query)
-      if (!query) {
-        console.log("no data");
+      let { data, error } = await supabase
+      .rpc('fetch_data', {
+        exp_end:expEnd,
+        exp_start:expStart,
+        key:keyword,
+        pet:petQuery ,
+        rate_end:ratingEnd,
+        rate_start:ratingStart,
+      })
+      if (!data || error) {
+        console.log("nodata",error);
       }
-      setSitterData(query.data);
-      console.log("1eapppppppppppp", query.data);
+      console.log("1eapppppppppppp",data)
+      const fetchSitter = filterSitterData(data)
+      setSitterData(fetchSitter)
+      
     } catch (error) {
       console.log(error);
     }
   }
 
-  console.log("expppppppp outside", expStart, expEnd);
-  
-  console.log("ratingggggg", ratingQuery);
-  
+ 
   useEffect(() => {
-    console.log("useeffect")
-    splitExpNum(expQuery);
 
-    getSitterData(expStart, expEnd, petQuery, ratingQuery)
+    splitExpNum(expQuery);
+    getSitterData(expStart, expEnd, petQuery, ratingStart,ratingEnd,keyword)
   }, [search]);
 
   function splitPage(numpage) {
@@ -150,8 +128,9 @@ let query = `select pet_sitter.id,
                 sittername={item.sitter_name}
                 district={item.district}
                 province={item.province}
-                fullname={item.users?.full_name}
+                fullname={item.full_name}
                 id={item.id}
+                image={item.image_url? item.image_url:""}
               />
             ))}
           </div>

@@ -9,7 +9,8 @@ const UserContext = createContext();
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
   const [userId, setUserId] = useState(null);
-  const [search,setSearch]=useState({})
+  const [searchKey,setSearchKey]=useState("")
+  const [search,setSearch]=useState({"exp":'0-10',"rating":0,"pet": [1,2,3,4],"keyword":''})
   useEffect(() => {
     const session = supabase.auth.getSession().session;
     setUser(session?.user);

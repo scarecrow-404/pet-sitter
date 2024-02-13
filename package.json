@@ -26,13 +26,12 @@
     "flowbite": "^2.2.1",
     "flowbite-react": "^0.7.2",
     "framer-motion": "^11.0.3",
+    "fs": "^0.0.1-security",
     "jquery": "^3.7.1",
     "js-cookie": "^3.0.5",
- 
     "next": "14.1.0",
     "next-images": "^1.8.5",
     "next-transpile-modules": "^10.0.1",
-
     "pg": "^8.11.3",
     "postgres": "^3.4.3",
     "react": "^18",
@@ -43,7 +42,6 @@
     "react-slick": "^0.30.1",
     "slick-carousel": "^1.8.1",
     "thai-address-autocomplete-react": "^1.0.1",
-
     "tw-elements": "^1.1.0"
   },
   "devDependencies": {
