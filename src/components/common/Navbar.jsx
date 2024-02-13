@@ -199,7 +199,7 @@ const Navbar = () => {
                       height={8}
                       width={8}
                     />
-                    <p className="ml-2">Become Sitter ?</p>
+                    <p className="ml-2">Sitter Mode</p>
                   </MenuItem>
                 ) : (
                   <PopUpSitterConfirm />

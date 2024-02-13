@@ -31,10 +31,19 @@ export default function PopUpSitterConfirm() {
         .eq("id", userId)
         .select();
       console.log(data);
-      router.push("/sitter_management");
     }
+    const { data: petSitterData, error: petSitterError } = await supabase
+      .from("pet_sitter")
+      .upsert([{ user_id: userId }], { returning: "minimal" });
+
+    if (petSitterError) {
+      console.error(petSitterError);
+    }
+
+    router.push("/sitter_management");
     onClose();
   };
+
   return (
     <>
       <MenuItem onClick={onOpen}>
@@ -50,7 +59,7 @@ export default function PopUpSitterConfirm() {
           height={8}
           width={8}
         />
-        Sitter Mode
+        Become Pet Sitter
       </MenuItem>
 
       <Modal isOpen={isOpen} onClose={onClose}>
