@@ -9,7 +9,10 @@ const UserContext = createContext();
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
   const [userId, setUserId] = useState(null);
-  const [search, setSearch] = useState({});
+
+  const [searchKey,setSearchKey]=useState("")
+  const [search,setSearch]=useState({"exp":'0-10',"rating":0,"pet": [1,2,3,4],"keyword":''})
+
 
   const [bookingData, setBookingData] = useState({
     isModalOpen: false,
@@ -18,15 +21,18 @@ export function UserProvider({ children }) {
     date: new Date(),
   });
 
+
   useEffect(() => {
     const session = supabase.auth.getSession();
     setUser(session?.user);
   }, []);
 
   return (
+
     <UserContext.Provider
-      value={{ user, setUser, userId, setUserId, bookingData, setBookingData }}
+      value={{ user, setUser, userId, setUserId, bookingData, setBookingData,search,setSearch }}
     >
+
       {children}
     </UserContext.Provider>
   );

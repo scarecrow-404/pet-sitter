@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 // import withImages from "next-images";
 
+
 const nextConfig = {
   images: {
     domains: ["twbnpazhgudgqhmulgru.supabase.co"],
