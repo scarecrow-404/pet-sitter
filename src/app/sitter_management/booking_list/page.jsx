@@ -220,22 +220,7 @@ const BookingList = () => {
   const handleClick = (item) => {
     const path = `/sitter_management/booking_list/${item.id}`;
 
-    const queryString = new URLSearchParams({
-      id: item.id,
-      name: item.PetOwnerName,
-      amountPet: item.amountPet,
-      Duration: item.Duration,
-      BookedDate: item.BookedDate,
-      Status: item.Status,
-      TotalPaid: item.TotalPaid,
-      TransactionDate: item.TransactionDate,
-      TransactionNo: item.TransactionNo,
-      AdditionalMessage: item.AdditionalMessage,
-      Email: item.Email,
-      Phone: item.Phone,
-      IDNumber: item.IDNumber,
-      DateOfBirth: item.DateOfBirth,
-    }).toString();
+    const queryString = new URLSearchParams(item).toString();
 
     const url = String(path) + "?" + queryString;
 
@@ -280,6 +265,7 @@ const BookingList = () => {
           <div className="nameTitle pl-5">Booking List</div>
           <div className="flex pr-5 gap-4">
             <Input
+            size="md"
               htmlSize={4}
               width="auto"
               placeholder="Search..."
@@ -289,6 +275,7 @@ const BookingList = () => {
               }}
             />
             <Select
+            size="md"
               htmlSize={4}
               placeholder="All status"
               value={keywordsStatus}
