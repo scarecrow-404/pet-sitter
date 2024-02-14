@@ -70,7 +70,7 @@ console.log("bookingdata", bookingData);
     <div className=" w-full flex justify-center" key={props.key} >
 
       <section
-        className="flex  items-center p-3 rounded-xl  shadow-md md:w-[90%]  h-52"
+        className="flex  items-center p-3 rounded-xl  shadow-md md:w-[90%]  h-52  hover:bg-sixthOrange cursor-pointer"
         direction={{ base: "column", sm: "row" }}
         overflow="hidden"
         variant="outline"

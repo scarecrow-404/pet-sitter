@@ -168,7 +168,7 @@ const Search = () => {
        
             />
           </div>
-          <div className="  lg:w-[70%] w-[100%] flex flex-col gap-2">
+          <div className="  lg:w-[70%] w-[100%] flex flex-col gap-2  cursor-default ">
             {sitterData.map((item) => (
               <CardSitter
                 key={item.id}
