@@ -22,6 +22,7 @@ import {
   MenuItem,
   IconButton,
   MenuOptionGroup,
+  Avatar,
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
 export function Sidebar({ active }) {
@@ -147,11 +148,10 @@ export function TopBar() {
     signOut();
     router.push("/");
   };
-
   return user ? (
     <div className="headBar flex items-center gap-5 p-5 bg-white justify-between">
       <div className="flex flex-col items-center md:flex-row md:gap-5">
-        <Image src={profile} width={40} height={40} alt="profile" />
+        <Avatar src={user.image_url} width={10} height={10} alt="profile" />
         <p>{user.full_name}</p>
       </div>
       <div className="lg:hidden">
