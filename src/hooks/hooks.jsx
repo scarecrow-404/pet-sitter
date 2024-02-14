@@ -19,10 +19,13 @@ export function UserProvider({ children }) {
     startTime: "07.00",
     endTime: "07.15",
     date: new Date(),
+    fullname: "",
+    sittername: "",
   });
 
   return (
     <UserContext.Provider
+
 
       value={{ user, setUser, userId, setUserId, bookingData, setBookingData ,search,setSearch,setIsNewSearch,isNewSearch}}
 
