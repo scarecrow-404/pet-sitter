@@ -13,7 +13,7 @@ function PopupBooking() {
   const { bookingData, setBookingData } = useUser();
   const router = useRouter();
   const params = useParams();
-
+ 
   const openModal = () => {
     setBookingData({ ...bookingData, isModalOpen: true });
   };
@@ -25,12 +25,13 @@ function PopupBooking() {
     setBookingData({ ...bookingData, date: selectDate });
   };
   const handleStartTimeChange = (time) => {
-    // setStartTime(time);
     setBookingData({ ...bookingData, startTime: time });
   };
   const handleEndTimeChange = (time) => {
-    // setEndTime(time);
-    // Add any additional logic you need when the time changes
+    if (!bookingData.endTime) {
+      alert("Please select end time.");
+      return;
+    }
     setBookingData({ ...bookingData, endTime: time });
   };
   return (
@@ -81,6 +82,7 @@ function PopupBooking() {
                     name="date-input"
                     date={bookingData.date}
                     onDateChange={handleDate}
+                    minDate={new Date()}
                   />
                 </div>
                 <label className="flex gap-[16px] ">

@@ -29,7 +29,7 @@ const Booking = () => {
   });
   //from pet
   const [selectedPets, setSelectedPets] = useState([]);
-
+  
   //from information
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
