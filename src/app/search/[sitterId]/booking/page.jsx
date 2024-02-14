@@ -12,7 +12,7 @@ import Pet from "@/components/common/steps/Pet";
 import Information from "@/components/common/steps/Information";
 import Payment from "@/components/common/steps/Payment";
 import { useUser } from "@/hooks/hooks";
-// import { useUser } from "./UserProvider";
+
 const Booking = () => {
   //่รับข้อมูลต่อมาจาก sodix
   const { userId } = useUser();
@@ -22,6 +22,7 @@ const Booking = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const steps = ["Your Pet", "Information", "Payment"];
   const [errors, setErrors] = useState({});
+
   const [paymentMethod, setPaymentMethod] = useState({
     creditCard: true,
     cash: false,
