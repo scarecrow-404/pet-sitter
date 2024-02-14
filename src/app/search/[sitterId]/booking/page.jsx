@@ -18,7 +18,7 @@ const Booking = () => {
   const { userId } = useUser();
   const { bookingData, setBookingData } = useUser();
   console.log(bookingData);
-
+  const [dataForSearch, setDataForSearch] = useState(bookingData);
   const [currentStep, setCurrentStep] = useState(1);
   const steps = ["Your Pet", "Information", "Payment"];
   const [errors, setErrors] = useState({});
@@ -27,9 +27,10 @@ const Booking = () => {
     creditCard: true,
     cash: false,
   });
+
   //from pet
   const [selectedPets, setSelectedPets] = useState([]);
-  
+
   //from information
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -50,6 +51,78 @@ const Booking = () => {
     creditCard: "creditcard",
     cash: "cash",
   });
+  // displayStep จะเป็นการแสดงข้อมูลของแต่ละ step โดยจะเช็คว่า step ที่เข้ามาเป็นอะไร แล้วจะแสดงข้อมูลของ step นั้นๆ
+  function formatDate(dataForSearch) {
+    const formattedDate = `${dataForSearch.getDate()} ${getMonthName(
+      dataForSearch.getMonth()
+    )}, ${dataForSearch.getFullYear()}`;
+    return formattedDate;
+  }
+  function getMonthName(monthIndex) {
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    return months[monthIndex];
+  }
+  function getTimeDifference(startTime, endTime) {
+    const formattedStartTime = startTime.replace(".", ":");
+    const formattedEndTime = endTime.replace(".", ":");
+
+    const [startHour, startMinute] = formattedStartTime.split(":").map(Number);
+    const [endHour, endMinute] = formattedEndTime.split(":").map(Number);
+
+    const start = new Date(2000, 0, 1, startHour, startMinute);
+    const end = new Date(2000, 0, 1, endHour, endMinute);
+
+    const diff = end.getTime() - start.getTime();
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+    return { hours, minutes };
+  }
+  const formattedDate = formatDate(dataForSearch.date);
+
+  useEffect(() => {
+    const { startTime, endTime } = dataForSearch;
+    const { hours, minutes } = getTimeDifference(startTime, endTime);
+    console.log(hours, minutes);
+  }, [dataForSearch]);
+  const calculateTotal = (numberOfPets, startTime, endTime) => {
+    const baseCost = 600; // Base cost for 3-hour booking
+    const additionalCostPerPet = 300; // Additional cost per extra pet
+    const additionalHourlyRate = 200; // Additional hourly rate for bookings over 3 hours
+
+    // Calculate duration in hours and minutes
+    const { hours, minutes } = getTimeDifference(startTime, endTime);
+
+    // Convert duration to total hours
+    const totalHours = hours + minutes / 60;
+
+    // Calculate total cost based on the number of pets and duration
+    let totalCost = baseCost;
+
+    // Check if the duration is over 3 hours
+    if (totalHours > 3) {
+      totalCost += (totalHours - 3) * additionalHourlyRate;
+    }
+
+    // Calculate additional cost for pets
+    const additionalPetCost = (numberOfPets - 1) * additionalCostPerPet;
+    totalCost += additionalPetCost;
+
+    return totalCost;
+  };
 
   const displayStep = (step) => {
     switch (step) {
@@ -199,11 +272,11 @@ const Booking = () => {
                     </p>
                     <div className="flex">
                       <p className="text-[16px] font-[500] leading-[28px]">
-                        Name
+                        {bookingData.sittername}
                       </p>
                       &nbsp;
                       <p className="text-[16px] font-[500] leading-[28px]">
-                        By Owner Name
+                        By {bookingData.fullname}
                       </p>
                     </div>
                   </div>
@@ -213,7 +286,8 @@ const Booking = () => {
                       Date & Time:
                     </p>
                     <p className="text-[16px] font-[500] leading-[28px]">
-                      Date | AM - PM
+                      {formattedDate} | {dataForSearch.startTime} -{" "}
+                      {dataForSearch.endTime}
                     </p>
                   </div>
 
@@ -222,7 +296,21 @@ const Booking = () => {
                       Duration:
                     </p>
                     <p className="text-[16px] font-[500] leading-[28px]">
-                      Times
+                      {/* {hours} hours {minutes} minutes */}
+                      {
+                        getTimeDifference(
+                          dataForSearch.startTime,
+                          dataForSearch.endTime
+                        ).hours
+                      }{" "}
+                      hours{" "}
+                      {
+                        getTimeDifference(
+                          dataForSearch.startTime,
+                          dataForSearch.endTime
+                        ).minutes
+                      }{" "}
+                      minutes
                     </p>
                   </div>
                   <div className="lg:h-[52px] lg:block flex justify-between">
@@ -253,7 +341,14 @@ const Booking = () => {
                 </div>
                 <div className="bg-black p-[24px] flex rounded-b-[16px] text-[14px] font-[500] leading-[26px] justify-between ">
                   <span className="text-white ">Total</span>
-                  <span className="text-white ">Money THB</span>
+                  <span className="text-white ">
+                    {selectedPets.length > 0
+                      ? `${calculateTotal(
+                          selectedPets.length,
+                          formattedDate
+                        )} THB`
+                      : "0 THB"}
+                  </span>
                 </div>
 
                 <div className="bg-[#FAFAFB] lg:flex w-[400px] h-[150px] flex-col items-end justify-end hidden">
