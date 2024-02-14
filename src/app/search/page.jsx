@@ -1,14 +1,15 @@
 "use client";
 import React from "react";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import CardSitter from "@/app/search/cardsitterlist.jsx";
 import SearchBar from "@/components/common/SearchBar";
-import supabase  from "@/lib/utils/db";
+import supabase from "@/lib/utils/db";
 import { useUser } from "@/hooks/hooks";
-
+import  iconNext from "@/asset/images/IconButtonNext.svg";
+import  iconPrev  from "@/asset/images/IconButtonPrev.svg";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
-
 
 
 const Search = () => {
@@ -17,11 +18,12 @@ const Search = () => {
   const [idSitter, setIdSitter] = useState("");
   const [expStart, setExpStart] = useState(0);
   const [expEnd, setExpEnd] = useState(10);
-  const [loading,setloading] = useState()
+  const [loading, setloading] = useState();
   const [page, setPage] = useState(1);
   const [lengthReview, setLengthReview] = useState(1);
 
   const reviewsPerPage = 5;
+
   const nextPage = () => {
     setPage(page + 1);
   };
@@ -32,99 +34,114 @@ const Search = () => {
     setPage(page - 1);
   };
 
-  const expQuery = search.exp ? search.exp : '0-10';
+  const expQuery = search.exp ? search.exp : "0-10";
 
-  const petQuery = search.pet.length? [...search.pet] : [1,2,3,4];
+  const petQuery = search.pet.length ? [...search.pet] : [1, 2, 3, 4];
 
   const ratingStart = search.rating ? Number(search.rating) : 0;
 
-  const ratingEnd = ratingStart? ratingStart + 1: 6;
+  const ratingEnd = ratingStart ? ratingStart + 1 : 6;
 
-  const keyword = search.keyword? search.keyword : '';
-  
-
-
- async function getTaotalPage(){
-  try {
-    let { data, error } = await supabase.from("pet_sitter_render").select("*")
-    console.log("total",data)
-    if(!data|| error){
-      console.log("nodata",error)
-    }
-    setLengthReview(Math.ceil(data.length / reviewsPerPage))
- }catch(error){
-  console.log(error,"error total page")
- }}
+  const keyword = search.keyword ? search.keyword : "";
 
   const splitExpNum = (num) => {
     if (num.length >= 3) {
       const split = num.split("-");
-      console.log("split1",split[0], split[1]);
+      console.log("split1", split[0], split[1]);
       setExpStart(split[0]);
       setExpEnd(split[1]);
-
     }
     if (num.length == 2) {
       const split = num.split("+");
-      console.log("split2",split[0], split[1]);
+      console.log("split2", split[0], split[1]);
       setExpStart(split[0]);
       setExpEnd(100);
     }
-    
   };
-  
 
-  console.log(idSitter);
-  function filterSitterData (array){
-    const arr =[]
-    const sitterArr =[]
-    array.filter((item)=>{
-      const index = arr.indexOf(item.id);
-      if(index==-1){
+  function splitPage(numpage) {
+    const pageArr = [];
 
-       arr.push(item.id)
-       sitterArr.push(item)
-      }
+    for (let i = 1; i <= numpage; i++) {
+      pageArr.push(i);
     }
-    )
-    return sitterArr
+    return pageArr;
   }
-  
 
-  async function getSitterData(expStart, expEnd, petQuery, ratingStart,ratingEnd,keyword,reviewsPerPage,page) {
- 
+  async function getSitterData(
+    expStart,
+    expEnd,
+    petQuery,
+    ratingStart,
+    ratingEnd,
+    keyword,
+    reviewsPerPage,
+    page
+  ) {
+    console.log(
+      "1eap",
+      expStart,
+      expEnd,
+      petQuery,
+      ratingStart,
+      ratingEnd,
+      keyword,
+      reviewsPerPage,
+      page
+    );
 
     try {
-      let { data, error } = await supabase
-  .rpc('fetch_data', {
-    exp_end:expEnd,
-    exp_start:expStart,
-    key:keyword, 
-    page:page, 
-    pet:petQuery, 
-    rate_end:ratingEnd, 
-    rate_start:ratingStart, 
-    reviews_perpage:reviewsPerPage,
-  })
-      if (!data || error) {
-        console.log(error);
+      let { data: pageData, error: errorPage } = await supabase.rpc(
+        "fetch_page",
+        {
+          exp_end: expEnd,
+          exp_start: expStart,
+          key: keyword,
+          pet: petQuery,
+          rate_end: ratingEnd,
+          rate_start: ratingStart,
+        }
+      );
+      let { data: sitterData, error: errorSitter } = await supabase.rpc(
+        "fetch_data",
+        {
+          exp_end: expEnd,
+          exp_start: expStart,
+          key: keyword,
+          page: page,
+          pet: petQuery,
+          rate_end: ratingEnd,
+          rate_start: ratingStart,
+          reviews_perpage: reviewsPerPage,
+        }
+      );
+      if (!sitterData || errorSitter || !pageData || errorPage) {
+        console.log(errorSitter, errorPage);
       }
-   
-      const fetchSitter = filterSitterData(data)
-      console.log("data",fetchSitter)
-      setSitterData(fetchSitter)
-      
+
+      console.log("data", sitterData);
+      console.log("dataPage", pageData);
+      const totalPage = pageData.length ? pageData.length : 5;
+      setLengthReview(Math.ceil(totalPage / reviewsPerPage));
+      setSitterData(sitterData);
     } catch (error) {
       console.log(error);
     }
   }
 
- 
   useEffect(() => {
-getTaotalPage()
     splitExpNum(expQuery);
-    getSitterData(expStart, expEnd, petQuery, ratingStart,ratingEnd,keyword,reviewsPerPage,page)
-  }, [search,page]);
+    getSitterData(
+      expStart,
+      expEnd,
+      petQuery,
+      ratingStart,
+      ratingEnd,
+      keyword,
+      reviewsPerPage,
+      page
+    );
+  }, [search, page]);
 
   function splitPage(numpage) {
     const pageArr = [];
@@ -153,43 +170,56 @@ getTaotalPage()
                 province={item.province}
                 fullname={item.full_name}
                 id={item.id}
-                image={item.image_url? item.image_url:""}
+                image={item.image_url ? item.image_url : ""}
                 rating={item.rating}
               />
             ))}
           </div>
         </section>
-        {/* <div className="flex gap-2">
-          <button href="#">pevious</button>
-          {splitPage(10).map((item, index) => {
-            return (
-              <a href="#" key={index}>
-                {item}
-              </a>
-            );
-          })}
-          <button href="#">next</button>
-        </div> */}
-        <div className="pagination flex gap-4">
-              <button
-                className="previous-button"
-                onClick={previousPage}
-                disabled={page === 1} // ปิดปุ่มก่อนหน้าเมื่ออยู่ที่หน้าแรก
-              >
-                Previous
-              </button>
-              <div className="pages">
-                {page}/{lengthReview}
-                {/* แสดงหน้าปัจจุบัน / จำนวนหน้าทั้งหมด */}
-              </div>
-              <button
-                className="next-button"
-                onClick={nextPage}
-                disabled={page === lengthReview} // ปิดปุ่มถัดไปเมื่ออยู่ที่หน้าสุดท้าย
-              >
-                Next
-              </button>
-            </div>
+
+        <div className="pagination flex gap-4  text-center justify-center">
+          <button
+            className="previous-button pl-4 pt-2 pr-4 pb-2 hover:bg-sixthOrange  rounded-full  text-fourthGray  font-medium hover:text-firstOrange"
+            onClick={previousPage}
+            disabled={page === 1} // ปิดปุ่มก่อนหน้าเมื่ออยู่ที่หน้าแรก
+          >
+            <Image
+                  objectFit="cover"
+                  className=" w-[15px] h-[15px] rounded-xl"
+                  src={iconPrev}
+                  alt="Prev icon"
+                />
+          </button>
+          <div className="pages flex gap-2 ">
+            {/* {page}/{lengthReview} */}
+            {/* แสดงหน้าปัจจุบัน / จำนวนหน้าทั้งหมด */}
+            {splitPage(lengthReview).map((item, index) => {
+              return (
+                <button
+                  key={index}
+                  onClick={(event) => setPage(event.target.value)}
+                  value={item}
+                  className={`pl-4 pt-2 pr-4 pb-2  hover:bg-sixthOrange  rounded-full  text-fourthGray  font-medium hover:text-firstOrange ${page==item? "bg-sixthOrange text-firstOrange":''}`} 
+                >
+                  {item}
+                </button>
+              );
+            })}
+          </div>
+          <button
+            className="next-button pl-4 pt-2 pr-4 pb-2 hover:bg-sixthOrange  rounded-full  text-fourthGray  font-medium hover:text-firstOrange"
+            onClick={nextPage}
+            disabled={page === lengthReview} // ปิดปุ่มถัดไปเมื่ออยู่ที่หน้าสุดท้าย
+          >
+          <Image
+                  objectFit="cover"
+                  className=" w-[15px] h-[15px] rounded-xl"
+                  src={iconNext}
+                  alt="next icon"
+                />
+            
+          </button>
+        </div>
       </section>
       <Footer />
     </>
