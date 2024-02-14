@@ -85,8 +85,8 @@ const SitterManagement = () => {
   const handleSelect = (address) => {
     setAddress(address);
     setProvince(address.province);
-    setDistrict(address.amphoe);
-    setSubDistrict(address.district);
+    setDistrict(address.district);
+    setSubDistrict(address.amphoe);
     setPostCode(address.zipcode);
   };
 
@@ -130,6 +130,7 @@ const SitterManagement = () => {
           const option = optionPetType.find(
             (option) => option.value.toLowerCase() === petType
           );
+
           return option;
         });
         setPetType(petTypes);
@@ -140,12 +141,13 @@ const SitterManagement = () => {
           (option) => option.value == data[0].experience
         );
         setExperience(existingExperienceOption);
-        // console.log("exp", existingExperienceOption);
+        console.log("exp", existingExperienceOption);
       } else {
         setExperience(null);
       }
       setIntroduction(data[0].introduction);
       setAddressDetail(data[0].address_detail);
+      setSubDistrict(data[0].sub_district);
       setDistrict(data[0].district);
       setBankName(data[0].bank_name);
       setAccountNumber(data[0].bank_acc_number);
@@ -157,6 +159,12 @@ const SitterManagement = () => {
       setAccountName(data[0].account_name);
       setAccountType(data[0].account_type);
       setEtcs(data[0].etcs);
+      setAddress({
+        district: data[0].district,
+        amphoe: data[0].sub_district,
+        province: data[0].province,
+        zipcode: data[0].post_code,
+      });
     };
 
     const fetchData = async () => {
@@ -353,11 +361,10 @@ const SitterManagement = () => {
   ];
   const handleExperience = (value) => {
     const selectedOption = options.find((option) => option.value === value);
-    setExperience(selectedOption);
+    setExperience(selectedOption.value);
+    console.log(selectedOption.value);
   };
-  const selectedExperience = experience
-    ? options.find((option) => option.value === experience)
-    : null;
+
   return (
     <div className="flex bg-sixthGray justify-center">
       <div className="hidden bg-sixthGray lg:block relative">
