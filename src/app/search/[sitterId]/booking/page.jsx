@@ -11,8 +11,14 @@ import Navbar from "@/components/common/Navbar";
 import Pet from "@/components/common/steps/Pet";
 import Information from "@/components/common/steps/Information";
 import Payment from "@/components/common/steps/Payment";
-
+import { useUser } from "@/hooks/hooks";
+// import { useUser } from "./UserProvider";
 const Booking = () => {
+  //่รับข้อมูลต่อมาจาก sodix
+  const { userId } = useUser();
+  const { bookingData, setBookingData } = useUser();
+  console.log(bookingData);
+
   const [currentStep, setCurrentStep] = useState(1);
   const steps = ["Your Pet", "Information", "Payment"];
   const [errors, setErrors] = useState({});
@@ -20,6 +26,14 @@ const Booking = () => {
     creditCard: true,
     cash: false,
   });
+  //from pet
+  const [selectedPets, setSelectedPets] = useState([]);
+
+  //from information
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [message, setMessage] = useState("");
 
   const [values, setValues] = useState({
     pets_id: "",
@@ -44,6 +58,8 @@ const Booking = () => {
             values={values}
             handleInput={handleInput}
             HandleCheck={HandleCheck}
+            selectedPets={selectedPets}
+            setSelectedPets={setSelectedPets}
             errors={errors}
           />
         );
@@ -53,6 +69,14 @@ const Booking = () => {
             values={values}
             handleInput={handleInput}
             errors={errors}
+            fullName={fullName}
+            email={email}
+            phoneNumber={phoneNumber}
+            message={message}
+            setFullName={setFullName}
+            setEmail={setEmail}
+            setPhoneNumber={setPhoneNumber}
+            setMessage={setMessage}
           />
         );
       case 3:
@@ -200,12 +224,30 @@ const Booking = () => {
                       Times
                     </p>
                   </div>
-
                   <div className="lg:h-[52px] lg:block flex justify-between">
                     <p className="text-[14px] lg:text-[#7B7E8F] font-[500] leading-[24px]">
                       Pet
                     </p>
-                    <p className="text-[16px] font-[500] leading-[28px]">???</p>
+
+                    <p className="text-[16px] font-[500] leading-[28px]">
+                      {selectedPets.length > 0
+                        ? selectedPets.map(
+                            (pet, index) =>
+                              `${pet.name}${
+                                index !== selectedPets.length - 1 ? ", " : ""
+                              }`
+                          )
+                        : "No pets selected"}
+                    </p>
+                  </div>
+                  <div className="lg:h-[52px] lg:block flex justify-between">
+                    <p className="text-[14px] lg:text-[#7B7E8F] font-[500] leading-[24px]">
+                      Additional Message (To pet sitter)
+                    </p>
+
+                    <p className="text-[16px] font-[500] leading-[28px]">
+                      {message}
+                    </p>
                   </div>
                 </div>
                 <div className="bg-black p-[24px] flex rounded-b-[16px] text-[14px] font-[500] leading-[26px] justify-between ">
