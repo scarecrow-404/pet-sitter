@@ -8,12 +8,11 @@ import TimePicker from "./TimePicker";
 import { useUser } from "@/hooks/hooks";
 import { useRouter } from "next/navigation";
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
-
+import { useParams } from "next/navigation";
 function PopupBooking() {
-
   const { bookingData, setBookingData } = useUser();
   const router = useRouter();
-
+  const params = useParams();
 
   const openModal = () => {
     setBookingData({ ...bookingData, isModalOpen: true });
@@ -102,7 +101,7 @@ function PopupBooking() {
                   <button
                     className="bg-secondOrange w-full rounded-3xl p-[10px] hover:bg-thirdOrange focus:bg-firstOrange-400  active:bg-fifthOrange text-white "
                     onClick={() => {
-                      router.push("/search/1/booking");
+                      router.push(`/search/${params.sitterId}/booking`);
                     }}
                   >
                     Continue
