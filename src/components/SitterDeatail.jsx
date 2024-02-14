@@ -7,6 +7,8 @@ import PopupBooking from "./Popup";
 import { Avatar } from "@chakra-ui/react";
 import { useParams } from "next/navigation";
 import supabase from "@/lib/utils/db";
+import iconNext from "@/asset/images/IconButtonNext.svg";
+import iconPrev from "@/asset/images/IconButtonPrev.svg";
 
 function SitterDetail(props) {
   const [rating, setRating] = useState("");
@@ -296,16 +298,21 @@ function SitterDetail(props) {
               })}
             </div>
 
-            <div className="pagination flex gap-4">
+            <div className="pagination flex gap-4 justify-center">
               <button
-                className="previous-button"
+                className="previous-button "
                 onClick={previousPage}
                 disabled={page === 1} // ปิดปุ่มก่อนหน้าเมื่ออยู่ที่หน้าแรก
               >
-                Previous
+                <Image src={iconPrev} />
               </button>
-              <div className="pages">
-                {page}/{lengthReview}
+              <div className="pages w-[30px] h-[30px] rounded-[50%] bg-secondOrange flex items-center justify-center border-2 border-orange-500">
+                {page}
+                {/* แสดงหน้าปัจจุบัน / จำนวนหน้าทั้งหมด */}
+              </div>
+              /
+              <div className="pages ">
+                {lengthReview}
                 {/* แสดงหน้าปัจจุบัน / จำนวนหน้าทั้งหมด */}
               </div>
               <button
@@ -313,7 +320,7 @@ function SitterDetail(props) {
                 onClick={nextPage}
                 disabled={page === lengthReview} // ปิดปุ่มถัดไปเมื่ออยู่ที่หน้าสุดท้าย
               >
-                Next
+                <Image src={iconNext} />
               </button>
             </div>
           </div>

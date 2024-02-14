@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { event } from "jquery";
 const BookingList = () => {
   const router = useRouter();
-  const data = [
+  const dataMock = [
     {
       id: 1,
       PetOwnerName: "John Wick",
@@ -226,7 +226,7 @@ const BookingList = () => {
 
     router.push(url);
   };
-  const [petData, setPetData] = useState([...data]);
+  const [petData, setPetData] = useState([...dataMock]);
   const [keywords, setKeywords] = useState("");
   const [keywordsStatus, setKeywordsStatus] = useState("");
   useEffect(() => {
@@ -265,7 +265,7 @@ const BookingList = () => {
           <div className="nameTitle pl-5">Booking List</div>
           <div className="flex pr-5 gap-4">
             <Input
-            size="md"
+              size="md"
               htmlSize={4}
               width="auto"
               placeholder="Search..."
@@ -275,7 +275,7 @@ const BookingList = () => {
               }}
             />
             <Select
-            size="md"
+              size="md"
               htmlSize={4}
               placeholder="All status"
               value={keywordsStatus}

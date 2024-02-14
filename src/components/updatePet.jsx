@@ -33,7 +33,7 @@ function updatePet({ searchParams }) {
   const { userId } = useUser();
   const router = useRouter();
   const [photo, setPhoto] = useState({});
-  const [imageUrl, setImageUrl] = useState(previewImg);
+  const [imageUrl, setImageUrl] = useState();
   const inputRefLogo = useRef(null);
   const [petName, setPetName] = useState("");
   const [petType, setPetType] = useState(""); // เป็น selector มา edit ถ้าต้องเปลี่ยนแปลงอะไร
@@ -70,18 +70,31 @@ function updatePet({ searchParams }) {
     };
 
     fetchPetData();
-  }, [searchParams.id||userId]);
+  }, [searchParams.id || userId]);
 
   const handleUploadPhoto = (event) => {
     const file = event.target.files[0];
     if (file) {
       const url = URL.createObjectURL(file);
       if (url) {
-        setPhoto({ [file.name]: file });
+        const uniqueFileName = generateUniqueFileName(file.name);
+        console.log("Generated unique filename:", uniqueFileName); // Log the generated filename
+        setPhoto({ [uniqueFileName]: file });
         setImageUrl(url);
       }
     }
   };
+  
+  
+  // Function to generate a unique filename
+  const generateUniqueFileName = (fileName) => {
+    const timestamp = new Date().getTime(); // Get current timestamp
+    const randomString = Math.random().toString(36).substring(7); // Generate random string
+    const fileExtension = fileName.split('.').pop(); // Get file extension
+    return `${timestamp}_${randomString}.${fileExtension}`;
+  };
+  
+
   const handleSubmit = async (event) => {
     try {
       await updatePet(searchParams.id);
@@ -107,7 +120,8 @@ function updatePet({ searchParams }) {
     } catch (error) {}
   };
   const updatePet = async (petId) => {
-    let imageUrl = null;
+    let updatedImageUrl = imageUrl ?? ""; // Initialize with the existing imageUrl
+
     // Upload photo
     if (Object.keys(photo).length > 0) {
       const file = Object.values(photo)[0];
@@ -132,7 +146,7 @@ function updatePet({ searchParams }) {
         return;
       }
 
-      imageUrl = url.data.publicUrl;
+      updatedImageUrl = url.data.publicUrl;
     }
     // if (!imageUrl) {
     //   console.error("Image URL is null");
@@ -147,7 +161,7 @@ function updatePet({ searchParams }) {
       color: color,
       weight: weight,
       about: about,
-      image_url: imageUrl, // assuming this is the URL of the image
+      image_url: updatedImageUrl, // assuming this is the URL of the image
       user_id: userId,
       updated_at: new Date(), // assuming userId is available in this scope
       // add other necessary fields
@@ -237,6 +251,7 @@ function updatePet({ searchParams }) {
             />
           </FormControl>
         </div>
+
         <div className="w-11/12 flex flex-col gap-4 lg:flex-row lg:gap-0 lg:justify-between lg:w-full">
           <div className="w-full lg:w-[48%]">
             <FormControl isRequired>

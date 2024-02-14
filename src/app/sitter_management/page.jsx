@@ -85,14 +85,14 @@ const SitterManagement = () => {
   const handleSelect = (address) => {
     setAddress(address);
     setProvince(address.province);
-    setDistrict(address.amphoe);
-    setSubDistrict(address.district);
+    setDistrict(address.district);
+    setSubDistrict(address.amphoe);
     setPostCode(address.zipcode);
   };
 
   //fetch data
   useEffect(() => {
-    console.log(user);
+    // console.log(user);
     const fetchUserData = async () => {
       if (!userId) {
         console.error("userId is null");
@@ -112,7 +112,7 @@ const SitterManagement = () => {
         setImageUrl(data[0].image_url || previewImg);
       }
     };
-    const fetchPetSitterData = async () => {
+    const fetchPetSitterData = async (optionPetType) => {
       if (!userId) {
         console.error("userId is null");
         return;
@@ -121,41 +121,62 @@ const SitterManagement = () => {
         .from("pet_sitter")
         .select("*")
         .eq("user_id", userId);
-
+      console.log(data);
       if (error) {
         console.error("Error fetching user data:", error);
       } else {
-        const existingOption = optionPetType.find(
-          (option) => option.value === data[0].pet_type
-        );
-        if (data[0].experience !== null) {
-          const existingExperienceOption = options.find(
-            (option) => option.value === data[0].experience
+        const petTypes = data[0].pet_type.split(",").map((petType) => {
+          petType = petType.trim().toLowerCase();
+          const option = optionPetType.find(
+            (option) => option.value.toLowerCase() === petType
           );
-          setExperience(existingExperienceOption);
-        } else {
-          setExperience(null);
-        }
-        setIntroduction(data[0].introduction);
-        setAddressDetail(data[0].address_detail);
-        setDistrict(data[0].district);
-        setBankName(data[0].bank_name);
-        setAccountNumber(data[0].bank_acc_number);
-        setProvince(data[0].province);
-        setPostCode(data[0].post_code);
-        setTradeName(data[0].sitter_name);
-        setServices(data[0].service);
-        setMyPlace(data[0].place);
-        setExperience(existingExperienceOption);
-        setPetType(existingOption);
-        setAccountName(data[0].account_name);
-        setAccountType(data[0].account_type);
-        setEtcs(data[0].etcs);
+
+          return option;
+        });
+        setPetType(petTypes);
       }
+
+      if (data[0].experience !== null) {
+        const existingExperienceOption = options.find(
+          (option) => option.value == data[0].experience
+        );
+        setExperience(existingExperienceOption);
+        console.log("exp", existingExperienceOption);
+      } else {
+        setExperience(null);
+      }
+      setIntroduction(data[0].introduction);
+      setAddressDetail(data[0].address_detail);
+      setSubDistrict(data[0].sub_district);
+      setDistrict(data[0].district);
+      setBankName(data[0].bank_name);
+      setAccountNumber(data[0].bank_acc_number);
+      setProvince(data[0].province);
+      setPostCode(data[0].post_code);
+      setTradeName(data[0].sitter_name);
+      setServices(data[0].service);
+      setMyPlace(data[0].place);
+      setAccountName(data[0].account_name);
+      setAccountType(data[0].account_type);
+      setEtcs(data[0].etcs);
+      setAddress({
+        district: data[0].district,
+        amphoe: data[0].sub_district,
+        province: data[0].province,
+        zipcode: data[0].post_code,
+      });
     };
-    fetchUserData();
-    fetchPetSitterData();
-    fetchPetTypes();
+
+    const fetchData = async () => {
+      const optionPetType = await fetchPetTypes();
+      if (!optionPetType) {
+        console.error("fetchPetTypes returned undefined");
+        return;
+      }
+      await fetchUserData();
+      await fetchPetSitterData(optionPetType);
+    };
+    fetchData();
   }, [userId]);
   const handleUploadPhoto = (event) => {
     const file = event.target.files[0];
@@ -243,7 +264,7 @@ const SitterManagement = () => {
       sitter_name: tradeName,
       service: services,
       place: myPlace,
-      experience: parseFloat(experience.value),
+      experience: parseFloat(experience),
       pet_type: petType ? petType.map((item) => item.value).join(", ") : null,
       account_name: accountName,
       account_type: accountType,
@@ -302,8 +323,9 @@ const SitterManagement = () => {
     setPetImage({ ...petImage });
   };
 
-  const handlePetType = (petType) => {
-    setPetType(petType);
+  const handlePetType = (selectedOptions) => {
+    console.log("Selected options:", selectedOptions);
+    setPetType(selectedOptions);
   };
 
   // Read records pet_type_master
@@ -322,6 +344,7 @@ const SitterManagement = () => {
     });
 
     setOptionPetType(options);
+    return options; // return the options array
   }
 
   const options = [
@@ -336,12 +359,12 @@ const SitterManagement = () => {
     { value: "4.5", label: "4.5" },
     { value: "5", label: "5++" },
   ];
-  const handleExperience = (selectedOption) => {
+  const handleExperience = (value) => {
+    const selectedOption = options.find((option) => option.value === value);
     setExperience(selectedOption.value);
+    console.log(selectedOption.value);
   };
-  const selectedExperience = experience
-    ? options.find((option) => option.value === experience)
-    : null;
+
   return (
     <div className="flex bg-sixthGray justify-center">
       <div className="hidden bg-sixthGray lg:block relative">
@@ -418,19 +441,22 @@ const SitterManagement = () => {
             <div className="Experience md:w-80 lg:w-[474px] xl:w-[560px]">
               <FormControl isRequired>
                 <FormLabel>Experience</FormLabel>
-                <Select
+                <select
                   name="experience"
-                  placeholder="Select Experience"
-                  closeMenuOnSelect={true}
-                  value={
-                    experience
-                      ? options.find((option) => option.value === experience)
-                      : null
-                  }
-                  onChange={handleExperience}
-                  options={options}
                   id="experience"
-                />
+                  value={experience ? experience.value : ""}
+                  onChange={(e) => handleExperience(e.target.value)}
+                  className="w-full h-10 px-3 py-2 border border-gray-300 rounded-lg "
+                >
+                  <option value="" disabled>
+                    Select Experience
+                  </option>
+                  {options.map((option, index) => (
+                    <option key={index} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
               </FormControl>
             </div>
           </div>
@@ -512,7 +538,7 @@ const SitterManagement = () => {
                   placeholder="Select type"
                   colorScheme="orange"
                   closeMenuOnSelect={false}
-                  value={petType}
+                  value={petType || []}
                   onChange={handlePetType}
                 />
               </FormControl>

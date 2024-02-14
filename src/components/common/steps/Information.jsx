@@ -1,7 +1,43 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import supabase from "@/lib/utils/db";
+import { useUser } from "@/hooks/hooks";
+function Information({
+  values,
+  handleInput,
+  errors,
+  fullName,
+  email,
+  phoneNumber,
+  message,
+  setFullName,
+  setEmail,
+  setPhoneNumber,
+  setMessage,
+}) {
+  const { userId } = useUser();
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!userId) {
+        console.error("userId is null");
+        return;
+      }
+      const { data: user, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", userId);
 
-function Information({ values, handleInput, errors }) {
+      if (error) {
+        console.error("Error fetching user data:", error);
+      } else {
+        setFullName(user[0].full_name);
+        setEmail(user[0].email);
+        setPhoneNumber(user[0].phone_number);
+      }
+    };
+    fetchUserData();
+  }, [userId]);
+
   return (
     <div className="mx-[20px] lg:mx-[40px]">
       <div className="h-[24px] mt-[12px] text-[12px] md:text-[16px] font-[500] leading-[24px] ">
@@ -16,10 +52,10 @@ function Information({ values, handleInput, errors }) {
       >
         <input
           onChange={(event) => handleInput(event)}
-          value={values.name}
+          value={fullName}
           id="name"
           name="name"
-          type="name"
+          type="text"
           placeholder="Full name"
           className="p-[4px] px-[8px] w-full text-[12px] md:text-[16px] font-[500] leading-[24px] border-none focus:ring-0"
         />
@@ -45,7 +81,7 @@ function Information({ values, handleInput, errors }) {
           >
             <input
               onChange={(event) => handleInput(event)}
-              value={values.email}
+              value={email}
               id="email"
               name="email"
               type="email"
@@ -76,7 +112,7 @@ function Information({ values, handleInput, errors }) {
           >
             <input
               onChange={(event) => handleInput(event)}
-              value={values.phoneNumber}
+              value={phoneNumber}
               id="phoneNumber"
               name="phoneNumber"
               type="tel"
@@ -100,11 +136,11 @@ function Information({ values, handleInput, errors }) {
       </div>
       <div className="bg-white my-[8px] p-[4px] xl:w-full flex items-center border order-x-slate-400 rounded-[8px]">
         <textarea
-          onChange={(event) => handleInput(event)}
-          value={values.message}
+          onChange={(event) => setMessage(event.target.value)}
+          value={message}
           id="message"
           name="message"
-          type="message"
+          type="text"
           className="py-[12px] px-[16px] w-full text-[12px] md:text-[16px] border-none focus:ring-0"
         />
       </div>
