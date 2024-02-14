@@ -58,9 +58,9 @@ function UserManagementProfile() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    let imageUrl = null;
+    let imageUrl = imageUrl; // Initialize with the existing imageUrl
 
-    // Upload photo
+    // Upload photo only if a new photo is selected
     if (Object.keys(photo).length > 0) {
       const file = Object.values(photo)[0];
       const filePath = `public/${userId}/${file.name}`;
@@ -94,7 +94,7 @@ function UserManagementProfile() {
       phone_number: phone,
       personal_id: IdNumber,
       date_of_birth: dateOfBirth,
-      image_url: imageUrl,
+      image_url: imageUrl, // Use the updated or existing imageUrl
       updated_at: new Date(),
     };
 
@@ -109,6 +109,7 @@ function UserManagementProfile() {
       console.log("User updated successfully");
     }
   };
+
   return (
     // form
     <div className="flex flex-col xl:items-start xl:pl-12 mx-auto py-6 lg:gap-10 min-w-[375px] w-full lg:max-w-[1440px]">

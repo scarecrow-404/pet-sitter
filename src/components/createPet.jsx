@@ -1,54 +1,52 @@
-"use client";
 import React, { useState, useRef } from "react";
 import Image from "next/image";
 import {
   FormControl,
   FormLabel,
-  FormErrorMessage,
-  FormHelperText,
   Input,
   Select,
   Textarea,
-  Avatar,
 } from "@chakra-ui/react";
 import supabase from "@/lib/utils/db";
 import previewImg from "@/asset/images/Frame427321094.svg";
 import Link from "next/link";
 import backIcon from "@/asset/images/backIcon.svg";
-import previewPet from "@/asset/images/previewPetPhoto.svg";
 import { useUser } from "@/hooks/hooks";
 import { useRouter } from "next/navigation";
-function createPet() {
+
+function CreatePet() {
   const { userId } = useUser();
   const router = useRouter();
   const [photo, setPhoto] = useState({});
-
   const [petName, setPetName] = useState("");
-  const [petType, setPetType] = useState(""); // เป็น selector มา edit ถ้าต้องเปลี่ยนแปลงอะไร
+  const [petType, setPetType] = useState("");
   const [breed, setBreed] = useState("");
-  const [sex, setSex] = useState(""); // เป็น selector มา edit ถ้าต้องเปลี่ยนแปลงอะไร
+  const [sex, setSex] = useState("");
   const [age, setAge] = useState("");
   const [color, setColor] = useState("");
   const [weight, setWeight] = useState("");
   const [about, setAbout] = useState("");
-  const [imageUrl, setImageUrl] = useState(previewImg);
+  const imageUrlRef = useRef(previewImg);
+
   const handleUploadPhoto = (event) => {
     const file = event.target.files[0];
+    const timestamp = new Date().getTime(); // Generate unique timestamp
+    const fileName = `${timestamp}_${file.name}`; // Append timestamp to file name
     const url = URL.createObjectURL(file);
-    setPhoto({ [file.name]: file });
-    setImageUrl(url);
+    setPhoto({ [fileName]: file });
+    imageUrlRef.current = url;
   };
   const handleSubmit = async (event) => {
     try {
-      await createNewPet();
-
+      await createNewPet(imageUrlRef.current);
       router.push("/account/pet/");
     } catch (error) {
       alert("Error creating pet: " + error.message);
     }
   };
-  const createNewPet = async () => {
-    let imageUrl = null;
+
+  const createNewPet = async (imageUrl) => {
+    let imageUrlToUse = imageUrl;
 
     // Upload photo
     if (Object.keys(photo).length > 0) {
@@ -57,7 +55,6 @@ function createPet() {
       let { data, error: uploadError } = await supabase.storage
         .from("images")
         .upload(filePath, file);
-      console.log(data);
       if (uploadError) {
         console.error("Error uploading photo:", uploadError);
         return;
@@ -65,7 +62,6 @@ function createPet() {
 
       // Get URL of uploaded photo
       let url = supabase.storage.from("images").getPublicUrl(data.path);
-      console.log(url.data.publicUrl);
       if (!url.data.publicUrl) {
         console.error(
           "Error getting photo URL: File does not exist or bucket is not public",
@@ -74,7 +70,7 @@ function createPet() {
         return;
       }
 
-      imageUrl = url.data.publicUrl;
+      imageUrlToUse = url.data.publicUrl;
     }
 
     const petData = {
@@ -86,24 +82,22 @@ function createPet() {
       color: color,
       weight: weight,
       about: about,
-      image_url: imageUrl, // assuming this is the URL of the image
-      user_id: userId, // assuming userId is available in this scope
-      // add other necessary fields
+      image_url: imageUrlToUse,
+      user_id: userId,
     };
 
-    const { data, error } = await supabase.from("pet").insert([petData]);
+    const { error } = await supabase.from("pet").insert([petData]);
 
     if (error) {
       console.error("Error creating pet: ", error);
       return null;
     } else {
-      console.log("Pet created successfully", data);
+      console.log("Pet created successfully");
     }
   };
 
   return (
     <div className="flex flex-col justify-center items-center py-6 gap-5 max-w-[1440px] mx-auto lg:gap-10 lg:py-14">
-      {/* topic */}
       <div className="w-[90%] flex flex-row justify-between md:w-[85%] lg:w-[83%]">
         <div className="font-bold text-lg flex flex-row justify-start items-center gap-1">
           <Link href="/account/pet">
@@ -114,28 +108,27 @@ function createPet() {
           Your Pet
         </div>
       </div>
-      {/* pet picture edit later */}
       <div className="lg:w-[83%]">
         <label htmlFor="profile">
-          {imageUrl && (
+          {imageUrlRef.current && (
             <div className="photo">
               <Image
                 className="block md:hidden lg:hidden cursor-pointer"
-                src={imageUrl}
+                src={imageUrlRef.current}
                 width={150}
                 height={150}
                 alt="Preview"
               />
               <Image
                 className="hidden md:block lg:hidden cursor-pointer"
-                src={imageUrl}
+                src={imageUrlRef.current}
                 width={200}
                 height={200}
                 alt="Preview"
               />
               <Image
                 className="hidden md:hidden lg:block cursor-pointer"
-                src={imageUrl}
+                src={imageUrlRef.current}
                 width={220}
                 height={220}
                 alt="Preview"
@@ -152,7 +145,6 @@ function createPet() {
           />
         </label>
       </div>
-      {/* input for create pet profile */}
       <div className="w-[90%] flex flex-col justify-between items-center gap-4 py-4 md:w-[85%] lg:gap-8 lg:w-[83%]">
         <div className="w-11/12 lg:w-full">
           <FormControl isRequired>
@@ -177,11 +169,11 @@ function createPet() {
               <FormLabel>Pet type</FormLabel>
               <Select
                 placeholder="Select your pet type"
-                // edit later if have change
                 value={petType}
                 onChange={(event) => {
                   setPetType(event.target.value);
                 }}
+                required
               >
                 <option>Dog</option>
                 <option>Cat</option>
@@ -212,7 +204,6 @@ function createPet() {
               <FormLabel>Sex</FormLabel>
               <Select
                 placeholder="Select sex of your pet"
-                // edit later
                 value={sex}
                 onChange={(event) => {
                   setSex(event.target.value);
@@ -235,6 +226,7 @@ function createPet() {
                 onChange={(event) => {
                   setAge(event.target.value);
                 }}
+                required
               />
             </FormControl>
           </div>
@@ -251,6 +243,7 @@ function createPet() {
                 onChange={(event) => {
                   setColor(event.target.value);
                 }}
+                required
               />
             </FormControl>
           </div>
@@ -264,6 +257,7 @@ function createPet() {
                 onChange={(event) => {
                   setWeight(event.target.value);
                 }}
+                required
               />
             </FormControl>
           </div>
@@ -300,4 +294,5 @@ function createPet() {
     </div>
   );
 }
-export default createPet;
+
+export default CreatePet;

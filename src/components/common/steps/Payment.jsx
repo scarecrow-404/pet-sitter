@@ -2,7 +2,8 @@
 import { useState } from "react";
 import CreditCard from "../payment/CreditCard";
 import Cash from "../payment/Cash";
-
+import supabase from "@/lib/utils/db";
+import { useUser } from "@/hooks/hooks";
 function Payment({ values, handleInput, errors, handleClick }) {
   return (
     <div className="flex flex-col justify-center ">
