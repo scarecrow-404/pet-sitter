@@ -21,7 +21,16 @@ export function UserProvider({ children }) {
 
   return (
     <UserContext.Provider
-      value={{ user, setUser, userId, setUserId, bookingData, setBookingData }}
+      value={{
+        user,
+        setUser,
+        userId,
+        setUserId,
+        bookingData,
+        setBookingData,
+        search,
+        setSearch,
+      }}
     >
       {children}
     </UserContext.Provider>
