@@ -4,7 +4,7 @@ import xicon from "@/asset/images/iconX.svg";
 
 function PopupBooking(props) {
   return props.trigger ? (
-    <div className="bg-black bg-opacity-60 flex justify-center w-screen h-screen">
+    <div className="bg-black bg-opacity-60 flex justify-center w-screen h-screen fixed z-20">
       <div className="bg-white w-[400px] h-[208px] mt-[250px] rounded-[16px]">
         <div
           className="flex justify-between py-[16px] px-[24px] border-[

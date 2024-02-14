@@ -8,6 +8,7 @@ import starpic from "@/asset/images/Star1.svg";
 import squarepic from "@/asset/images/Ellipse15(butblue).svg";
 
 import Navbar from "@/components/common/Navbar";
+import PopupBooking from "@/components/PopupBooking";
 import Pet from "@/components/common/steps/Pet";
 import Information from "@/components/common/steps/Information";
 import Payment from "@/components/common/steps/Payment";
@@ -22,6 +23,7 @@ const Booking = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const steps = ["Your Pet", "Information", "Payment"];
   const [errors, setErrors] = useState({});
+  const [popupButton, setPopupButton] = useState(false);
 
   const [paymentMethod, setPaymentMethod] = useState({
     creditCard: true,
@@ -29,7 +31,7 @@ const Booking = () => {
   });
   //from pet
   const [selectedPets, setSelectedPets] = useState([]);
-  
+
   //from information
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -145,9 +147,13 @@ const Booking = () => {
         setErrors({ ...checkStep3 });
       } else {
         setErrors({});
-        setCurrentStep(newStep + 1);
+        setPopupButton(true);
       }
     }
+  };
+
+  const closePopup = () => {
+    setPopupButton(false);
   };
 
   const handleClick = () => {
@@ -170,6 +176,7 @@ const Booking = () => {
     <div className="bg-[#FAFAFB] ">
       <div className="bg-[#FAFAFB] h-full ">
         <Navbar />
+        <PopupBooking trigger={popupButton} closePopup={closePopup} />
         <div className="flex lg:flex-row flex-col">
           <div className="w-full flex lg:flex-row flex-col justify-center 2xl:w-[1440px] lg:mx-auto pt-[40px] md:px-[80px] gap-[16px]">
             <div className="bg-[#FFFFFF] flex flex-col md:w-full h-auto mb-[20px] pb-[20px] ">
