@@ -15,7 +15,7 @@ import { usePathname } from "next/navigation";
 import { useUser} from "@/hooks/hooks"
 import supabase  from "@/lib/utils/db";
 const SearchBar = () => {
-  const {search,setSearch}= useUser()
+  const {search,setSearch,setIsNewSearch}= useUser()
   const [experianceQuery, setExperianceQuery] = useState("0-10");
   const [searchQuery, setSearchQuery] = useState('');
   const [searchRating, setSearchRating] = useState(0);
@@ -26,6 +26,7 @@ const SearchBar = () => {
   const [isLandingPage, setIsLandingPage] = useState(true);
   const [check, setCheck] = useState([false, false, false, false]);
   const router = useRouter();
+  
   const HandleCheck = (index) => {
     setCheck((prevState) =>
       prevState.map((item, idx) => (idx === index ? !item : item))
@@ -53,6 +54,7 @@ const getPet = async()=>{
   const handleSearch = async (event) => {
     event.preventDefault()
     const currentPath = pathname;
+    await setIsNewSearch(true)
     console.log("handleSearch");
     console.log(inputType);
     console.log(searchRating);
