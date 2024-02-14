@@ -12,8 +12,9 @@ import { useParams } from "next/navigation";
 function PopupBooking() {
   const { bookingData, setBookingData } = useUser();
   const router = useRouter();
+
   const params = useParams();
- 
+
   const openModal = () => {
     setBookingData({ ...bookingData, isModalOpen: true });
   };

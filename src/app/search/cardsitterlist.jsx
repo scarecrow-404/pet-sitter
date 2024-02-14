@@ -9,19 +9,25 @@ import star from "@/asset/images/Star2.svg";
 import supabase  from "@/lib/utils/db";
 import { useRouter } from "next/navigation";
 import { Avatar } from "@chakra-ui/react";
+import { useUser } from "@/hooks/hooks";
+
 
 function CardSitter(props) {
+  const { bookingData, setBookingData} = useUser();
   const [petId, setPetId] = useState([]);
   let id = props.id;
 
 
   const router = useRouter();
-  function HandleClick (props){
+
+  function HandleClick (props,sittername,fullname){
     const path = `/search/${props}`;
     const url =String(path)
     router.push(url);
-  }
+    setBookingData({...bookingData,sittername: sittername , fullname : fullname});
 
+  }
+console.log("bookingdata", bookingData);
   function renderStar(starNumber) {
     let stars = [];
     for (let i = 0; i < starNumber; i++) {
@@ -68,7 +74,7 @@ function CardSitter(props) {
         direction={{ base: "column", sm: "row" }}
         overflow="hidden"
         variant="outline"
-        onClick={()=>{HandleClick(props.id)}}
+        onClick={()=>{HandleClick(props.id,props.sittername,props.fullname)}}
       >
         <div className=" flex  gap-3 w-[100%]">
        
