@@ -13,7 +13,7 @@ function PopupBooking() {
 
   const { bookingData, setBookingData } = useUser();
   const router = useRouter();
-
+console.log(bookingData);
 
   const openModal = () => {
     setBookingData({ ...bookingData, isModalOpen: true });
