@@ -241,7 +241,7 @@ function SitterDetail(props) {
                 </div>
               </div>
             </div>
-            <div className="reviewer">
+            <div className="reviewer flex flex-col">
               {review.map((item, index) => {
                 const months = [
                   "January",
@@ -264,8 +264,11 @@ function SitterDetail(props) {
                 const formattedDate = `${monthName} ${day}, ${year}`;
 
                 return (
-                  <div key={index} className="flex flex-col p-[24px]">
-                    <div className="flex gap-3 ">
+                  <div
+                    key={index}
+                    className="flex flex-col p-[24px] lg:flex-row lg:gap-[50px]"
+                  >
+                    <div className="flex gap-3 w-[200px]">
                       <Avatar
                         src={item.image_url}
                         className="w-[60px]  rounded-[50%]"
@@ -276,14 +279,14 @@ function SitterDetail(props) {
                           {/* name of reviewer */}
                           {item.full_name}
                         </p>
-                        <p>
+                        <p className="text-gray-500 text-[13px]">
                           {/* date to created_at */}
                           {formattedDate}
                         </p>
                       </div>
                     </div>
-                    <div className="py-[20px] ">
-                      <p className="flex">
+                    <div>
+                      <p className="flex pb-[15px]">
                         {renderStar(item.rating)}
                         {/* star of review */}
                       </p>
@@ -306,14 +309,14 @@ function SitterDetail(props) {
               >
                 <Image src={iconPrev} />
               </button>
-              <div className="pages w-[30px] h-[30px] rounded-[50%] bg-secondOrange flex items-center justify-center border-2 border-orange-500">
+              <div className="pages w-[40px] h-[40px] rounded-[50%] bg-orange-100 text-firstOrange flex items-center justify-center ">
                 {page}
-                {/* แสดงหน้าปัจจุบัน / จำนวนหน้าทั้งหมด */}
+                {/* แสดงหน้าปัจจุบัน */}
               </div>
               /
-              <div className="pages ">
+              <div className="pages w-[40px] h-[40px] rounded-[50%] bg-orange-100 text-firstOrange flex items-center justify-center">
                 {lengthReview}
-                {/* แสดงหน้าปัจจุบัน / จำนวนหน้าทั้งหมด */}
+                {/* แสดงจำนวนหน้าทั้งหมด */}
               </div>
               <button
                 className="next-button"
