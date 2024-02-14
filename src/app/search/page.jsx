@@ -13,7 +13,7 @@ import Footer from "@/components/common/Footer";
 
 
 const Search = () => {
-  const { search, setSearch } = useUser();
+  const { search, setSearch,isNewSearch,setIsNewSearch } = useUser();
   const [sitterData, setSitterData] = useState([]);
   const [idSitter, setIdSitter] = useState("");
   const [expStart, setExpStart] = useState(0);
@@ -21,6 +21,7 @@ const Search = () => {
   const [loading, setloading] = useState();
   const [page, setPage] = useState(1);
   const [lengthReview, setLengthReview] = useState(1);
+
 
   const reviewsPerPage = 5;
 
@@ -131,6 +132,10 @@ const Search = () => {
 
   useEffect(() => {
     splitExpNum(expQuery);
+    if(isNewSearch){
+      setPage(1)
+      setIsNewSearch(false)
+    }
     getSitterData(
       expStart,
       expEnd,
@@ -154,12 +159,14 @@ const Search = () => {
 
   return (
     <>
-      <section className=" max-w-[1440]">
+      <section className=" max-w-[1440px]  mx-auto">
         <Navbar />
 
         <section className=" flex flex-col  lg:flex-row p-3">
           <div className=" w-[100%] lg:w-[30%]">
-            <SearchBar />
+            <SearchBar 
+       
+            />
           </div>
           <div className="  lg:w-[70%] w-[100%] flex flex-col gap-2">
             {sitterData.map((item) => (
@@ -199,7 +206,7 @@ const Search = () => {
                   key={index}
                   onClick={(event) => setPage(event.target.value)}
                   value={item}
-                  className={`pl-4 pt-2 pr-4 pb-2  hover:bg-sixthOrange  rounded-full  text-fourthGray  font-medium hover:text-firstOrange ${page==item? "bg-sixthOrange text-firstOrange":''}`} 
+                  className={`pl-4 pt-2 pr-4 pb-2  hover:bg-sixthOrange  rounded-full   font-medium hover:text-firstOrange ${page==item? "bg-sixthOrange text-firstOrange": "text-fourthGray"}`} 
                 >
                   {item}
                 </button>
