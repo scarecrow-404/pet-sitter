@@ -24,7 +24,7 @@ function CardSitter(props) {
     const path = `/search/${props}`;
     const url =String(path)
     router.push(url);
-    setBookingData({...bookingData,sittername: sittername , fullname : fullname});
+    setBookingData({...bookingData,sittername: sittername , fullname : fullname , sitterId: id});
 
   }
 console.log("bookingdata", bookingData);
