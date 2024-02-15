@@ -40,9 +40,23 @@ function SitterDetail(props) {
     }
     return pageArr;
   }
+  console.log("idsit", params.sitterId);
+  async function getReviewData(
+    ratingStart,
+    ratingEnd,
+    page,
+    reviewsPerPage,
+    sitterId
+  ) {
+    // console.log(
+    //   "dada1",
+    //   ratingStart,
+    //   ratingEnd,
+    //   page,
+    //   reviewsPerPage,
+    //   params.sitterId
+    // );
 
-  async function getReviewData(ratingStart, ratingEnd, page, reviewsPerPage) {
-    console.log("dada1", ratingStart, ratingEnd, page, reviewsPerPage);
     try {
       //.range
       let { data: pageOfReview, error: errorPageOfReview } = await supabase.rpc(
@@ -52,6 +66,7 @@ function SitterDetail(props) {
           rate_end: ratingEnd,
           rate_start: ratingStart,
           reviews_perpage: reviewsPerPage,
+          sitterid: sitterId,
         }
       );
       //get all review
@@ -60,14 +75,15 @@ function SitterDetail(props) {
         {
           rate_end: ratingEnd,
           rate_start: ratingStart,
+          sitterid: sitterId,
         }
       );
       if (!reviewAll || errorReviewAll || !pageOfReview || errorPageOfReview) {
         console.log(errorReviewAll, errorPageOfReview);
       }
 
-      console.log("data", reviewAll);
-      console.log("dataPage", pageOfReview);
+      // console.log("data", reviewAll);
+      // console.log("dataPage", pageOfReview);
       const totalPage = reviewAll.length ? reviewAll.length : 5;
       setLengthReview(Math.ceil(totalPage / reviewsPerPage));
       setReview(pageOfReview);
@@ -84,11 +100,16 @@ function SitterDetail(props) {
   }
 
   useEffect(() => {
-    getReviewData(ratingStart, ratingEnd, page, reviewsPerPage);
+    getReviewData(
+      ratingStart,
+      ratingEnd,
+      page,
+      reviewsPerPage,
+      params.sitterId
+    );
     ratingPrepare(props.rating);
   }, [page, ratingStart]);
 
-  console.log("log", ratingEnd, ratingStart, page);
   //เอาไว้แสดงรูปภาพดาวrating
   function renderStar(starNumber) {
     let stars = [];
@@ -104,9 +125,8 @@ function SitterDetail(props) {
     }
     return stars;
   }
-
   function handleClickStar(number) {
-    console.log("number", number);
+    // console.log("number", number);
     if (number == "All Reviews") {
       setRatingEnd(5);
       setRatingStart(1);
@@ -116,41 +136,7 @@ function SitterDetail(props) {
     }
     setPage(1);
   }
-  // async function handleClickStar(selectedRating) {
-  //   try {
-  //     let { data, error } = {};
 
-  //     if (selectedRating === "All Reviews") {
-  //       // Fetch all reviews
-  //       ({ data, error } = await supabase
-  //         .from("review_render")
-  //         .select("*")
-  //         .eq("pet_sitter_id", params.sitterId)
-  //         .order("created_at", params.created_at)
-  //         .range((page - 1) * reviewsPerPage, page * reviewsPerPage - 1));
-  //     } else {
-  //       // Fetch reviews based on selected rating
-
-  //       ({ data, error } = await supabase
-  //         .from("review_render")
-  //         .select("*")
-  //         .eq("pet_sitter_id", params.sitterId)
-  //         .eq("rating", selectedRating)
-  //         .order("created_at", params.created_at)
-  //         .range((page - 1) * reviewsPerPage, page * reviewsPerPage - 1));
-  //     }
-  //     if (!data || data.length === 0) {
-  //       setReview([]);
-  //     } else {
-  //       setReview(data);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching reviews:", error.message);
-  //   }
-
-  // }
-
-  console.log("review", review);
   return (
     <div className="mainDivDetailSitter lg:flex-row-reverse lg:flex h-full">
       <div className="p-[20px] gap-2 w-full lg:w-[35%]">
@@ -299,7 +285,7 @@ function SitterDetail(props) {
                 return (
                   <div
                     key={index}
-                    className="flex flex-col p-[24px] lg:flex-row lg:gap-[50px]"
+                    className="flex flex-col p-[24px] lg:flex-row lg:gap-[50px]  gap-3  border-b-sixthGray border-b-[1px] "
                   >
                     <div className="flex gap-3 w-[200px]">
                       <Avatar
@@ -328,13 +314,12 @@ function SitterDetail(props) {
                         {item.description}
                       </p>
                     </div>
-                    <hr></hr>
                   </div>
                 );
               })}
             </div>
 
-            <div className="pagination flex gap-4  text-center justify-center">
+            <div className="pagination flex gap-4  text-center justify-center p-[10px]">
               <button
                 className="previous-button pl-4 pt-2 pr-4 pb-2 hover:bg-sixthOrange  rounded-full  text-fourthGray  font-medium hover:text-firstOrange"
                 onClick={previousPage}
@@ -348,13 +333,12 @@ function SitterDetail(props) {
                 />
               </button>
               <div className="pages flex gap-2 ">
-                {/* {page}/{lengthReview} */}
                 {/* แสดงหน้าปัจจุบัน / จำนวนหน้าทั้งหมด */}
                 {splitPage(lengthReview).map((item, index) => {
                   return (
                     <button
                       key={index}
-                      onClick={(e) => handleClickStar(e.target.value)}
+                      onClick={(e) => setPage(e.target.value)}
                       value={item}
                       className={`pl-4 pt-2 pr-4 pb-2  hover:bg-sixthOrange  rounded-full  text-fourthGray  font-medium hover:text-firstOrange ${
                         page == item ? "bg-sixthOrange text-firstOrange" : ""
