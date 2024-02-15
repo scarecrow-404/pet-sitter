@@ -2,221 +2,37 @@
 import React, { useEffect, useState } from "react";
 import { Sidebar, TopBar } from "@/components/sidebar";
 import { Input, Select } from "@chakra-ui/react";
-
+import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { event } from "jquery";
+import supabase from "@/lib/utils/db";
+import { useUser } from "@/hooks/hooks";
+
 const BookingList = () => {
+  const params = useParams();
   const router = useRouter();
   const dataMock = [
     {
       id: 1,
-      PetOwnerName: "John Wick",
-      amountPet: 2,
-      Duration: 3,
-      BookedDate: "25 Aug, 7 AM - 10 AM",
-      Status: "Waiting for confirm",
-      TotalPaid: 150,
+      PetOwnerName: "John Wick", //full_name //users
+      amountPet: 2, //รับมา
+      Duration: 3, //รับมา
+      BookedDate: "25 Aug, 7 AM - 10 AM", //booking_data
+      Status: "Waiting for confirm", //process_status
+      TotalPaid: 150, //total_amout
       TransactionDate: "2024-02-03",
       TransactionNo: "1234567",
       AdditionalMessage: "I love my pet",
-      Email: "johnwick@example.com",
-      Phone: "1234567890",
-      IDNumber: "1234567890123",
-      DateOfBirth: "1990-01-01",
-    },
-    {
-      id: 2,
-      PetOwnerName: "Aaron",
-      amountPet: 2,
-      Duration: 3,
-      BookedDate: "25 Aug, 7 AM - 10 AM",
-      Status: "Waiting for service",
-      TotalPaid: 200,
-      TransactionDate: "2024-02-03",
-      TransactionNo: "2345678",
-      AdditionalMessage: "I miss my pet",
-      Email: "johnwick@example.com",
-      Phone: "1234567890",
-      IDNumber: "1234567890123",
-      DateOfBirth: "1990-01-01",
-    },
-    {
-      id: 3,
-      PetOwnerName: "Alisha",
-      amountPet: 2,
-      Duration: 3,
-      BookedDate: "25 Aug, 7 AM - 10 AM",
-      Status: "In service",
-      TotalPaid: 250,
-      TransactionDate: "2024-02-03",
-      TransactionNo: "3456789",
-      AdditionalMessage: "My pet is happy",
-      Email: "johnwick@example.com",
-      Phone: "1234567890",
-      IDNumber: "1234567890123",
-      DateOfBirth: "1990-01-01",
-    },
-    {
-      id: 4,
-      PetOwnerName: "Benjamin",
-      amountPet: 2,
-      Duration: 3,
-      BookedDate: "25 Aug, 7 AM - 10 AM",
-      Status: "Success",
-      TotalPaid: 300,
-      TransactionDate: "2024-02-03",
-      TransactionNo: "4567890",
-      AdditionalMessage: "My pet is healthy",
-      Email: "johnwick@example.com",
-      Phone: "1234567890",
-      IDNumber: "1234567890123",
-      DateOfBirth: "1990-01-01",
-    },
-    {
-      id: 5,
-      PetOwnerName: "Camilla",
-      amountPet: 2,
-      Duration: 3,
-      BookedDate: "25 Aug, 7 AM - 10 AM",
-      Status: "Canceled",
-      TotalPaid: 0,
-      TransactionDate: "2024-02-03",
-      TransactionNo: "5678901",
-      AdditionalMessage: "Sorry for the inconvenience",
-      Email: "johnwick@example.com",
-      Phone: "1234567890",
-      IDNumber: "1234567890123",
-      DateOfBirth: "1990-01-01",
-    },
-    {
-      id: 6,
-      PetOwnerName: "Daisy",
-      amountPet: 2,
-      Duration: 3,
-      BookedDate: "25 Aug, 7 AM - 10 AM",
-      Status: "Canceled",
-      TotalPaid: 0,
-      TransactionDate: "2024-02-03",
-      TransactionNo: "6789012",
-      AdditionalMessage: "Looking forward to rebooking",
-      Email: "johnwick@example.com",
-      Phone: "1234567890",
-      IDNumber: "1234567890123",
-      DateOfBirth: "1990-01-01",
-    },
-    {
-      id: 7,
-      PetOwnerName: "Emmalee",
-      amountPet: 2,
-      Duration: 3,
-      BookedDate: "25 Aug, 7 AM - 10 AM",
-      Status: "Canceled",
-      TotalPaid: 0,
-      TransactionDate: "2024-02-03",
-      TransactionNo: "7890123",
-      AdditionalMessage: "Next time, please call in advance",
-      Email: "johnwick@example.com",
-      Phone: "1234567890",
-      IDNumber: "1234567890123",
-      DateOfBirth: "1990-01-01",
-    },
-    {
-      id: 8,
-      PetOwnerName: "Gavin",
-      amountPet: 2,
-      Duration: 3,
-      BookedDate: "25 Aug, 7 AM - 10 AM",
-      Status: "Canceled",
-      TotalPaid: 0,
-      TransactionDate: "2024-02-03",
-      TransactionNo: "8901234",
-      AdditionalMessage: "My pet is not feeling well",
-      Email: "johnwick@example.com",
-      Phone: "1234567890",
-      IDNumber: "1234567890123",
-      DateOfBirth: "1990-01-01",
-    },
-    {
-      id: 9,
-      PetOwnerName: "Isabella",
-      amountPet: 2,
-      Duration: 3,
-      BookedDate: "25 Aug, 7 AM - 10 AM",
-      Status: "Canceled",
-      TotalPaid: 0,
-      TransactionDate: "2024-02-03",
-      TransactionNo: "9012345",
-      AdditionalMessage: "Please refund my payment",
-      Email: "johnwick@example.com",
-      Phone: "1234567890",
-      IDNumber: "1234567890123",
-      DateOfBirth: "1990-01-01",
-    },
-    {
-      id: 10,
-      PetOwnerName: "Jennaleek",
-      amountPet: 2,
-      Duration: 3,
-      BookedDate: "25 Aug, 7 AM - 10 AM",
-      Status: "Canceled",
-      TotalPaid: 0,
-      TransactionDate: "2024-02-03",
-      TransactionNo: "0123456",
-      AdditionalMessage: "I have a scheduling conflict",
-      Email: "johnwick@example.com",
-      Phone: "1234567890",
-      IDNumber: "1234567890123",
-      DateOfBirth: "1990-01-01",
-    },
-    {
-      id: 11,
-      PetOwnerName: "Katharine",
-      amountPet: 2,
-      Duration: 3,
-      BookedDate: "25 Aug, 7 AM - 10 AM",
-      Status: "In service",
-      TotalPaid: 350,
-      TransactionDate: "2024-02-03",
-      TransactionNo: "1234567",
-      AdditionalMessage: "My pet is enjoying the service",
-      Email: "johnwick@example.com",
-      Phone: "1234567890",
-      IDNumber: "1234567890123",
-      DateOfBirth: "1990-01-01",
-    },
-    {
-      id: 12,
-      PetOwnerName: "Latisha",
-      amountPet: 2,
-      Duration: 3,
-      BookedDate: "25 Aug, 7 AM - 10 AM",
-      Status: "Success",
-      TotalPaid: 400,
-      TransactionDate: "2024-02-03",
-      TransactionNo: "2345678",
-      AdditionalMessage: "Highly recommend this service",
-      Email: "johnwick@example.com",
-      Phone: "1234567890",
-      IDNumber: "1234567890123",
-      DateOfBirth: "1990-01-01",
-    },
-    {
-      id: 13,
-      PetOwnerName: "Maglorix",
-      amountPet: 2,
-      Duration: 3,
-      BookedDate: "25 Aug, 7 AM - 10 AM",
-      Status: "In service",
-      TotalPaid: 450,
-      TransactionDate: "2024-02-03",
-      TransactionNo: "3456789",
-      AdditionalMessage: "My pet is so happy!",
-      Email: "johnwick@example.com",
-      Phone: "1234567890",
-      IDNumber: "1234567890123",
-      DateOfBirth: "1990-01-01",
+      Email: "johnwick@example.com", //email //users
+      Phone: "1234567890", //phone_number //users
+      IDNumber: "1234567890123", // ไม่มี
+      DateOfBirth: "1990-01-01", //date_of_birth  //users
     },
   ];
+  const [petData, setPetData] = useState([]);
+  const [keywords, setKeywords] = useState("");
+  const [keywordsStatus, setKeywordsStatus] = useState("");
+  const [petCount, setPetCount] = useState({});
   const handleClick = (item) => {
     const path = `/sitter_management/booking_list/${item.id}`;
 
@@ -226,17 +42,81 @@ const BookingList = () => {
 
     router.push(url);
   };
-  const [petData, setPetData] = useState([...dataMock]);
-  const [keywords, setKeywords] = useState("");
-  const [keywordsStatus, setKeywordsStatus] = useState("");
+
+  async function getBookingList() {
+    let { data, error } = await supabase
+      .from("booking_list_render")
+      .select("*")
+      .eq("pet_sitter_id", 19);
+    if (error || !data) {
+      console.log(error);
+    }
+
+    // สร้างเซตเพื่อเก็บ id ที่เป็น unique
+    let idSet = new Set();
+
+    // นับจำนวน id แต่ละตัว
+
+    let idCount = {};
+    data.forEach((item) => {
+      idSet.add(item.id);
+      if (idCount[item.id]) {
+        idCount[item.id]++;
+      } else {
+        idCount[item.id] = 1;
+      }
+    });
+
+    // นับจำนวนข้อมูลทั้งหมดที่มี id ซ้ำกัน
+    let totalCount = 0;
+    for (const id in idCount) {
+      totalCount += idCount[id];
+    }
+
+    console.log("Total number of unique IDs:", idSet.size);
+    console.log("ID count map:", idCount);
+    console.log("Total count of data with duplicate IDs:", totalCount);
+    console.log("dataa", data);
+    setPetData(data);
+    setPetCount(idCount);
+    console.log(petCount);
+  }
+
+  function filterSitterData(array) {
+    const petType = [];
+    const arr = [];
+    const sitterArr = [];
+    const idCount = [];
+    let idSet = new Set();
+    let totalCount = 0;
+    array.filter((item) => {
+      const index = arr.indexOf(item.sitterId);
+      if (index == -1) {
+        totalCount += 1;
+        idCount.push(totalCount);
+        arr.push(item.sitterId);
+        sitterArr.push(item);
+        petType.push(item.pet_type_master_id);
+      } else {
+        idCount[idCount.length - 1] += 1;
+
+        petType.push(item.pet_type_master_id);
+      }
+    });
+    setPrefer(petType);
+    return sitterArr;
+  }
+
   useEffect(() => {
+    getBookingList();
     const filteredData = getKeywords();
     setPetData(filteredData);
   }, [keywords, keywordsStatus]);
+
   const getKeywords = () => {
     const regexKeywords = keywords.split(" ").join("|");
     const regex = new RegExp(regexKeywords, "ig");
-    const results = data.filter((item) => {
+    const results = petData.filter((item) => {
       return (
         item.PetOwnerName.match(regex) ||
         item.IDNumber.match(regex) ||
@@ -251,7 +131,7 @@ const BookingList = () => {
     return results;
   };
   const getStatusCount = (status) => {
-    const count = data.filter((item) => item.Status === status).length;
+    const count = petData.filter((item) => item.Status === status).length;
     return count;
   };
   return (
@@ -325,33 +205,33 @@ const BookingList = () => {
                     className="cursor-pointer hover:bg-fourthGray"
                   >
                     <td className="text-center py-2 md:py-6 ">
-                      {item.PetOwnerName}
+                      {item.full_name}
                     </td>
                     <td className="text-center py-2 md:py-6 hidden md:table-cell">
-                      {item.amountPet}
+                      {petCount[item.id] || 1}
                     </td>
                     <td className="text-center py-2 md:py-6 hidden md:table-cell">
-                      {item.Duration}
+                      {item.Duration} hours
                     </td>
                     <td className="text-center py-2 md:py-6">
-                      {item.BookedDate}
+                      {item.booking_date}
                     </td>
                     <td
                       className={`${
-                        item.Status === "Waiting for confirm"
+                        item.process_status === "Waiting for confirm"
                           ? "text-pink-500"
-                          : item.Status === "Waiting for service"
+                          : item.process_status === "Waiting for service"
                           ? "text-orange-300"
-                          : item.Status === "In service"
+                          : item.process_status === "In service"
                           ? "text-blue-500"
-                          : item.Status === "Success"
+                          : item.process_status === "Success"
                           ? "text-green-400"
-                          : item.Status === "Canceled"
+                          : item.process_status === "Canceled"
                           ? "text-red-400"
                           : null
                       } text-center py-2 md:py-6`}
                     >
-                      {item.Status}
+                      • {item.process_status}
                     </td>
                   </tr>
                 );
