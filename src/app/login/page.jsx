@@ -9,11 +9,9 @@ import cathand from "@/asset/images/Vector(butorange).svg";
 import Facebookicon from "@/asset/images/Facebookicon.svg";
 import Googleicon from "@/asset/images/Googleicon.svg";
 import { useUser } from "@/hooks/hooks";
-import { signIn } from "@/app/services/auth";
+import { signIn, signInWithProvider } from "@/app/services/auth";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Link from "next/link";
-
-import { signInWithProvider } from "@/app/services/auth";
 
 const LoginPage = () => {
   const [values, setValues] = useState({
@@ -44,7 +42,10 @@ const LoginPage = () => {
 
     return errors;
   }
-
+  function handleOauthSignIn(provider) {
+    const user = signInWithProvider(provider);
+    console.log(user);
+  }
   //   }
   useEffect(() => {
     if (user) {
@@ -178,7 +179,10 @@ const LoginPage = () => {
 
               <div className="text-center">
                 <div className="flex gap-[12px] justify-between">
-                  <button className="flex justify-center gap-[10px] bg-[#F6F6F9] text-black w-1/2 rounded-[99px] px-[24px] py-[12px] h-[34px] sm:h-[48px]">
+                  <button
+                    className="flex justify-center gap-[10px] bg-[#F6F6F9] text-black w-1/2 rounded-[99px] px-[24px] py-[12px] h-[34px] sm:h-[48px]"
+                    onClick={() => handleOauthSignIn("facebook")}
+                  >
                     <span className="flex items-center">
                       <Image src={Facebookicon} alt="Facebook_icon" />
                     </span>
@@ -186,7 +190,10 @@ const LoginPage = () => {
                       Facebook
                     </span>
                   </button>
-                  <button className="flex justify-center gap-[10px] bg-[#F6F6F9] text-black w-1/2 rounded-[99px] px-[24px] py-[6px] sm:py-[12px] h-[34px] sm:h-[48px]">
+                  <button
+                    className="flex justify-center gap-[10px] bg-[#F6F6F9] text-black w-1/2 rounded-[99px] px-[24px] py-[6px] sm:py-[12px] h-[34px] sm:h-[48px]"
+                    onClick={() => handleOauthSignIn("google")}
+                  >
                     <span>
                       <Image src={Googleicon} alt="Google_icon" />
                     </span>

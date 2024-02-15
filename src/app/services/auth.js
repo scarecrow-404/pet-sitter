@@ -54,7 +54,7 @@ export async function resetPassword(email) {
 }
 
 export async function signInWithProvider(provider) {
-  const { user, session, error } = await supabase.auth.signIn({
+  const { user, session, error } = await supabase.auth.signInWithOAuth({
     provider,
   });
 
@@ -65,10 +65,10 @@ export async function signInWithProvider(provider) {
 
   return user;
 }
-
 export async function signUpWithProvider(provider) {
-  const { user, session, error } = await supabase.auth.signUp({
-    provider,
+  console.log(provider);
+  const { user, session, error } = await supabase.auth.signInWithOAuth({
+    provider: provider,
   });
 
   if (error) {
