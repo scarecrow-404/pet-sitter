@@ -59,7 +59,7 @@ function BookingHistory() {
       }
       const { data, error } = await supabase
         .from("booking")
-        .select("*")
+        .select(`*, pet_sitter_render(image_url, sitter_name, full_name)`)
         .eq("user_id", userId);
       if (error) {
         throw error;
@@ -89,21 +89,21 @@ function BookingHistory() {
                 <div className="flex justify-between md:justify-start md:gap-1">
                   <div className="photo w-[80px] h-[80px] md:w-[65px] md:h-[65px]">
                     <Avatar
-                      // width={20}
-                      // height={20}
-                      width="auto"
-                      height="auto"
-                      src={item.Image}
+                      width={14}
+                      height={14}
+                      // width="auto"
+                      // height="auto"
+                      src={item.pet_sitter_render.image_url}
                       alt="preview-pet"
                       className="rounded-full w-[80px] h-[80px] md:w-[65px] md:h-[65px]"
                     />
                   </div>
                   <div className="w-[200px] flex flex-col justify-center gap-2 md:w-[250px] lg:w-[320px]">
                     <div className="text-base font-bold md:text-lg lg:text-xl">
-                      {item.SitterName}
+                      {item.pet_sitter_render.sitter_name}
                     </div>
                     <div className="text-sm font-semibold md:text-base lg:text-lg">
-                      By {item.by}
+                      By {item.pet_sitter_render.full_name}
                     </div>
                   </div>
                 </div>
@@ -400,28 +400,28 @@ function BookingHistory() {
                 <div className="flex flex-col gap-3 pb-3 md:gap-6">
                   <div
                     className={`${
-                      isOpenHistory.Status === "Waiting for confirm"
+                      isOpenHistory.process_status === "Waiting for confirm"
                         ? "text-pink-500"
-                        : isOpenHistory.Status === "Waiting for service"
+                        : isOpenHistory.process_status === "Waiting for service"
                         ? "text-orange-300"
-                        : isOpenHistory.Status === "In service"
+                        : isOpenHistory.process_status === "In service"
                         ? "text-blue-500"
-                        : isOpenHistory.Status === "Success"
+                        : isOpenHistory.process_status === "Success"
                         ? "text-green-400"
-                        : isOpenHistory.Status === "Canceled"
+                        : isOpenHistory.process_status === "Canceled"
                         ? "text-red-400"
                         : null
                     } text-sm font-medium md:text-base`}
                   >
-                    • {isOpenHistory.Status}
+                    • {isOpenHistory.process_status}
                   </div>
 
                   <div className="w-full flex flex-col gap-1">
                     <div className="text-fourthGray text-[13px] font-medium md:text-[15px]">
-                      Transaction date: {isOpenHistory.DateAndTime}
+                      Transaction date: {isOpenHistory.booking_date}
                     </div>
                     <div className="text-fourthGray text-[13px] font-medium md:text-[15px]">
-                      Transaction No.: {isOpenHistory.transtionid}
+                      Transaction No.: {isOpenHistory.id}
                     </div>
                   </div>
 
@@ -430,7 +430,8 @@ function BookingHistory() {
                       Pet Sitter:
                     </div>
                     <div className="text-sm font-medium md:text-[15px]">
-                      {isOpenHistory.SitterName}
+                      {isOpenHistory.pet_sitter_render.sitter_name} By{" "}
+                      {isOpenHistory.pet_sitter_render.full_name}
                     </div>
                   </div>
 
@@ -440,7 +441,7 @@ function BookingHistory() {
                         Date & Time:
                       </div>
                       <div className="text-sm font-medium md:text-[15px]">
-                        {isOpenHistory.DateAndTime}
+                        {isOpenHistory.booking_date}
                       </div>
                     </div>
                     <div className="w-full flex flex-col gap-1 md:w-[48%]">
@@ -464,7 +465,7 @@ function BookingHistory() {
                   <hr />
                   <div className="font-bold text-base flex justify-between">
                     <div>Total</div>
-                    <div>{isOpenHistory.total}</div>
+                    <div>{isOpenHistory.total_amout}</div>
                   </div>
                 </div>
               </>
