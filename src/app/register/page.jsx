@@ -80,6 +80,7 @@ const RegisterPage = () => {
     }
   }
   async function handleOAuth(provider) {
+    console.log(provider);
     let result = await signUpWithProvider(provider);
     console.log(result);
   }
@@ -222,45 +223,44 @@ const RegisterPage = () => {
                 </span>
                 <span class="flex-grow bg-gray-200 rounded h-[1px]"></span>
               </h3>
-
-              <div className="text-center">
-                <div className="flex gap-[12px] justify-between">
-                  <button
-                    value="facebook"
-                    className="flex justify-center gap-[10px] bg-[#F6F6F9] text-black w-1/2 rounded-[99px] px-[24px] py-[6px] sm:py-[12px] h-[34px] sm:h-[48px]"
-                    onClick={() => handleOAuth(values)}
-                  >
-                    <span className="flex items-center">
-                      <Image src={Facebookicon} alt="Facebook_icon" />
-                    </span>
-                    <span className="sm:block hidden text-[16px] font-[700] leading-[24px]">
-                      Facebook
-                    </span>
-                  </button>
-                  <button
-                    value="google"
-                    className="flex justify-center gap-[10px] bg-[#F6F6F9] text-black w-1/2 rounded-[99px] px-[24px] py-[6px] sm:py-[12px] h-[34px] sm:h-[48px]"
-                    onClick={() => handleOAuth(values)}
-                  >
-                    <span>
-                      <Image src={Googleicon} alt="Google_icon" />
-                    </span>
-                    <span className="sm:block hidden text-[16px] font-[700] leading-[24px]">
-                      Gmail
-                    </span>
-                  </button>
-                </div>
-              </div>
-
-              <div className="text-center ">
-                <p className="text-[14px] sm:text-[16px] font-[700] leading-[24px]">
-                  Already have an account?&nbsp;
-                  <Link href="/login">
-                    <span className="text-secondOrange">Login</span>
-                  </Link>
-                </p>
-              </div>
             </form>
+            <div className="text-center">
+              <div className="flex gap-[12px] justify-between">
+                <button
+                  value="facebook"
+                  className="flex justify-center gap-[10px] bg-[#F6F6F9] text-black w-1/2 rounded-[99px] px-[24px] py-[6px] sm:py-[12px] h-[34px] sm:h-[48px]"
+                  onClick={() => handleOAuth("facebook")}
+                >
+                  <span className="flex items-center">
+                    <Image src={Facebookicon} alt="Facebook_icon" />
+                  </span>
+                  <span className="sm:block hidden text-[16px] font-[700] leading-[24px]">
+                    Facebook
+                  </span>
+                </button>
+                <button
+                  value="google"
+                  className="flex justify-center gap-[10px] bg-[#F6F6F9] text-black w-1/2 rounded-[99px] px-[24px] py-[6px] sm:py-[12px] h-[34px] sm:h-[48px]"
+                  onClick={() => handleOAuth("google")}
+                >
+                  <span>
+                    <Image src={Googleicon} alt="Google_icon" />
+                  </span>
+                  <span className="sm:block hidden text-[16px] font-[700] leading-[24px]">
+                    Gmail
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            <div className="text-center ">
+              <p className="text-[14px] sm:text-[16px] font-[700] leading-[24px]">
+                Already have an account?&nbsp;
+                <Link href="/login">
+                  <span className="text-secondOrange">Login</span>
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
 
