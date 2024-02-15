@@ -24,15 +24,20 @@ function Pet({
   selectedPets,
   setSelectedPets,
   onClose,
+  id,
 }) {
   const { isOpen, onOpen, onClose: closeModal } = useDisclosure();
   const { userId } = useUser();
   const [petData, setPetData] = useState([]);
+  const [petPrefer, setPetPrefer] = useState([]);
   useEffect(() => {
     if (userId) {
       fetchPets();
-    }
+    }if(id){
+      fetchPetPerfer(id)}
   }, [userId, isOpen]);
+
+
   const fetchPets = async () => {
     const { data: pets, error } = await supabase
       .from("pet")
@@ -46,6 +51,29 @@ function Pet({
     }
   };
 
+const addPetTypeToArr = (arr)=>{
+  let newArr=[];
+arr.map((item)=>newArr.push(item.pet_type_master.name))
+setPetPrefer(newArr)
+}
+
+
+
+  const fetchPetPerfer = async (id) => {
+    const { data: pets, error } = await supabase
+      .from("pet_prefer")
+      .select(`*, pet_type_master(name)`)
+      .eq("pet_sitter_id", id);
+
+    if (error) {
+      console.error("Error fetching pets data:", error);
+    } else {
+      addPetTypeToArr(pets)
+ 
+    }
+  };
+  console.log(petData,"petData");
+  console.log(petPrefer,"petPrefer");
   // const [selectedPets, setSelectedPets] = useState([]);
   const handleClick = (item) => {
     const index = selectedPets.findIndex((pet) => pet.id === item.id);
@@ -73,13 +101,16 @@ function Pet({
           {/* map here */}
           {petData.length > 0 ? (
             petData.map((item) => (
-              <div
+             
+              <button
+              disabled={petPrefer.includes(item.petType)?false:true}
                 onClick={() => handleClick(item)}
                 key={item.id}
-                className={`mb-5 border rounded-lg w-[210px] h-[240px] flex flex-col justify-center items-center gap-6 cursor-pointer ${
+                className={`mb-5 border rounded-lg w-[210px] h-[240px] flex flex-col justify-center items-center gap-6 cursor-pointer  disabled:bg-gray-200  disabled:opacity-50 ${
                   selectedPets.find((pet) => pet.id === item.id)
-                    ? "bg-gray-200" // Apply a different background color to indicate selection
+                   ? " border-thirdOrange border-[3px]"
                     : ""
+                  
                 }`}
               >
                 <Avatar
@@ -92,7 +123,7 @@ function Pet({
                   <p className="mx-auto">{item.name}</p>
                   <p
                     className={` border rounded-xl w-fit px-3 ${
-                      item.petType === "Dog"
+                      item.petType === "Dog" 
                         ? "border-firstGreen text-firstGreen bg-secondGreen"
                         : item.petType === "Cat"
                         ? "bg-secondPink text-firstPink border-firstPink"
@@ -106,7 +137,7 @@ function Pet({
                     {item.petType}
                   </p>
                 </div>
-              </div>
+              </button>
             ))
           ) : (
             <div>There is no pet</div>
