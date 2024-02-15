@@ -206,7 +206,7 @@ const LoginPage = () => {
 
               <div className="text-center mt-[10px] ">
                 <p className="text-[14px] sm:text-[16px] font-[700] leading-[24px]">
-                  Don't have any account?{" "}
+                  Don&apos;t have any account?{" "}
                   <Link href="/register">
                     <span className="text-secondOrange">Register</span>
                   </Link>
