@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import star from "@/asset/images/star2.svg";
+import star from "@/asset/images/Star2.svg";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { SearchIcon } from "@chakra-ui/icons";
@@ -12,21 +12,21 @@ import {
   InputRightElement,
 } from "@chakra-ui/react";
 import { usePathname } from "next/navigation";
-import { useUser} from "@/hooks/hooks"
-import supabase  from "@/lib/utils/db";
+import { useUser } from "@/hooks/hooks";
+import supabase from "@/lib/utils/db";
 const SearchBar = () => {
-  const {search,setSearch,setIsNewSearch}= useUser()
+  const { search, setSearch, setIsNewSearch } = useUser();
   const [experianceQuery, setExperianceQuery] = useState("0-10");
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [searchRating, setSearchRating] = useState(0);
   const [inputType, setInputType] = useState([]);
-  const [petType,setPettype]=useState([])
+  const [petType, setPettype] = useState([]);
   const sitterRating = [5, 4, 3, 2, 1];
   const pathname = usePathname();
   const [isLandingPage, setIsLandingPage] = useState(true);
   const [check, setCheck] = useState([false, false, false, false]);
   const router = useRouter();
-  
+
   const HandleCheck = (index) => {
     setCheck((prevState) =>
       prevState.map((item, idx) => (idx === index ? !item : item))
@@ -38,32 +38,34 @@ const SearchBar = () => {
     }
   };
 
-const getPet = async()=>{
-  try {
-    const { data, error } = await supabase.from("pet_type_master").select("*")
-    setPettype(data)
-}catch(error){
-  console.log(error)
-}}
-
-
-
-
-
+  const getPet = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("pet_type_master")
+        .select("*");
+      setPettype(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleSearch = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
     const currentPath = pathname;
-    await setIsNewSearch(true)
+    await setIsNewSearch(true);
     console.log("handleSearch");
     console.log(inputType);
     console.log(searchRating);
     console.log(searchQuery);
     console.log(experianceQuery);
- 
 
-    await setSearch({"exp":experianceQuery,"rating":searchRating,"pet": inputType,"keyword":searchQuery});
-   
+    await setSearch({
+      exp: experianceQuery,
+      rating: searchRating,
+      pet: inputType,
+      keyword: searchQuery,
+    });
+
     if (pathname.startsWith("/search")) {
       console.log("Already on search Page");
     } else {
@@ -71,18 +73,20 @@ const getPet = async()=>{
     }
   };
 
-  console.log("frombrigth",search);
-  useEffect(() => {
-    handlePathname();
-    getPet()
-   
-  }, [search],searchQuery);
+  console.log("frombrigth", search);
+  useEffect(
+    () => {
+      handlePathname();
+      getPet();
+    },
+    [search],
+    searchQuery
+  );
 
   useEffect(() => {
     console.log(inputType);
     console.log(searchRating);
   }, [inputType, searchRating]);
-
 
   function renderStar(starNumber) {
     let stars = [];
