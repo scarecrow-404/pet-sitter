@@ -29,7 +29,7 @@ import { useUser } from "@/hooks/hooks";
 import { useRouter } from "next/navigation";
 import supabase from "@/lib/utils/db";
 
-function updatePet({ searchParams }) {
+function UpdatePet({ searchParams }) {
   const { userId } = useUser();
   const router = useRouter();
   const [photo, setPhoto] = useState({});
@@ -84,16 +84,14 @@ function updatePet({ searchParams }) {
       }
     }
   };
-  
-  
+
   // Function to generate a unique filename
   const generateUniqueFileName = (fileName) => {
     const timestamp = new Date().getTime(); // Get current timestamp
     const randomString = Math.random().toString(36).substring(7); // Generate random string
-    const fileExtension = fileName.split('.').pop(); // Get file extension
+    const fileExtension = fileName.split(".").pop(); // Get file extension
     return `${timestamp}_${randomString}.${fileExtension}`;
   };
-  
 
   const handleSubmit = async (event) => {
     try {
@@ -431,4 +429,4 @@ function updatePet({ searchParams }) {
     </div>
   );
 }
-export default updatePet;
+export default UpdatePet;

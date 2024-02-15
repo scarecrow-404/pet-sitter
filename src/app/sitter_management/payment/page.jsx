@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Sidebar, TopBar } from "@/components/sidebar";
+import { Sidebar, TopBar } from "@/components/Sidebar";
 import {
   Input,
   Button,

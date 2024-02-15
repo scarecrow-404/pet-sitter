@@ -70,6 +70,7 @@ const SitterProfile = () => {
         <div>
           {detailUser.map((item) => (
             <SitterDetail
+              key={item.sitterId}
               sitterName={item.sitter_name}
               exp={item.experience}
               place={item.place}

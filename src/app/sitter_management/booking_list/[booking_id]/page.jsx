@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Sidebar, TopBar } from "@/components/sidebar";
+import { Sidebar, TopBar } from "@/components/Sidebar";
 import {
   Input,
   Button,
@@ -273,6 +273,7 @@ const OrderDetails = ({ searchParams }) => {
               {dataPets.map((item, index) => {
                 return (
                   <PopUpPetData
+                    key={index}
                     name={item.name}
                     image={item.Image}
                     petType={item.petType}

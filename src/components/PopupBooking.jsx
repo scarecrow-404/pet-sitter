@@ -36,7 +36,7 @@ function PopupBooking(props) {
               close
             </button>
             <button className="text-[16px] font-[700] leading-[24px] py-[12px] px-[24px] rounded-[99px] gap-[8px] text-white bg-[#FF7037]">
-              Yes, I'm sure
+              Yes, I&apos;m sure
             </button>
           </div>
         </div>

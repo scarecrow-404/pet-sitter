@@ -51,7 +51,7 @@ const LoginPage = () => {
     if (user) {
       router.push("/");
     }
-  }, [user]);
+  }, [user, router]);
   async function handleValidation(event) {
     event.preventDefault();
     setErrors(validation(values));

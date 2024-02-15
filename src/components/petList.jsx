@@ -28,7 +28,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useUser } from "@/hooks/hooks";
 import supabase from "@/lib/utils/db";
-export default function petList() {
+export default function PetList() {
   const router = useRouter();
   const [dataPets, setDataPets] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -136,13 +136,17 @@ export default function petList() {
       {/* Pagination */}
       {dataPets.length > petsPerPage && (
         <div className="flex justify-center items-center gap-2 bg-fifthOrange px-2 py-1 rounded-xl ">
-          <button className="hover:text-firstOrange" onClick={prevPage}>Previous</button>
+          <button className="hover:text-firstOrange" onClick={prevPage}>
+            Previous
+          </button>
           {Array.from({ length: Math.ceil(dataPets.length / petsPerPage) }).map(
             (_, index) => (
               <div
                 key={index}
                 className={`cursor-pointer bg-fifthOrange hover:text-thirdOrange ${
-                  index + 1 === currentPage ? " text-thirdOrange border p-2 rounded-lg bg-sixthOrange " : ""
+                  index + 1 === currentPage
+                    ? " text-thirdOrange border p-2 rounded-lg bg-sixthOrange "
+                    : ""
                 }`}
                 onClick={() => paginate(index + 1)}
               >
@@ -150,7 +154,9 @@ export default function petList() {
               </div>
             )
           )}
-          <button className="hover:text-firstOrange" onClick={nextPage}>Next</button>
+          <button className="hover:text-firstOrange" onClick={nextPage}>
+            Next
+          </button>
         </div>
       )}
     </div>

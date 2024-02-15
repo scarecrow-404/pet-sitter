@@ -4,7 +4,7 @@ import Image from "next/image";
 import supabase from "@/lib/utils/db";
 import previewPet from "@/asset/images/catforsitterlist.jpg";
 import newPet from "@/asset/images/createNewPet.svg";
-import CreatePetModal from "@/components/createPetModal";
+import CreatePetModal from "@/components/CreatePetModal";
 import { useUser } from "@/hooks/hooks";
 import {
   Input,
@@ -121,7 +121,7 @@ function Pet({
                 <ModalHeader>Create Your Pet</ModalHeader>
 
                 <ModalBody>
-                  <CreatePetModal onClose={closeModal} fetchPets={fetchPets}/>
+                  <CreatePetModal onClose={closeModal} fetchPets={fetchPets} />
                 </ModalBody>
                 <ModalFooter>
                   {/* You can add additional footer buttons here if needed */}

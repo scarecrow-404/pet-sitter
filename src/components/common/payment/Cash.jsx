@@ -17,7 +17,7 @@ function Cash() {
         <br />
         you are required to make a cash Payment
         <br />
-        upon arrival at the pet sitter's location.
+        upon arrival at the pet sitter&apos;s location.
       </div>
     </div>
   );

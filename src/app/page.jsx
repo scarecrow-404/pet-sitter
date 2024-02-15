@@ -59,7 +59,7 @@ export default function Home() {
         <SearchBar />
 
         <p className="w-11/12 text-center text-base font-extrabold md:text-lg lg:text-2xl">
-          "Your Pets, Our Priority: Perfect Care, Anytime, Anywhere."
+          &quot;Your Pets, Our Priority: Perfect Care, Anytime, Anywhere.&quot;
         </p>
         <div className="flex flex-col items-center gap-6 w-10/12 lg:flex-row-reverse lg:justify-between lg:gap-0 lg:w-10/12 lg:px-10">
           <div className="w-3/5 md:w-1/2 lg:w-2/5">
@@ -72,8 +72,9 @@ export default function Home() {
                 <h1 className="font-bold text-base md:text-lg">Boarding</h1>
               </div>
               <p className="text-secondGray text-sm pl-4 md:text-base lg:pl-9 lg:text-sm">
-                Your pets stay overnight in your sitter's home. They'll be
-                treated like part of the family in a comfortable environment.
+                Your pets stay overnight in your sitter&apos;s home.
+                They`&apos;`ll be treated like part of the family in a
+                comfortable environment.
               </p>
             </div>
             <div className="flex flex-col gap-2">
@@ -82,8 +83,8 @@ export default function Home() {
                 <h1 className="font-bold text-base md:text-lg">Safety First</h1>
               </div>
               <p className="text-secondGray text-sm pl-4 md:text-base lg:pl-9 lg:text-sm">
-                Your pet's safety is our top priority. Our pet sitters are
-                trained in pet first aid and are equipped to handle any
+                Your pet`&apos;`s safety is our top priority. Our pet sitters
+                are trained in pet first aid and are equipped to handle any
                 unexpected situations. Rest easy knowing that your pets are in
                 capable and caring hands.
               </p>
@@ -124,7 +125,7 @@ export default function Home() {
                 <span className="text-firstGreen">Connect</span> With Sitters
               </h1>
               <p className="w-11/12 text-center text-secondGray text-sm md:text-base md:w-10/12 lg:w-11/12 lg:text-sm">
-                Find a verified and reviewed sitter who'll keep your pets
+                Find a verified and reviewed sitter who&apos;ll keep your pets
                 company and give time.
               </p>
             </div>

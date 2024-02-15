@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Navbar from "@/components/common/Navbar";
 import { AccountBar } from "@/components/AccountBar";
-import UserProfile from "@/components/userProfileManagement";
+import UserProfile from "@/components/UserProfileManagement";
 const Account = () => {
   return (
     <div className="max-w-[1440px] mx-auto bg-sixthGray gap-9">

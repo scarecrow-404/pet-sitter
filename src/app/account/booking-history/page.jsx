@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Navbar from "@/components/common/Navbar";
 import { AccountBar } from "@/components/AccountBar";
-import BookingHistoryList from "@/components/bookingHistory";
+import BookingHistoryList from "@/components/BookingHistory";
 const BookingHistory = () => {
   return (
     <div className="max-w-[1440px] mx-auto bg-sixthGray gap-9">

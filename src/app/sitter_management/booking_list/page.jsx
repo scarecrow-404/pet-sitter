@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Sidebar, TopBar } from "@/components/sidebar";
+import { Sidebar, TopBar } from "@/components/Sidebar";
 import { Input, Select } from "@chakra-ui/react";
 
 import { useRouter } from "next/navigation";

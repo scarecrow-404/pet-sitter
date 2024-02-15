@@ -359,6 +359,7 @@ function BookingHistory() {
                         {[...Array(5)].map((star, index) => {
                           return (
                             <FaStar
+                              key={index}
                               className="cursor-pointer"
                               size={20}
                               color={"#1CCD83"}

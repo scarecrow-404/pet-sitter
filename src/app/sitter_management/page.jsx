@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 
 import { CreateInput } from "thai-address-autocomplete-react";
 import Image from "next/image";
-import { Sidebar, TopBar } from "@/components/sidebar";
+import { Sidebar, TopBar } from "@/components/Sidebar";
 import { Select } from "chakra-react-select";
 import { FormControl, FormLabel, Input, Textarea } from "@chakra-ui/react";
 import supabase from "@/lib/utils/db";

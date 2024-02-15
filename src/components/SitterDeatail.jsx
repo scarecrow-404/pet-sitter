@@ -167,31 +167,43 @@ function SitterDetail(props) {
               </p>
             </div>
             <div className=" flex gap-2 pt-2 ">
-              {props.typePet.map((number) => {
+              {props.typePet.map((number, index) => {
                 if (number === 1) {
                   return (
-                    <p className=" text-[14px]  border-solid border bg-secondGreen rounded-2xl  border-firstGreen pl-2 pr-2 text-firstGreen">
+                    <p
+                      key={index}
+                      className=" text-[14px]  border-solid border bg-secondGreen rounded-2xl  border-firstGreen pl-2 pr-2 text-firstGreen"
+                    >
                       Dog
                     </p>
                   );
                 }
                 if (number === 2) {
                   return (
-                    <p className=" text-[14px]  border-solid border bg-secondPink rounded-2xl  border-firstPink pl-2 pr-2 text-firstPink">
+                    <p
+                      key={index}
+                      className=" text-[14px]  border-solid border bg-secondPink rounded-2xl  border-firstPink pl-2 pr-2 text-firstPink"
+                    >
                       Cat
                     </p>
                   );
                 }
                 if (number === 3) {
                   return (
-                    <p className=" text-[14px]  border-solid border bg-secondLigthBlue rounded-2xl  border-firstLigthBlue pl-2 pr-2 text-firstLigthBlue">
+                    <p
+                      key={index}
+                      className=" text-[14px]  border-solid border bg-secondLigthBlue rounded-2xl  border-firstLigthBlue pl-2 pr-2 text-firstLigthBlue"
+                    >
                       Bird
                     </p>
                   );
                 }
                 if (number === 4) {
                   return (
-                    <p className=" text-[14px]  border-solid border bg-secondYellow rounded-2xl  border-firstYellow pl-2 pr-2 text-firstYellow">
+                    <p
+                      key={index}
+                      className=" text-[14px]  border-solid border bg-secondYellow rounded-2xl  border-firstYellow pl-2 pr-2 text-firstYellow"
+                    >
                       Rabbit
                     </p>
                   );
