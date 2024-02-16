@@ -73,8 +73,8 @@ export default function Home() {
               </div>
               <p className="text-secondGray text-sm pl-4 md:text-base lg:pl-9 lg:text-sm">
                 Your pets stay overnight in your sitter&apos;s home.
-                They`&apos;`ll be treated like part of the family in a
-                comfortable environment.
+                They&apos;ll be treated like part of the family in a comfortable
+                environment.
               </p>
             </div>
             <div className="flex flex-col gap-2">
@@ -83,8 +83,8 @@ export default function Home() {
                 <h1 className="font-bold text-base md:text-lg">Safety First</h1>
               </div>
               <p className="text-secondGray text-sm pl-4 md:text-base lg:pl-9 lg:text-sm">
-                Your pet`&apos;`s safety is our top priority. Our pet sitters
-                are trained in pet first aid and are equipped to handle any
+                Your pet&apos;s safety is our top priority. Our pet sitters are
+                trained in pet first aid and are equipped to handle any
                 unexpected situations. Rest easy knowing that your pets are in
                 capable and caring hands.
               </p>
