@@ -1,18 +1,10 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import Image from "next/image";
+import React, { useState, useEffect, useRef } from "react";
 import previewImg from "@/asset/images/Frame427321094.svg";
-import {
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
-  FormHelperText,
-  Input,
-  Avatar,
-} from "@chakra-ui/react";
+import { FormControl, FormLabel, Input, Avatar } from "@chakra-ui/react";
 import supabase from "@/lib/utils/db";
 import { useUser } from "@/hooks/hooks";
-
+import { useRouter } from "next/navigation";
 function UserManagementProfile() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -20,50 +12,65 @@ function UserManagementProfile() {
   const [IdNumber, setIdNumber] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [photo, setPhoto] = useState({});
-  const [imageUrl, setImageUrl] = useState(previewImg);
-  const { userId } = useUser();
-
+  const imageUrlRef = useRef(previewImg);
+  const { user } = useUser();
+  const [imageUrl, setImageUrl] = useState(imageUrlRef);
+  const router = useRouter();
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!userId) {
-        console.error("userId is null");
+      if (!user || !user.id) {
+        console.error("User ID is null or user object is missing");
         return;
       }
-      const { data: user, error } = await supabase
+      const { data: userData, error } = await supabase
         .from("users")
         .select("*")
-        .eq("id", userId);
+        .eq("id", user.id);
 
       if (error) {
         console.error("Error fetching user data:", error);
+      } else if (userData && userData.length > 0) {
+        const fetchedUser = userData[0];
+        setName(fetchedUser.full_name);
+        setEmail(fetchedUser.email);
+        setPhone(fetchedUser.phone_number);
+        setIdNumber(fetchedUser.personal_id);
+        setDateOfBirth(fetchedUser.date_of_birth);
+        setImageUrl(fetchedUser.image_url || previewImg);
       } else {
-        setName(user[0].full_name);
-        setEmail(user[0].email);
-        setPhone(user[0].phone_number);
-        setIdNumber(user[0].personal_id);
-        setDateOfBirth(user[0].date_of_birth);
-        setImageUrl(user[0].image_url || previewImg);
+        console.error("User data not found");
       }
     };
-    fetchUserData();
-  }, [userId]);
 
+    fetchUserData();
+  }, [user]);
+  const generateUniqueFileName = (fileName) => {
+    const timestamp = new Date().getTime(); // Get current timestamp
+    const randomString = Math.random().toString(36).substring(7); // Generate random string
+    const fileExtension = fileName.split(".").pop(); // Get file extension
+    return `${timestamp}_${randomString}.${fileExtension}`;
+  };
   const handleUploadPhoto = (event) => {
     const file = event.target.files[0];
-    const url = URL.createObjectURL(file);
-    setPhoto({ [file.name]: file });
-    setImageUrl(url);
+    if (file) {
+      const url = URL.createObjectURL(file);
+      if (url) {
+        const uniqueFileName = generateUniqueFileName(file.name);
+        console.log("Generated unique filename:", uniqueFileName); // Log the generated filename
+        setPhoto({ [uniqueFileName]: file });
+        setImageUrl(url);
+      }
+    }
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    let imageUrlToUse = imageUrl; // Initialize with the existing imageUrl
-
-    // Upload photo only if a new photo is selected
+  const handleSubmit = async (imageUrl) => {
+    let imageUrlToUse = imageUrl;
+    // Upload photo
     if (Object.keys(photo).length > 0) {
       const file = Object.values(photo)[0];
-      const filePath = `public/${userId}/${file.name}`;
+      const timestamp = new Date().getTime();
+      const fileName = `${timestamp}_${file.name}`;
+      const filePath = `public/${user.id}/${fileName}`;
       let { data, error: uploadError } = await supabase.storage
         .from("images")
         .upload(filePath, file);
@@ -72,10 +79,8 @@ function UserManagementProfile() {
         console.error("Error uploading photo:", uploadError);
         return;
       }
-
       // Get URL of uploaded photo
       let url = supabase.storage.from("images").getPublicUrl(data.path);
-      console.log(url.data.publicUrl);
       if (!url.data.publicUrl) {
         console.error(
           "Error getting photo URL: File does not exist or bucket is not public",
@@ -83,8 +88,7 @@ function UserManagementProfile() {
         );
         return;
       }
-
-      imageUrl = url.data.publicUrl;
+      imageUrlToUse = url.data.publicUrl;
     }
 
     // Update user data
@@ -94,19 +98,19 @@ function UserManagementProfile() {
       phone_number: phone,
       personal_id: IdNumber,
       date_of_birth: dateOfBirth,
-      image_url: imageUrl, // Use the updated or existing imageUrl
+      image_url: imageUrlToUse,
       updated_at: new Date(),
     };
-
+    console.log("updates", updates);
     const { error } = await supabase
       .from("users")
       .update(updates)
-      .eq("id", userId);
+      .eq("id", user.id);
 
     if (error) {
       console.error("Error updating user:", error);
     } else {
-      console.log("User updated successfully");
+      alert("User updated successfully");
     }
   };
 

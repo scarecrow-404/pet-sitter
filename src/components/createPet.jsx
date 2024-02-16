@@ -30,8 +30,8 @@ function CreatePet() {
 
   const handleUploadPhoto = (event) => {
     const file = event.target.files[0];
-    const timestamp = new Date().getTime(); // Generate unique timestamp
-    const fileName = `${timestamp}_${file.name}`; // Append timestamp to file name
+    const timestamp = new Date().getTime();
+    const fileName = `${timestamp}_${file.name}`;
     const url = URL.createObjectURL(file);
     setPhoto({ [fileName]: file });
     imageUrlRef.current = url;
@@ -55,11 +55,11 @@ function CreatePet() {
       let { data, error: uploadError } = await supabase.storage
         .from("images")
         .upload(filePath, file);
+        console.log("data is",data);
       if (uploadError) {
         console.error("Error uploading photo:", uploadError);
         return;
       }
-
       // Get URL of uploaded photo
       let url = supabase.storage.from("images").getPublicUrl(data.path);
       if (!url.data.publicUrl) {
@@ -72,7 +72,7 @@ function CreatePet() {
 
       imageUrlToUse = url.data.publicUrl;
     }
-
+    console.log(imageUrlToUse);
     const petData = {
       name: petName,
       breed: breed,
@@ -85,7 +85,7 @@ function CreatePet() {
       image_url: imageUrlToUse,
       user_id: userId,
     };
-
+    console.log(petData);
     const { error } = await supabase.from("pet").insert([petData]);
 
     if (error) {
