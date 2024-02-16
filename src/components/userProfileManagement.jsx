@@ -58,7 +58,7 @@ function UserManagementProfile() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    let imageUrl = imageUrl; // Initialize with the existing imageUrl
+    let imageUrlToUse = imageUrl; // Initialize with the existing imageUrl
 
     // Upload photo only if a new photo is selected
     if (Object.keys(photo).length > 0) {

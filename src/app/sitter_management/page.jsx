@@ -37,7 +37,7 @@ const SitterManagement = () => {
   const [previewUrl, setPreviewUrl] = useState(previewImg);
   const [previewUrlPet, setPreviewUrlPet] = useState();
   const [petImage, setPetImage] = useState({});
-
+  const [petSitterID, setPetSitterID] = useState("");
   //address
   const [addressDetail, setAddressDetail] = useState("");
   const [province, setProvince] = useState("");
@@ -125,15 +125,18 @@ const SitterManagement = () => {
       if (error) {
         console.error("Error fetching user data:", error);
       } else {
-        const petTypes = data[0].pet_type.split(",").map((petType) => {
-          petType = petType.trim().toLowerCase();
-          const option = optionPetType.find(
-            (option) => option.value.toLowerCase() === petType
-          );
-
-          return option;
-        });
-        setPetType(petTypes);
+        // const petTypes = data[0].pet_type.split(",").map((petType) => {
+        //   petType = petType.trim().toLowerCase();
+        //   const option = optionPetType.find((option) => {
+        //     const optionValue =
+        //       typeof option.value === "string"
+        //         ? option.value.toLowerCase()
+        //         : "";
+        //     return optionValue === petType;
+        //   });
+        //   return option;
+        // });
+        // setPetType(petTypes);
       }
 
       if (data[0].experience !== null) {
@@ -145,6 +148,7 @@ const SitterManagement = () => {
       } else {
         setExperience(null);
       }
+      setPetSitterID(data[0].id);
       setIntroduction(data[0].introduction);
       setAddressDetail(data[0].address_detail);
       setSubDistrict(data[0].sub_district);
@@ -178,6 +182,7 @@ const SitterManagement = () => {
     };
     fetchData();
   }, [userId]);
+  
   const handleUploadPhoto = (event) => {
     const file = event.target.files[0];
     if (!file) {
@@ -236,21 +241,6 @@ const SitterManagement = () => {
     }
   };
   const updatesPetSitter = async () => {
-    // console.log("inside function");
-    // const { data: existingPetSitter, error: fetchError } = await supabase
-    //   .from("pet_sitter")
-    //   .select("bank_acc_number")
-    //   .eq("bank_acc_number", accountNumber);
-    // console.log("inside function after await");
-    // if (fetchError) {
-    //   console.log("Error fetching pet sitter:", fetchError);
-    //   return;
-    // }
-
-    // if (existingPetSitter.length > 0) {
-    //   console.log("A pet sitter with this bank account number already exists.");
-    //   return;
-    // }
     console.log("inside function");
     const updatesPetSitter = {
       introduction: introduction,
@@ -265,7 +255,6 @@ const SitterManagement = () => {
       service: services,
       place: myPlace,
       experience: parseFloat(experience),
-      pet_type: petType ? petType.map((item) => item.value).join(", ") : null,
       account_name: accountName,
       account_type: accountType,
       etcs: etcs,
@@ -283,6 +272,15 @@ const SitterManagement = () => {
       console.log("User updated successfully");
     }
   };
+  const dataPetType = async () => {
+    petType.map(async (item) => {
+      await supabase
+        .from("pet_prefer")
+        .upsert([
+          { pet_sitter_id: petSitterID , pet_type_master_id: item.value },
+        ]);
+    });
+  };
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
@@ -290,6 +288,7 @@ const SitterManagement = () => {
     try {
       console.log("before await");
       await updatesPetSitter();
+      await dataPetType();
       console.log("after await");
       alert("Update successfully");
     } catch (error) {
@@ -340,7 +339,7 @@ const SitterManagement = () => {
     }
 
     const options = pet_type_master.map((item) => {
-      return { value: item.name, label: item.name };
+      return { value: item.id, label: item.name };
     });
 
     setOptionPetType(options);
