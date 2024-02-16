@@ -52,7 +52,7 @@ function PopupBooking() {
           className="flex top-1/2 left-1/2 items-center bg-white rounded-lg "
           overlayClassName="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center"
         >
-          <div className=" h-fit  rounded-lg bg-white max-sm:w-[320px]">
+          <div className=" h-fit  rounded-lg bg-white max-sm:w-[350px]">
             <div className="flex font-bold h-[32px] items-center justify-between px-[40px] py-[27px]">
               <p className=" text-[18px] font-bold md:text-[24px]">Booking</p>
               <button onClick={closeModal}>
@@ -64,7 +64,7 @@ function PopupBooking() {
             <div className="flex flex-col p-[40px] text-[17px]">
               <div className="flex flex-col gap-5">
                 <p>Select date and time you want to schedule the service.</p>
-                <div className="flex gap-[16px]">
+                <div className="flex gap-[16px] ">
                   <Image src={iconCalenda} alt="" />
 
                   <SingleDatepicker
@@ -90,13 +90,13 @@ function PopupBooking() {
                   <Image src={iconClock} alt="" />
 
                   <TimePicker
-                    className="placeholder:italic placeholder:text-slate-400 w-[186px] h-[45px] border border-gray-400/40 p-[12px] rounded-lg max-sm:w-[80px] max-sm:text-[14px]"
+                    className="placeholder:italic placeholder:text-slate-400 w-[186px] h-[45px] border border-gray-400/40 p-[12px] rounded-lg max-sm:w-[95px] max-sm:text-[14px]"
                     onSelectTime={handleStartTimeChange}
                   />
 
                   <p className="flex items-center">-</p>
                   <TimePicker
-                    className="placeholder:italic placeholder:text-slate-400 w-[186px] h-[45px] border border-gray-400/40 p-[12px] rounded-lg max-sm:w-[80px] max-sm:text-[14px]"
+                    className="placeholder:italic placeholder:text-slate-400 w-[186px] h-[45px] border border-gray-400/40 p-[12px] rounded-lg max-sm:w-[95px] max-sm:text-[14px]"
                     onSelectTime={handleEndTimeChange}
                   />
                 </label>

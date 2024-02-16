@@ -6,7 +6,7 @@ import StepperControl from "@/components/common/StepperControl";
 
 import starpic from "@/asset/images/Star1.svg";
 import squarepic from "@/asset/images/Ellipse15(butblue).svg";
-
+import { useParams } from "next/navigation";
 import Navbar from "@/components/common/Navbar";
 import PopupBooking from "@/components/PopupBooking";
 import Pet from "@/components/common/steps/Pet";
@@ -16,9 +16,10 @@ import { useUser } from "@/hooks/hooks";
 
 const Booking = () => {
   //่รับข้อมูลต่อมาจาก sodix
+  const params = useParams();
   const { userId } = useUser();
   const { bookingData, setBookingData } = useUser();
-  console.log(bookingData);
+  console.log("biikingdata",bookingData);
   const [dataForSearch, setDataForSearch] = useState(bookingData);
   const [currentStep, setCurrentStep] = useState(1);
   const steps = ["Your Pet", "Information", "Payment"];
@@ -29,6 +30,9 @@ const Booking = () => {
     creditCard: true,
     cash: false,
   });
+
+const sitterId = params.sitterId
+
 
   //from pet
   const [selectedPets, setSelectedPets] = useState([]);
@@ -77,6 +81,7 @@ const Booking = () => {
     ];
     return months[monthIndex];
   }
+
   function getTimeDifference(startTime, endTime) {
     const formattedStartTime = startTime.replace(".", ":");
     const formattedEndTime = endTime.replace(".", ":");
@@ -93,21 +98,32 @@ const Booking = () => {
 
     return { hours, minutes };
   }
-  const formattedDate = formatDate(dataForSearch.date);
 
+  const formattedDate = formatDate(dataForSearch.date);
+console.log("dateselect",formattedDate)
   useEffect(() => {
+    //const { startTime, endTime } = dataForSearch;
+    // const { hours, minutes } = getTimeDifference(startTime, endTime);
+    // console.log(hours, minutes);
+  }, [dataForSearch]);
+
     const { startTime, endTime } = dataForSearch;
     const { hours, minutes } = getTimeDifference(startTime, endTime);
-    console.log(hours, minutes);
-  }, [dataForSearch]);
+    console.log("h and m",hours, minutes);
+    console.log("s and e",startTime, endTime);
+
+
+
   const calculateTotal = (numberOfPets, startTime, endTime) => {
+    console.log("calculate total called",numberOfPets,startTime,endTime);
     const baseCost = 600; // Base cost for 3-hour booking
     const additionalCostPerPet = 300; // Additional cost per extra pet
     const additionalHourlyRate = 200; // Additional hourly rate for bookings over 3 hours
 
     // Calculate duration in hours and minutes
+    // let { startTime, endTime } = dataForSearch;
     const { hours, minutes } = getTimeDifference(startTime, endTime);
-
+    // console.log("h and m",hours, minutes);
     // Convert duration to total hours
     const totalHours = hours + minutes / 60;
 
@@ -137,6 +153,7 @@ const Booking = () => {
             selectedPets={selectedPets}
             setSelectedPets={setSelectedPets}
             errors={errors}
+            id = {sitterId}
           />
         );
       case 2:
@@ -303,21 +320,7 @@ const Booking = () => {
                       Duration:
                     </p>
                     <p className="text-[16px] font-[500] leading-[28px]">
-                      {/* {hours} hours {minutes} minutes */}
-                      {
-                        getTimeDifference(
-                          dataForSearch.startTime,
-                          dataForSearch.endTime
-                        ).hours
-                      }{" "}
-                      hours{" "}
-                      {
-                        getTimeDifference(
-                          dataForSearch.startTime,
-                          dataForSearch.endTime
-                        ).minutes
-                      }{" "}
-                      minutes
+                      {hours} hours {minutes} minutes
                     </p>
                   </div>
                   <div className="lg:h-[52px] lg:block flex justify-between">
@@ -333,7 +336,7 @@ const Booking = () => {
                                 index !== selectedPets.length - 1 ? ", " : ""
                               }`
                           )
-                        : "No pets selected"}
+                        : "-"}
                     </p>
                   </div>
                   <div className="lg:h-[52px] lg:block flex justify-between">
@@ -352,7 +355,8 @@ const Booking = () => {
                     {selectedPets.length > 0
                       ? `${calculateTotal(
                           selectedPets.length,
-                          formattedDate
+                          startTime,
+                          endTime
                         )} THB`
                       : "0 THB"}
                   </span>
