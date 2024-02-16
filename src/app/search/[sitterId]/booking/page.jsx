@@ -19,7 +19,7 @@ const Booking = () => {
   const params = useParams();
   const { userId } = useUser();
   const { bookingData, setBookingData } = useUser();
-  console.log("biikingdata",bookingData);
+  console.log("biikingdata", bookingData);
   const [dataForSearch, setDataForSearch] = useState(bookingData);
   const [currentStep, setCurrentStep] = useState(1);
   const steps = ["Your Pet", "Information", "Payment"];
@@ -31,8 +31,7 @@ const Booking = () => {
     cash: false,
   });
 
-const sitterId = params.sitterId
-
+  const sitterId = params.sitterId;
 
   //from pet
   const [selectedPets, setSelectedPets] = useState([]);
@@ -100,22 +99,20 @@ const sitterId = params.sitterId
   }
 
   const formattedDate = formatDate(dataForSearch.date);
-console.log("dateselect",formattedDate)
+  console.log("dateselect", formattedDate);
   useEffect(() => {
     //const { startTime, endTime } = dataForSearch;
     // const { hours, minutes } = getTimeDifference(startTime, endTime);
     // console.log(hours, minutes);
   }, [dataForSearch]);
 
-    const { startTime, endTime } = dataForSearch;
-    const { hours, minutes } = getTimeDifference(startTime, endTime);
-    console.log("h and m",hours, minutes);
-    console.log("s and e",startTime, endTime);
-
-
+  const { startTime, endTime } = dataForSearch;
+  const { hours, minutes } = getTimeDifference(startTime, endTime);
+  console.log("h and m", hours, minutes);
+  console.log("s and e", startTime, endTime);
 
   const calculateTotal = (numberOfPets, startTime, endTime) => {
-    console.log("calculate total called",numberOfPets,startTime,endTime);
+    console.log("calculate total called", numberOfPets, startTime, endTime);
     const baseCost = 600; // Base cost for 3-hour booking
     const additionalCostPerPet = 300; // Additional cost per extra pet
     const additionalHourlyRate = 200; // Additional hourly rate for bookings over 3 hours
@@ -153,7 +150,7 @@ console.log("dateselect",formattedDate)
             selectedPets={selectedPets}
             setSelectedPets={setSelectedPets}
             errors={errors}
-            id = {sitterId}
+            id={sitterId}
           />
         );
       case 2:
