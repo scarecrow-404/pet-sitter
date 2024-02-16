@@ -5,7 +5,13 @@ import { CreateInput } from "thai-address-autocomplete-react";
 import Image from "next/image";
 import { Sidebar, TopBar } from "@/components/Sidebar";
 import { Select } from "chakra-react-select";
-import { FormControl, FormLabel, Input, Textarea } from "@chakra-ui/react";
+import {
+  FormControl,
+  FormLabel,
+  Input,
+  Textarea,
+  Avatar,
+} from "@chakra-ui/react";
 import supabase from "@/lib/utils/db";
 import deleteButton from "@/asset/images/delete.svg";
 import deleteButtonHover from "@/asset/images/deleteHover.svg";
@@ -15,6 +21,7 @@ import withAuth from "@/lib/utils/withAuth";
 const InputThaiAddress = CreateInput();
 import { useUser } from "@/hooks/hooks";
 import previewImg from "@/asset/images/Frame427321094.svg";
+import { set } from "date-fns";
 const SitterManagement = () => {
   const [optionPetType, setOptionPetType] = useState([]);
   const { userId, user } = useUser();
@@ -33,10 +40,10 @@ const SitterManagement = () => {
   const [myPlace, setMyPlace] = useState("");
   const [logo, setLogo] = useState({});
   const [photo, setPhoto] = useState({});
-  const [imageUrl, setImageUrl] = useState(previewImg);
+  const [imageUrl, setImageUrl] = useState();
   const [previewUrl, setPreviewUrl] = useState(previewImg);
   const [previewUrlPet, setPreviewUrlPet] = useState();
-  const [petImage, setPetImage] = useState({});
+  const [petImage, setPetImage] = useState([]);
   const [petSitterID, setPetSitterID] = useState("");
   //address
   const [addressDetail, setAddressDetail] = useState("");
@@ -92,112 +99,137 @@ const SitterManagement = () => {
 
   //fetch data
   useEffect(() => {
-    // console.log(user);
-    const fetchUserData = async () => {
-      if (!userId) {
-        console.error("userId is null");
-        return;
-      }
-      const { data, error } = await supabase
-        .from("users")
-        .select("*")
-        .eq("id", userId);
-
-      if (error) {
-        console.error("Error fetching user data:", error);
-      } else {
-        setFullName(data[0].full_name);
-        setEmail(data[0].email);
-        setPhoneNumber(data[0].phone_number);
-        setImageUrl(data[0].image_url || previewImg);
-      }
-    };
-    const fetchPetSitterData = async (optionPetType) => {
-      if (!userId) {
-        console.error("userId is null");
-        return;
-      }
-      const { data, error } = await supabase
-        .from("pet_sitter")
-        .select("*")
-        .eq("user_id", userId);
-      console.log(data);
-      if (error) {
-        console.error("Error fetching user data:", error);
-      } else {
-        // const petTypes = data[0].pet_type.split(",").map((petType) => {
-        //   petType = petType.trim().toLowerCase();
-        //   const option = optionPetType.find((option) => {
-        //     const optionValue =
-        //       typeof option.value === "string"
-        //         ? option.value.toLowerCase()
-        //         : "";
-        //     return optionValue === petType;
-        //   });
-        //   return option;
-        // });
-        // setPetType(petTypes);
-      }
-
-      if (data[0].experience !== null) {
-        const existingExperienceOption = options.find(
-          (option) => option.value == data[0].experience
-        );
-        setExperience(existingExperienceOption);
-        console.log("exp", existingExperienceOption);
-      } else {
-        setExperience(null);
-      }
-      setPetSitterID(data[0].id);
-      setIntroduction(data[0].introduction);
-      setAddressDetail(data[0].address_detail);
-      setSubDistrict(data[0].sub_district);
-      setDistrict(data[0].district);
-      setBankName(data[0].bank_name);
-      setAccountNumber(data[0].bank_acc_number);
-      setProvince(data[0].province);
-      setPostCode(data[0].post_code);
-      setTradeName(data[0].sitter_name);
-      setServices(data[0].service);
-      setMyPlace(data[0].place);
-      setAccountName(data[0].account_name);
-      setAccountType(data[0].account_type);
-      setEtcs(data[0].etcs);
-      setAddress({
-        district: data[0].district,
-        amphoe: data[0].sub_district,
-        province: data[0].province,
-        zipcode: data[0].post_code,
-      });
-    };
-
     const fetchData = async () => {
-      const optionPetType = await fetchPetTypes();
-      if (!optionPetType) {
-        console.error("fetchPetTypes returned undefined");
-        return;
-      }
       await fetchUserData();
-      await fetchPetSitterData(optionPetType);
+      const petSitterData = await fetchPetSitterData(); // Wait for petSitterData to be fetched
+      if (petSitterData) {
+        await fetchDataPetTypesPrefer(petSitterData.id); // Pass petSitterID to fetchDataPetTypesPrefer
+      }
+      fetchPetTypes();
     };
     fetchData();
   }, [userId]);
-  
-  const handleUploadPhoto = (event) => {
-    const file = event.target.files[0];
-    if (!file) {
-      console.error("No file selected");
+
+  //fetch data start
+  const fetchUserData = async () => {
+    if (!userId) {
+      console.error("User ID is null or user object is missing");
+      return;
+    }
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", userId);
+    console.log("userData", data);
+    if (error) {
+      console.error("Error fetching user data:", error);
+    } else {
+      setFullName(data[0].full_name);
+      setEmail(data[0].email);
+      setPhoneNumber(data[0].phone_number);
+      setImageUrl(data[0].image_url || previewImg);
+    }
+  };
+  const fetchPetSitterData = async () => {
+    if (!userId) {
+      console.error("userId is null");
+      return;
+    }
+    const { data, error } = await supabase
+      .from("pet_sitter")
+      .select("*")
+      .eq("user_id", userId);
+    console.log(data);
+    if (error) {
+      console.error("Error fetching user data:", error);
+    } else if (data[0].experience !== null) {
+      const existingExperienceOption = options.find(
+        (option) => option.value == data[0].experience
+      );
+      setExperience(existingExperienceOption);
+      console.log("exp", existingExperienceOption);
+    } else {
+    }
+    const petSitterData = data[0];
+    setPetSitterID(petSitterData.id);
+    setIntroduction(petSitterData.introduction);
+    setAddressDetail(petSitterData.address_detail);
+    setSubDistrict(petSitterData.sub_district);
+    setDistrict(petSitterData.district);
+    setBankName(petSitterData.bank_name);
+    setAccountNumber(petSitterData.bank_acc_number);
+    setProvince(petSitterData.province);
+    setPostCode(petSitterData.post_code);
+    setTradeName(petSitterData.sitter_name);
+    setServices(petSitterData.service);
+    setMyPlace(petSitterData.place);
+    setAccountName(petSitterData.account_name);
+    setAccountType(petSitterData.account_type);
+    setEtcs(petSitterData.etcs);
+    setPetImage(petSitterData.images);
+    setAddress({
+      district: petSitterData.district,
+      amphoe: petSitterData.sub_district,
+      province: petSitterData.province,
+      zipcode: petSitterData.post_code,
+    });
+    console.log("petSitterData", petSitterData);
+    return petSitterData;
+  };
+  console.log("petSitterID", petSitterID);
+  const fetchDataPetTypesPrefer = async (petSitterID) => {
+    if (!petSitterID) {
+      console.error("petSitterID is undefined");
       return;
     }
 
-    const url = URL.createObjectURL(file);
-    setPhoto({ [file.name]: file });
-    setImageUrl(url);
+    console.log("petSitterID", petSitterID);
+    const { data, error } = await supabase
+      .from("pet_prefer")
+      .select("*")
+      .eq("pet_sitter_id", petSitterID);
+    if (error) {
+      console.error("Error fetching pet type prefer data:", error);
+    } else {
+      const petTypeOptions = data.map((item) => {
+        if (item.pet_type_master_id == "1") {
+          return { value: item.pet_type_master_id, label: "Dog" };
+        } else if (item.pet_type_master_id == "2") {
+          return { value: item.pet_type_master_id, label: "Cat" };
+        } else if (item.pet_type_master_id == "3") {
+          return { value: item.pet_type_master_id, label: "Rabbit" };
+        } else if (item.pet_type_master_id == "4") {
+          return { value: item.pet_type_master_id, label: "Bird" };
+        } else {
+          null;
+        }
+      });
+      setPetType(petTypeOptions);
+    }
   };
-  const updatesUser = async () => {
-    let imageUrl = null;
 
-    // Upload photo
+  //upload Avatar
+  const handleUploadPhoto = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      if (url) {
+        const uniqueFileName = generateUniqueFileName(file.name);
+        console.log("Generated unique filename:", uniqueFileName); // Log the generated filename
+        setPhoto({ [uniqueFileName]: file });
+        setImageUrl(url);
+      }
+    }
+  };
+  // Function to generate a unique filename
+  const generateUniqueFileName = (fileName) => {
+    const timestamp = new Date().getTime(); // Get current timestamp
+    const randomString = Math.random().toString(36).substring(7); // Generate random string
+    const fileExtension = fileName.split(".").pop(); // Get file extension
+    return `${timestamp}_${randomString}.${fileExtension}`;
+  };
+  const updatesAvatarUser = async () => {
+    let updatedImageUrl = imageUrl ?? "";
     if (Object.keys(photo).length > 0) {
       const file = Object.values(photo)[0];
       const filePath = `public/${userId}/${file.name}`;
@@ -221,13 +253,13 @@ const SitterManagement = () => {
         return;
       }
 
-      imageUrl = url.data.publicUrl;
+      updatedImageUrl = url.data.publicUrl;
     }
     const updatesData = {
       full_name: fullName,
       email: email,
       phone_number: phoneNumber,
-      image_url: imageUrl,
+      image_url: updatedImageUrl,
       updated_at: new Date(),
     };
     const { error } = await supabase
@@ -240,6 +272,8 @@ const SitterManagement = () => {
       console.log("User updated successfully");
     }
   };
+
+  //update pet sitter
   const updatesPetSitter = async () => {
     console.log("inside function");
     const updatesPetSitter = {
@@ -254,13 +288,13 @@ const SitterManagement = () => {
       sitter_name: tradeName,
       service: services,
       place: myPlace,
-      experience: parseFloat(experience),
+      experience: experience,
       account_name: accountName,
       account_type: accountType,
       etcs: etcs,
       updated_at: new Date(),
     };
-
+    console.log("updatesPets", updatesPetSitter);
     const { error } = await supabase
       .from("pet_sitter")
       .update(updatesPetSitter)
@@ -272,14 +306,73 @@ const SitterManagement = () => {
       console.log("User updated successfully");
     }
   };
+  //update petsitter end
+
+  //update pet type start
   const dataPetType = async () => {
-    petType.map(async (item) => {
-      await supabase
-        .from("pet_prefer")
-        .upsert([
-          { pet_sitter_id: petSitterID , pet_type_master_id: item.value },
-        ]);
+    // เตรียมข้อมูลใหม่ที่ต้องการ upsert หรือเพิ่มเข้าไปในฐานข้อมูล
+    const newPetTypes = petType.map((item) => ({
+      pet_sitter_id: petSitterID,
+      pet_type_master_id: item.value,
+    }));
+
+    // ดึงข้อมูลเก่าที่มีอยู่ในฐานข้อมูล
+    const { data: existingPetTypes, error } = await supabase
+      .from("pet_prefer")
+      .select("pet_type_master_id")
+      .eq("pet_sitter_id", petSitterID);
+
+    if (error) {
+      console.error("Error fetching existing pet types:", error);
+      return;
+    }
+
+    // สร้างเซ็ตของ pet type ids ที่มีอยู่ในฐานข้อมูลเก่า
+    const existingPetTypeIds = new Set(
+      existingPetTypes.map((item) => item.pet_type_master_id)
+    );
+
+    // กรองข้อมูลใหม่เพื่อเลือกเฉพาะข้อมูลที่ต้องการ upsert หรือเพิ่มเข้าไป
+    const newDataForUpsert = newPetTypes.filter((item) => {
+      return !existingPetTypeIds.has(item.pet_type_master_id);
     });
+
+    // ทำการ upsert ข้อมูลใหม่หรือเพิ่มข้อมูลใหม่เข้าไปในฐานข้อมูล
+    const { error: upsertError } = await supabase
+      .from("pet_prefer")
+      .upsert(newDataForUpsert);
+
+    if (upsertError) {
+      console.error("Error upserting pet types:", upsertError);
+      return;
+    }
+
+    console.log("Pet types upserted successfully");
+
+    // ลบข้อมูลที่ไม่มีในข้อมูลใหม่
+    const dataToDelete = existingPetTypes.filter((item) => {
+      return !newPetTypes.some(
+        (newItem) => newItem.pet_type_master_id === item.pet_type_master_id
+      );
+    });
+
+    // ทำการลบข้อมูลที่ไม่มีในข้อมูลใหม่ออกจากฐานข้อมูล
+    if (dataToDelete.length > 0) {
+      const { error: deleteError } = await supabase
+        .from("pet_prefer")
+        .delete()
+        .in(
+          "pet_type_master_id",
+          dataToDelete.map((item) => item.pet_type_master_id)
+        );
+
+      if (deleteError) {
+        console.error("Error deleting old pet types:", deleteError);
+        return;
+      }
+
+      console.log("Old pet types deleted successfully");
+    }
   };
 
   const handleFormSubmit = async (event) => {
@@ -289,14 +382,62 @@ const SitterManagement = () => {
       console.log("before await");
       await updatesPetSitter();
       await dataPetType();
+      await updatesAvatarUser();
+      await uploadPetImages();
       console.log("after await");
       alert("Update successfully");
     } catch (error) {
       alert("Update failed" + error.message);
     }
-    // await updatesUser();
   };
+
   //upload petimage
+  const uploadPetImages = async () => {
+    let uploadedImageUrls = []; // เก็บ URL ของรูปภาพทั้งหมด
+
+    // ตรวจสอบว่ามีภาพสัตว์เลี้ยงที่ต้องการอัปโหลดหรือไม่
+    if (Object.keys(petImage).length > 0) {
+      // วนลูปผ่านทุกภาพสัตว์เลี้ยง
+      for (const petImageKey in petImage) {
+        const file = petImage[petImageKey];
+        const filePath = `public/${userId}/petsitter/${file.name}`;
+
+        // อัปโหลดภาพสัตว์เลี้ยง
+        let { data, error: uploadError } = await supabase.storage
+          .from("images")
+          .upload(filePath, file);
+
+        if (uploadError) {
+          console.error("Error uploading pet image:", uploadError);
+          continue; // ข้ามไปยังการวนลูปต่อไปถ้าเกิดข้อผิดพลาด
+        }
+
+        // รับ URL ของภาพสัตว์เลี้ยงที่อัปโหลด
+        let url = supabase.storage.from("images").getPublicUrl(data.path);
+        if (!url.data.publicUrl) {
+          console.error(
+            "Error getting pet image URL: File does not exist or bucket is not public"
+          );
+          continue; // ข้ามไปยังการวนลูปต่อไปถ้าเกิดข้อผิดพลาด
+        }
+
+        // เพิ่ม URL ลงใน array
+        uploadedImageUrls.push(url.data.publicUrl);
+      }
+    }
+
+    const images = { images: uploadedImageUrls };
+    const { error } = await supabase
+      .from("pet_sitter")
+      .update(images)
+      .eq("user_id", userId);
+    if (error) {
+      console.error("Error updating user:", error);
+    } else {
+      console.log("User updated successfully");
+    }
+  };
+
   const handlePetImageChange = (event) => {
     const totalFiles = Object.keys(petImage).length + event.target.files.length;
 
@@ -316,10 +457,30 @@ const SitterManagement = () => {
     }
   };
 
-  const handleRemoveImage = (event, petImageKey) => {
-    event.preventDefault();
-    delete petImage[petImageKey];
-    setPetImage({ ...petImage });
+  const handleRemoveImage = (petImageKey) => {
+    const updatedPetImage = { ...petImage };
+    delete updatedPetImage[petImageKey];
+    setPetImage(updatedPetImage);
+  };
+  console.log("petImage", petImage);
+
+  const renderPetImages = () => {
+    return Object.keys(petImage).map((petImageKey) => (
+      <div key={petImageKey} className="relative flex flex-row">
+        <div className="bg-fifthGray rounded-lg w-[167px] h-[167px] flex justify-center items-center">
+          <img
+            src={URL.createObjectURL(petImage[petImageKey])}
+            alt={`Pet ${petImageKey}`}
+          />
+        </div>
+        <button
+          className="absolute text-sm right-1 top-1 cursor-pointer bg-secondOrange p-1 rounded-full hover:bg-fifthOrange hover:text-white w-6 h-6"
+          onClick={() => handleRemoveImage(petImageKey)}
+        >
+          X
+        </button>
+      </div>
+    ));
   };
 
   const handlePetType = (selectedOptions) => {
@@ -388,25 +549,11 @@ const SitterManagement = () => {
             <label htmlFor="profile">
               {imageUrl && (
                 <div className="photo">
-                  <Image
-                    className="block md:hidden lg:hidden cursor-pointer rounded-full w-[150px] h-[150px]"
-                    src={imageUrl}
-                    width={150}
-                    height={150}
-                    alt="Preview"
-                  />
-                  <Image
-                    className="hidden md:block lg:hidden cursor-pointer rounded-full w-[200px] h-[200px]"
+                  <Avatar
+                    className="cursor-pointer"
                     src={imageUrl}
                     width={200}
                     height={200}
-                    alt="Preview"
-                  />
-                  <Image
-                    className="hidden md:hidden lg:block cursor-pointer rounded-full w-[220px] h-[220px]"
-                    src={imageUrl}
-                    width={220}
-                    height={220}
                     alt="Preview"
                   />
                 </div>
@@ -572,62 +719,30 @@ const SitterManagement = () => {
           </div>
           <div className=" pt-6">
             <p>Image Gallery (Maximum 10 images)</p>
+            <div className="flex flex-row my-4 gap-4 flex-wrap justify-center items-center md:justify-start">
+              {renderPetImages()}
 
-            <div className="flex my-4 gap-4 flex-wrap items-center">
-              {Object.keys(petImage).map((petImageKey) => {
-                const file = petImage[petImageKey];
-                const isHovered = imageHoverStates[petImageKey] || false;
-                const imageSrc = isHovered ? deleteButtonHover : deleteButton;
-                return (
-                  <div
-                    key={petImageKey}
-                    className="relative flex justify-center"
-                  >
-                    <Image
-                      src={imageSrc}
-                      width={30}
-                      height={30}
-                      alt="deleteButton"
-                      className="absolute right-0 top-0 cursor-pointer"
-                      onClick={(event) => handleRemoveImage(event, petImageKey)}
-                      onMouseEnter={() => handleMouseEnter(petImageKey)}
-                      onMouseLeave={() => handleMouseLeave(petImageKey)}
-                    />
-                    <div className="bg-fifthGray rounded-lg w-[167px] h-[167px] flex justify-center items-center">
-                      <Image
-                        src={URL.createObjectURL(file)}
-                        width={150}
-                        height={150}
-                        alt={file.name}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-
-              <div className="flex relative mb-4 justify-center">
-                <label htmlFor="imagespet">
-                  {upload && (
-                    <Image
-                      className="cursor-pointer pt-4"
-                      src={upload}
-                      width={150}
-                      height={150}
-                      alt="Frame427321094"
-                    />
-                  )}
-                  <input
-                    type="file"
-                    id="imagespet"
-                    name="imagespet"
-                    accept="image/*"
-                    onChange={handlePetImageChange}
-                    className="sr-only"
-                    multiple
-                    max="10"
+              <label htmlFor="imagespet">
+                {upload && (
+                  <Image
+                    className="cursor-pointer pt-4"
+                    src={upload}
+                    width={150}
+                    height={150}
+                    alt="Frame427321094"
                   />
-                </label>
-              </div>
+                )}
+                <input
+                  type="file"
+                  id="imagespet"
+                  name="imagespet"
+                  accept="image/*"
+                  onChange={handlePetImageChange}
+                  className="sr-only"
+                  multiple
+                  max="10"
+                />
+              </label>
             </div>
           </div>
         </div>
