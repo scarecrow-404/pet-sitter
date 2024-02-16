@@ -47,7 +47,7 @@ const BookingList = () => {
     let { data, error } = await supabase
       .from("booking_list_render")
       .select("*")
-      .eq("pet_sitter_id", 19);
+      .eq("pet_sitter_id", params.sitterId);
     if (error || !data) {
       console.log(error);
     }
@@ -79,32 +79,26 @@ const BookingList = () => {
     console.log("dataa", data);
     setPetData(data);
     setPetCount(idCount);
-    console.log(petCount);
+    console.log("time", data.start_time);
   }
 
-  function filterSitterData(array) {
-    const petType = [];
-    const arr = [];
-    const sitterArr = [];
-    const idCount = [];
-    let idSet = new Set();
-    let totalCount = 0;
-    array.filter((item) => {
-      const index = arr.indexOf(item.sitterId);
-      if (index == -1) {
-        totalCount += 1;
-        idCount.push(totalCount);
-        arr.push(item.sitterId);
-        sitterArr.push(item);
-        petType.push(item.pet_type_master_id);
-      } else {
-        idCount[idCount.length - 1] += 1;
+  //เอาไว้คำนวนความต่างของเวลา
+  function calculator(start_time, end_time) {
+    const [startHour, startMinute] = start_time
+      .split(":")
+      .map((part) => parseInt(part));
+    const [endHour, endMinute] = end_time
+      .split(":")
+      .map((part) => parseInt(part));
+    let hourDifference = endHour - startHour;
+    let minuteDifference = endMinute - startMinute;
+    if (minuteDifference < 0) {
+      minuteDifference += 60;
+      hourDifference--;
+    }
+    const sum = hourDifference + "." + minuteDifference;
 
-        petType.push(item.pet_type_master_id);
-      }
-    });
-    setPrefer(petType);
-    return sitterArr;
+    return sum;
   }
 
   useEffect(() => {
@@ -112,6 +106,19 @@ const BookingList = () => {
     const filteredData = getKeywords();
     setPetData(filteredData);
   }, [keywords, keywordsStatus]);
+
+  //แปลงข้อมูลวันที่ ที่แสดงออกมาเป็น dd/mm, time-time
+  petData.forEach((item) => {
+    const startTime = item.start_time.slice(0, 5);
+    const endTime = item.end_time.slice(0, 5);
+    const bookingDate = new Date(item.booking_date);
+    const formattedDate = bookingDate.toLocaleDateString("en-Uk", {
+      day: "numeric",
+      month: "short",
+    });
+
+    item.formatted_booking_date = `${formattedDate}, ${startTime} - ${endTime}`;
+  });
 
   const getKeywords = () => {
     const regexKeywords = keywords.split(" ").join("|");
@@ -211,10 +218,10 @@ const BookingList = () => {
                       {petCount[item.id] || 1}
                     </td>
                     <td className="text-center py-2 md:py-6 hidden md:table-cell">
-                      {item.Duration} hours
+                      {calculator(item.start_time, item.end_time)} hours
                     </td>
                     <td className="text-center py-2 md:py-6">
-                      {item.booking_date}
+                      {item.formatted_booking_date}
                     </td>
                     <td
                       className={`${
