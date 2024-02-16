@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import logo from "@/asset/images/logoInBlack.svg";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,7 +14,7 @@ import profile from "@/asset/images/Frame427321006.svg";
 import { useUser } from "@/hooks/hooks";
 import { signOut } from "@/app/services/auth";
 import { useRouter } from "next/navigation";
-
+import { useParams } from "next/navigation";
 import {
   Menu,
   MenuButton,
@@ -25,6 +25,8 @@ import {
   Avatar,
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
+import supabase from "@/lib/utils/db";
+
 export function Sidebar({ active }) {
   const [imageSrcPetSittetProfile, setImageSrcPetSittetProfile] =
     useState(petSittetProfile);
@@ -57,12 +59,27 @@ export function Sidebar({ active }) {
     setImageSrcLogOut(logOut);
   };
 
-  const { user, setUser } = useUser();
-
+  const params = useParams();
+  const { user, setUser, userId } = useUser();
+  const [sitterId, setSitterId] = useState();
+  async function getSitterId() {
+    let { data, error } = await supabase
+      .from("pet_sitter")
+      .select("id")
+      .eq("user_id", userId);
+    setSitterId(data[0].id);
+  }
+  useEffect(() => {
+    getSitterId();
+  }, []);
+  console.log("sit", sitterId);
   const router = useRouter();
   const handleSignOut = () => {
     signOut();
     router.push("/");
+  };
+  const handleClickBookingList = () => {
+    router.push(`/sitter_management/${sitterId}/booking_list`);
   };
   return (
     <div className="w-60 h-[91vh] bg-sixthGray fixed">
@@ -92,7 +109,7 @@ export function Sidebar({ active }) {
               <p>Pet Sitter Profile</p>
             </div>
           </Link>
-          <Link href="/sitter_management/booking_list">
+          <button onClick={handleClickBookingList}>
             <div
               onMouseEnter={handleMouseEnterBookingList}
               onMouseLeave={handleMouseLeaveBookingList}
@@ -106,7 +123,10 @@ export function Sidebar({ active }) {
               />
               <p>Booking List</p>
             </div>
-          </Link>
+          </button>
+          {/* <Link href={`/sitter_management/${sitterId}/booking_list`}>
+            
+          </Link> */}
           <Link href="/sitter_management/payment">
             <div
               onMouseEnter={handleMouseEnterPayoutOption}
@@ -139,14 +159,29 @@ export function Sidebar({ active }) {
 }
 
 export function TopBar() {
-  const { user, setUser } = useUser();
+  const router = useRouter();
+  const { user, setUser, userId } = useUser();
+  const [sitterId, setSitterId] = useState();
+  async function getSitterId() {
+    let { data, error } = await supabase
+      .from("pet_sitter")
+      .select("id")
+      .eq("user_id", userId);
+    setSitterId(data[0].id);
+  }
+  useEffect(() => {
+    getSitterId();
+  }, []);
   const handleLogin = () => {
     user ? router.push("/") : router.push("/login");
   };
-  const router = useRouter();
+
   const handleSignOut = () => {
     signOut();
     router.push("/");
+  };
+  const handleClickBookingList = () => {
+    router.push(`/sitter_management/${sitterId}/booking_list`);
   };
   return user ? (
     <div className="headBar flex items-center gap-5 p-5 bg-white justify-between">
@@ -166,9 +201,12 @@ export function TopBar() {
             <Link href="/sitter_management">
               <MenuItem>Pet Sitter Profile</MenuItem>
             </Link>
-            <Link href="/sitter_management/booking_list">
+            <button onClick={handleClickBookingList}>
               <MenuItem>Booking List</MenuItem>
-            </Link>
+            </button>
+            {/* <Link href={`/sitter_management/${sitterId}/booking_list`}>
+              
+            </Link> */}
             <Link href="/sitter_management/payment">
               <MenuItem>Payout Option</MenuItem>
             </Link>
