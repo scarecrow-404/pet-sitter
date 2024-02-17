@@ -11,36 +11,19 @@ import { useUser } from "@/hooks/hooks";
 const BookingList = () => {
   const params = useParams();
   const router = useRouter();
-  const dataMock = [
-    {
-      id: 1,
-      PetOwnerName: "John Wick", //full_name //users
-      amountPet: 2, //รับมา
-      Duration: 3, //รับมา
-      BookedDate: "25 Aug, 7 AM - 10 AM", //booking_data
-      Status: "Waiting for confirm", //process_status
-      TotalPaid: 150, //total_amout
-      TransactionDate: "2024-02-03",
-      TransactionNo: "1234567",
-      AdditionalMessage: "I love my pet",
-      Email: "johnwick@example.com", //email //users
-      Phone: "1234567890", //phone_number //users
-      IDNumber: "1234567890123", // ไม่มี
-      DateOfBirth: "1990-01-01", //date_of_birth  //users
-    },
-  ];
   const [petData, setPetData] = useState([]);
   const [keywords, setKeywords] = useState("");
   const [keywordsStatus, setKeywordsStatus] = useState("");
   const [petCount, setPetCount] = useState({});
-  const handleClick = (item) => {
-    const path = `/sitter_management/booking_list/${item.id}`;
+  //คลิกแล้วไปหน้า bookingของคนฝากเลี้ยง
+  const handleClick = (id) => {
+    const path = `/sitter_management/${params.sitterId}/booking_list/${id}`;
 
-    const queryString = new URLSearchParams(item).toString();
+    // const queryString = new URLSearchParams(item).toString();
 
-    const url = String(path) + "?" + queryString;
+    // const url = String(path) + "?" + queryString;
 
-    router.push(url);
+    router.push(path);
   };
 
   async function getBookingList() {
@@ -54,8 +37,13 @@ const BookingList = () => {
 
     // สร้างเซตเพื่อเก็บ id ที่เป็น unique
     let idSet = new Set();
-
-    // นับจำนวน id แต่ละตัว
+    let uniqueData = [];
+    data.forEach((item) => {
+      if (!idSet.has(item.id)) {
+        uniqueData.push(item);
+        idSet.add(item.id);
+      }
+    });
 
     let idCount = {};
     data.forEach((item) => {
@@ -77,7 +65,7 @@ const BookingList = () => {
     console.log("ID count map:", idCount);
     console.log("Total count of data with duplicate IDs:", totalCount);
     console.log("dataa", data);
-    setPetData(data);
+    setPetData(uniqueData);
     setPetCount(idCount);
     console.log("time", data.start_time);
   }
@@ -120,27 +108,43 @@ const BookingList = () => {
     item.formatted_booking_date = `${formattedDate}, ${startTime} - ${endTime}`;
   });
 
+  //search หาแค่ชื่อของเจ้าของสัตว์เลี้ยง
   const getKeywords = () => {
     const regexKeywords = keywords.split(" ").join("|");
     const regex = new RegExp(regexKeywords, "ig");
     const results = petData.filter((item) => {
-      return (
-        item.PetOwnerName.match(regex) ||
-        item.IDNumber.match(regex) ||
-        item.Status.match(regex) ||
-        item.BookedDate.match(regex)
-      );
+      return item.full_name.match(regex);
     });
     if (keywordsStatus) {
       const statusRegex = new RegExp(keywordsStatus, "ig");
-      return results.filter((item) => item.Status.match(statusRegex));
+      return results.filter((item) => item.process_status.match(statusRegex));
     }
     return results;
   };
+
+  //รับ statusเข้ามา เอามาเทียบค่า
   const getStatusCount = (status) => {
-    const count = petData.filter((item) => item.Status === status).length;
+    const count = petData.filter(
+      (item) => item.process_status === status
+    ).length;
     return count;
   };
+
+  const filteredData = petData
+    .filter((item) => {
+      return (
+        item.full_name.toLowerCase().includes(keywords.toLowerCase()) ||
+        item.process_status.toLowerCase().includes(keywords.toLowerCase()) ||
+        item.booking_date.toLowerCase().includes(keywords.toLowerCase())
+      );
+    })
+    .filter((item) => {
+      return (
+        keywordsStatus === "" ||
+        item.process_status.toLowerCase().includes(keywordsStatus.toLowerCase())
+      );
+    });
+
   return (
     <div className="flex bg-sixthGray justify-center">
       <div className="hidden bg-sixthGray lg:block relative">
@@ -204,11 +208,11 @@ const BookingList = () => {
               </tr>
             </thead>
             <tbody className="text-[13px] md:text-[16px]">
-              {petData.map((item) => {
+              {filteredData.map((item) => {
                 return (
                   <tr
                     key={item.id}
-                    onClick={() => handleClick(item)}
+                    onClick={() => handleClick(item.id)}
                     className="cursor-pointer hover:bg-fourthGray"
                   >
                     <td className="text-center py-2 md:py-6 ">

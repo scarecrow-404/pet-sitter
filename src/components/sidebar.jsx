@@ -68,7 +68,9 @@ export function Sidebar({ active }) {
       .select("id")
       .eq("user_id", userId);
     setSitterId(data[0].id);
+    console.log("sit1", sitterId);
   }
+
   useEffect(() => {
     getSitterId();
   }, []);
@@ -78,9 +80,9 @@ export function Sidebar({ active }) {
     signOut();
     router.push("/");
   };
-  const handleClickBookingList = () => {
-    router.push(`/sitter_management/${sitterId}/booking_list`);
-  };
+  // const handleClickBookingList = () => {
+  //   router.push(`/sitter_management/${sitterId}/booking_list`);
+  // };
   return (
     <div className="w-60 h-[91vh] bg-sixthGray fixed">
       <div className="logo mx-6 my-6">
@@ -109,7 +111,10 @@ export function Sidebar({ active }) {
               <p>Pet Sitter Profile</p>
             </div>
           </Link>
-          <button onClick={handleClickBookingList}>
+          {/* <button onClick={handleClickBookingList}>
+            
+          </button> */}
+          <Link href={`/sitter_management/${sitterId}/booking_list`}>
             <div
               onMouseEnter={handleMouseEnterBookingList}
               onMouseLeave={handleMouseLeaveBookingList}
@@ -123,11 +128,8 @@ export function Sidebar({ active }) {
               />
               <p>Booking List</p>
             </div>
-          </button>
-          {/* <Link href={`/sitter_management/${sitterId}/booking_list`}>
-            
-          </Link> */}
-          <Link href="/sitter_management/payment">
+          </Link>
+          <Link href={`/sitter_management/${sitterId}/payment`}>
             <div
               onMouseEnter={handleMouseEnterPayoutOption}
               onMouseLeave={handleMouseLeavePayoutOption}
@@ -180,9 +182,9 @@ export function TopBar() {
     signOut();
     router.push("/");
   };
-  const handleClickBookingList = () => {
-    router.push(`/sitter_management/${sitterId}/booking_list`);
-  };
+  // const handleClickBookingList = () => {
+  //   router.push(`/sitter_management/${sitterId}/booking_list`);
+  // };
   return user ? (
     <div className="headBar flex items-center gap-5 p-5 bg-white justify-between">
       <div className="flex flex-col items-center md:flex-row md:gap-5">
@@ -201,13 +203,13 @@ export function TopBar() {
             <Link href="/sitter_management">
               <MenuItem>Pet Sitter Profile</MenuItem>
             </Link>
-            <button onClick={handleClickBookingList}>
+            {/* <button onClick={handleClickBookingList}>
+             
+            </button> */}
+            <Link href={`/sitter_management/${sitterId}/booking_list`}>
               <MenuItem>Booking List</MenuItem>
-            </button>
-            {/* <Link href={`/sitter_management/${sitterId}/booking_list`}>
-              
-            </Link> */}
-            <Link href="/sitter_management/payment">
+            </Link>
+            <Link href={`/sitter_management/${sitterId}/payment`}>
               <MenuItem>Payout Option</MenuItem>
             </Link>
             <MenuItem onClick={handleSignOut}>Log Out</MenuItem>
