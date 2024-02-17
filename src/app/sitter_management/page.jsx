@@ -17,6 +17,7 @@ import deleteButton from "@/asset/images/delete.svg";
 import deleteButtonHover from "@/asset/images/deleteHover.svg";
 import frameFray from "@/asset/images/photoFrameOutlineRounded.svg";
 import upload from "@/asset/images/uploadMin10.svg";
+import uploadDisable from "@/asset/images/uploadMin10disable.svg";
 import withAuth from "@/lib/utils/withAuth";
 const InputThaiAddress = CreateInput();
 import { useUser } from "@/hooks/hooks";
@@ -44,6 +45,7 @@ const SitterManagement = () => {
   const [previewUrl, setPreviewUrl] = useState(previewImg);
   const [previewUrlPet, setPreviewUrlPet] = useState();
   const [petImage, setPetImage] = useState([]);
+  const [oldPetImage, setOldPetImage] = useState([]);
   const [petSitterID, setPetSitterID] = useState("");
   //address
   const [addressDetail, setAddressDetail] = useState("");
@@ -167,6 +169,7 @@ const SitterManagement = () => {
     setAccountType(petSitterData.account_type);
     setEtcs(petSitterData.etcs);
     setPetImage(petSitterData.images);
+    setOldPetImage(petSitterData.images);
     setAddress({
       district: petSitterData.district,
       amphoe: petSitterData.sub_district,
@@ -387,54 +390,80 @@ const SitterManagement = () => {
       console.log("after await");
       alert("Update successfully");
     } catch (error) {
-      alert("Update failed" + error.message);
+      alert("Update failed " + error.message + "  " + error);
     }
   };
 
   //upload petimage
+  const fileNames = (i) => {
+    const item = oldPetImage[i] + "";
+    const publicIndex = item.split("/").findIndex((el) => el === "public");
+    const data = item
+      .split("/")
+      .filter((el, i) => {
+        if (i > publicIndex + 1) {
+          return el;
+        }
+      })
+      .join("/");
+    return data;
+  };
+
   const uploadPetImages = async () => {
-    let uploadedImageUrls = []; // เก็บ URL ของรูปภาพทั้งหมด
+    if (!petImage || typeof petImage !== "object") {
+      console.error("Invalid petImage:", petImage);
+      return;
+    }
 
-    // ตรวจสอบว่ามีภาพสัตว์เลี้ยงที่ต้องการอัปโหลดหรือไม่
-    if (Object.keys(petImage).length > 0) {
-      // วนลูปผ่านทุกภาพสัตว์เลี้ยง
-      for (const petImageKey in petImage) {
-        const file = petImage[petImageKey];
-        const filePath = `public/${userId}/petsitter/${file.name}`;
+    const uploadedImageUrls = [];
 
-        // อัปโหลดภาพสัตว์เลี้ยง
-        let { data, error: uploadError } = await supabase.storage
-          .from("images")
-          .upload(filePath, file);
+    for (const key of Object.keys(petImage)) {
+      const file = petImage[key];
 
-        if (uploadError) {
-          console.error("Error uploading pet image:", uploadError);
-          continue; // ข้ามไปยังการวนลูปต่อไปถ้าเกิดข้อผิดพลาด
+      if (typeof file === "object") {
+        try {
+          // Remove old image if exists
+          if (oldPetImage[key]) {
+            await supabase.storage.from("images").remove([fileNames(key)]);
+          }
+
+          // Upload new image
+          const { data, error: uploadError } = await supabase.storage
+            .from("images")
+            .upload(`public/${userId}/petsitter/${file.name}`, file, {
+              cacheControl: "3600",
+              upsert: true,
+            });
+
+          if (uploadError) {
+            throw uploadError;
+          }
+
+          const url = supabase.storage.from("images").getPublicUrl(data.path);
+          uploadedImageUrls.push(url.data.publicUrl);
+        } catch (error) {
+          console.error("Error uploading image:", error.message);
+          // Handle error gracefully
         }
-
-        // รับ URL ของภาพสัตว์เลี้ยงที่อัปโหลด
-        let url = supabase.storage.from("images").getPublicUrl(data.path);
-        if (!url.data.publicUrl) {
-          console.error(
-            "Error getting pet image URL: File does not exist or bucket is not public"
-          );
-          continue; // ข้ามไปยังการวนลูปต่อไปถ้าเกิดข้อผิดพลาด
-        }
-
-        // เพิ่ม URL ลงใน array
-        uploadedImageUrls.push(url.data.publicUrl);
+      } else {
+        uploadedImageUrls.push(file);
       }
     }
 
-    const images = { images: uploadedImageUrls };
-    const { error } = await supabase
-      .from("pet_sitter")
-      .update(images)
-      .eq("user_id", userId);
-    if (error) {
-      console.error("Error updating user:", error);
-    } else {
+    try {
+      // Update data in Supabase database
+      const { error } = await supabase
+        .from("pet_sitter")
+        .update({ images: uploadedImageUrls })
+        .eq("user_id", userId);
+
+      if (error) {
+        throw error;
+      }
       console.log("User updated successfully");
+    } catch (error) {
+      console.error("Error updating user:", error.message);
+      // Handle error gracefully
     }
   };
 
@@ -446,12 +475,11 @@ const SitterManagement = () => {
       return;
     }
 
-    // Process each file
     for (let i = 0; i < event.target.files.length; i++) {
       const file = event.target.files[i];
 
       if (file && file.size <= 10 * 1024 * 1024) {
-        const uniqueId = Date.now() + i; // add 'i' to ensure unique id for each file
+        const uniqueId = Date.now() + i;
         setPetImage((prevPetImage) => ({ ...prevPetImage, [uniqueId]: file }));
       }
     }
@@ -465,22 +493,36 @@ const SitterManagement = () => {
   console.log("petImage", petImage);
 
   const renderPetImages = () => {
-    return Object.keys(petImage).map((petImageKey) => (
-      <div key={petImageKey} className="relative flex flex-row">
-        <div className="bg-fifthGray rounded-lg w-[167px] h-[167px] flex justify-center items-center">
-          <img
-            src={URL.createObjectURL(petImage[petImageKey])}
-            alt={`Pet ${petImageKey}`}
-          />
+    if (!petImage) {
+      return null;
+    }
+
+    const totalImages = Object.keys(petImage).length;
+    const maxRenderedImages = Math.min(totalImages, 10); // Ensure we render no more than 10 images
+    const imagesToRender = Object.keys(petImage).slice(0, maxRenderedImages); // Get up to 10 images from petImage
+
+    return imagesToRender.map((petImageKey) => {
+      let src;
+      if (petImage[petImageKey] instanceof Blob) {
+        src = URL.createObjectURL(petImage[petImageKey]);
+      } else {
+        src = petImage[petImageKey];
+      }
+
+      return (
+        <div key={petImageKey} className="relative flex flex-row">
+          <div className="bg-fifthGray rounded-lg w-[167px] h-[167px] flex justify-center items-center">
+            <img src={src} alt={`Pet ${petImageKey}`} />
+          </div>
+          <button
+            className="absolute text-sm right-1 top-1 cursor-pointer bg-secondOrange p-1 rounded-full hover:bg-fifthOrange hover:text-white w-6 h-6"
+            onClick={() => handleRemoveImage(petImageKey)}
+          >
+            X
+          </button>
         </div>
-        <button
-          className="absolute text-sm right-1 top-1 cursor-pointer bg-secondOrange p-1 rounded-full hover:bg-fifthOrange hover:text-white w-6 h-6"
-          onClick={() => handleRemoveImage(petImageKey)}
-        >
-          X
-        </button>
-      </div>
-    ));
+      );
+    });
   };
 
   const handlePetType = (selectedOptions) => {
@@ -717,151 +759,176 @@ const SitterManagement = () => {
               </FormControl>
             </div>
           </div>
-          <div className=" pt-6">
+          <div className="pt-6">
             <p>Image Gallery (Maximum 10 images)</p>
             <div className="flex flex-row my-4 gap-4 flex-wrap justify-center items-center md:justify-start">
-              {renderPetImages()}
-
-              <label htmlFor="imagespet">
-                {upload && (
-                  <Image
-                    className="cursor-pointer pt-4"
-                    src={upload}
-                    width={150}
-                    height={150}
-                    alt="Frame427321094"
-                  />
-                )}
-                <input
-                  type="file"
-                  id="imagespet"
-                  name="imagespet"
-                  accept="image/*"
-                  onChange={handlePetImageChange}
-                  className="sr-only"
-                  multiple
-                  max="10"
-                />
-              </label>
+              <div className="flex flex-col gap-4 flex-wrap justify-center items-center md:flex-row md:justify-start">
+                {renderPetImages()}
+                <label htmlFor="imagespet">
+                  {Object.keys(petImage).length > 9 ? (
+                    <>
+                      <Image
+                        className="pt-4 flex  justify-center items-center cursor-not-allowed"
+                        src={uploadDisable}
+                        width={150}
+                        height={150}
+                        alt="Frame427321094"
+                      />
+                      <input
+                        disabled
+                        type="file"
+                        id="imagespet"
+                        name="imagespet"
+                        accept="image/*"
+                        onChange={handlePetImageChange}
+                        className="sr-only"
+                        multiple
+                        max="10"
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <Image
+                        className="cursor-pointer pt-4"
+                        src={upload}
+                        width={150}
+                        height={150}
+                        alt="Frame427321094"
+                      />
+                      <input
+                        type="file"
+                        id="imagespet"
+                        name="imagespet"
+                        accept="image/*"
+                        onChange={handlePetImageChange}
+                        className="sr-only"
+                        multiple
+                        max="10"
+                      />
+                    </>
+                  )}
+                </label>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="bg-white rounded-xl p-5 mb-5">
-          <p className="pb-6">Address</p>
-          <div>
-            <FormControl isRequired>
-              <FormLabel>Address detail</FormLabel>
-              <Input
-                value={addressDetail}
-                onChange={(event) => {
-                  setAddressDetail(event.target.value);
-                }}
-              />
-            </FormControl>
-          </div>
-          <div className="md:flex md:gap-9 md:justify-between">
-            <FormControl isRequired>
-              <FormLabel>Province</FormLabel>
-              <InputThaiAddress.Province
-                value={address["province"]}
-                onChange={handleChange("province")}
-                onSelect={handleSelect}
-              />
-            </FormControl>
 
-            <FormControl isRequired>
-              <FormLabel>District</FormLabel>
-              <InputThaiAddress.Amphoe
-                value={address["amphoe"]}
-                onChange={handleChange("amphoe")}
-                onSelect={handleSelect}
-              />
-            </FormControl>
-          </div>
-          <div className="md:flex md:gap-9 md:justify-between">
-            <FormControl isRequired>
-              <FormLabel>Sub-district</FormLabel>
-              <InputThaiAddress.District
-                value={address["district"]}
-                onChange={handleChange("district")}
-                onSelect={handleSelect}
-              />
-            </FormControl>
+          <div className="bg-white rounded-xl p-5 mb-5">
+            <p className="pb-6">Address</p>
+            <div>
+              <FormControl isRequired>
+                <FormLabel>Address detail</FormLabel>
+                <Input
+                  value={addressDetail}
+                  onChange={(event) => {
+                    setAddressDetail(event.target.value);
+                  }}
+                />
+              </FormControl>
+            </div>
+            <div className="md:flex md:gap-9 md:justify-between">
+              <FormControl isRequired>
+                <FormLabel>Province</FormLabel>
+                <InputThaiAddress.Province
+                  value={address["province"]}
+                  onChange={handleChange("province")}
+                  onSelect={handleSelect}
+                />
+              </FormControl>
 
-            <FormControl isRequired>
-              <FormLabel>Post code</FormLabel>
-              <InputThaiAddress.Zipcode
-                value={address["zipcode"]}
-                onChange={handleChange("zipcode")}
-                onSelect={handleSelect}
-              />
-            </FormControl>
-          </div>
-        </div>
-        {/* //bank account  */}
-        <div className="bg-white rounded-xl p-5 mb-5">
-          <p className="pb-6">Bank</p>
-          <div>
-            <FormControl isRequired>
-              <FormLabel>Account Number</FormLabel>
-              <Input
-                value={accountNumber}
-                onChange={(event) => {
-                  setAccountNumber(event.target.value);
-                }}
-              />
-            </FormControl>
-          </div>
-          <div className="md:flex md:gap-9 md:justify-between">
-            <FormControl isRequired>
-              <FormLabel>Account Name</FormLabel>
-              <Input
-                value={accountName}
-                onChange={(event) => {
-                  setAccountName(event.target.value);
-                }}
-              />
-            </FormControl>
+              <FormControl isRequired>
+                <FormLabel>District</FormLabel>
+                <InputThaiAddress.Amphoe
+                  value={address["amphoe"]}
+                  onChange={handleChange("amphoe")}
+                  onSelect={handleSelect}
+                />
+              </FormControl>
+            </div>
+            <div className="md:flex md:gap-9 md:justify-between">
+              <FormControl isRequired>
+                <FormLabel>Sub-district</FormLabel>
+                <InputThaiAddress.District
+                  value={address["district"]}
+                  onChange={handleChange("district")}
+                  onSelect={handleSelect}
+                />
+              </FormControl>
 
-            <FormControl isRequired>
-              <FormLabel>Bank Name</FormLabel>
-              <Input
-                value={bankName}
-                onChange={(event) => {
-                  setBankName(event.target.value);
-                }}
-              />
-            </FormControl>
+              <FormControl isRequired>
+                <FormLabel>Post code</FormLabel>
+                <InputThaiAddress.Zipcode
+                  value={address["zipcode"]}
+                  onChange={handleChange("zipcode")}
+                  onSelect={handleSelect}
+                />
+              </FormControl>
+            </div>
           </div>
-          <div className="md:flex md:gap-9 md:justify-between">
-            <FormControl isRequired>
-              <FormLabel>Account Type</FormLabel>
-              <Input
-                value={accountType}
-                onChange={(event) => {
-                  setAccountType(event.target.value);
-                }}
-              />
-            </FormControl>
+          {/* //bank account  */}
+          <div className="bg-white rounded-xl p-5 mb-5">
+            <p className="pb-6">Bank</p>
+            <div>
+              <FormControl isRequired>
+                <FormLabel>Account Number</FormLabel>
+                <Input
+                  value={accountNumber}
+                  onChange={(event) => {
+                    setAccountNumber(event.target.value);
+                  }}
+                />
+              </FormControl>
+            </div>
+            <div className="md:flex md:gap-9 md:justify-between">
+              <FormControl isRequired>
+                <FormLabel>Account Name</FormLabel>
+                <Input
+                  value={accountName}
+                  onChange={(event) => {
+                    setAccountName(event.target.value);
+                  }}
+                />
+              </FormControl>
 
-            <FormControl isRequired>
-              <FormLabel>Etc.</FormLabel>
-              <Input
-                value={etcs}
-                onChange={(event) => {
-                  setEtcs(event.target.value);
-                }}
-              />
-            </FormControl>
+              <FormControl isRequired>
+                <FormLabel>Bank Name</FormLabel>
+                <Input
+                  value={bankName}
+                  onChange={(event) => {
+                    setBankName(event.target.value);
+                  }}
+                />
+              </FormControl>
+            </div>
+            <div className="md:flex md:gap-9 md:justify-between">
+              <FormControl isRequired>
+                <FormLabel>Account Type</FormLabel>
+                <Input
+                  value={accountType}
+                  onChange={(event) => {
+                    setAccountType(event.target.value);
+                  }}
+                />
+              </FormControl>
+
+              <FormControl isRequired>
+                <FormLabel>Etc.</FormLabel>
+                <Input
+                  value={etcs}
+                  onChange={(event) => {
+                    setEtcs(event.target.value);
+                  }}
+                />
+              </FormControl>
+            </div>
           </div>
-        </div>
-        <div className="flex justify-center pb-7 md:hidden">
-          <button
-            onClick={handleFormSubmit}
-            className="bg-secondOrange rounded-3xl w-80 h-10"
-          >
-            Update
-          </button>
+          <div className="flex justify-center pb-7 md:hidden">
+            <button
+              onClick={handleFormSubmit}
+              className="bg-secondOrange rounded-3xl w-80 h-10"
+            >
+              Update
+            </button>
+          </div>
         </div>
       </div>
     </div>
