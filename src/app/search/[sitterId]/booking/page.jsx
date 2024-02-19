@@ -13,6 +13,7 @@ import Pet from "@/components/common/steps/Pet";
 import Information from "@/components/common/steps/Information";
 import Payment from "@/components/common/steps/Payment";
 import { useUser } from "@/hooks/hooks";
+import { set } from "date-fns";
 
 const Booking = () => {
   //่รับข้อมูลต่อมาจาก sodix
@@ -53,8 +54,7 @@ const Booking = () => {
     expiryDate: "",
     cvccvv: "",
     price: 0,
-    creditCard: "creditcard",
-    cash: "cash",
+    payment_type: "",
   });
   // displayStep จะเป็นการแสดงข้อมูลของแต่ละ step โดยจะเช็คว่า step ที่เข้ามาเป็นอะไร แล้วจะแสดงข้อมูลของ step นั้นๆ
   function formatDate(dataForSearch) {
@@ -174,7 +174,8 @@ const Booking = () => {
           <Payment
             values={values}
             handleInput={handleInput}
-            handleClick={handleClick}
+            handleClickCreditCard={handleClickCreditCard}
+            handleClickCash={handleClickCash}
             errors={errors}
           />
         );
@@ -243,11 +244,11 @@ const Booking = () => {
     setPopupButton(false);
   };
 
-  const handleClick = () => {
-    setValues({
-      creditCard: !setValues.creditCard,
-      cash: !setValues.cash,
-    });
+  const handleClickCreditCard = () => {
+    setValues({ ...values, payment_type: "creditcard" });
+  };
+  const handleClickCash = () => {
+    setValues({ ...values, payment_type: "cash" });
   };
 
   const handleInput = (event) => {

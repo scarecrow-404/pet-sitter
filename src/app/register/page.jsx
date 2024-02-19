@@ -6,6 +6,7 @@ import supabase from "@/lib/utils/db.js";
 import starpic from "@/asset/images/Star1.svg";
 import squarepic from "@/asset/images/Ellipse15(butblue).svg";
 import cathand from "@/asset/images/Vector(butorange).svg";
+import xIcon from "@/asset/images/icons8-twitter.svg";
 import Facebookicon from "@/asset/images/Facebookicon.svg";
 import Googleicon from "@/asset/images/Googleicon.svg";
 import { signUp } from "@/app/services/auth";
@@ -227,16 +228,16 @@ const RegisterPage = () => {
             <div className="text-center">
               <div className="flex gap-[12px] justify-between">
                 <button
-                  value="facebook"
+                  value="twitter"
                   className="flex justify-center gap-[10px] bg-[#F6F6F9] text-black w-1/2 rounded-[99px] px-[24px] py-[6px] sm:py-[12px] h-[34px] sm:h-[48px]"
-                  onClick={() => handleOAuth("facebook")}
+                  onClick={() => handleOAuth("twitter")}
                 >
                   <span className="flex items-center">
-                    <Image src={Facebookicon} alt="Facebook_icon" />
+                    <Image src={xIcon} alt="X icon" />
                   </span>
-                  <span className="sm:block hidden text-[16px] font-[700] leading-[24px]">
-                    Facebook
-                  </span>
+                  {/* <span className="sm:block hidden text-[16px] font-[700] leading-[24px]">
+                    X
+                  </span> */}
                 </button>
                 <button
                   value="google"
