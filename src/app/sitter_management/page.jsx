@@ -92,6 +92,7 @@ const SitterManagement = () => {
       setFullName(enteredFullName);
     }
   };
+  console.log(userId);
   //validate full name end
 
   //My place start
@@ -253,6 +254,7 @@ const SitterManagement = () => {
       const existingExperienceOption = options.find(
         (option) => option.value == data[0].experience
       );
+      console.log(data[0].experience);
       setExperience(existingExperienceOption);
       console.log("exp", existingExperienceOption);
     } else {
@@ -397,12 +399,20 @@ const SitterManagement = () => {
       console.log("User updated successfully");
     }
   };
-
+  console.log(experience);
   //update pet sitter
   const updatesPetSitter = async () => {
     try {
       console.log("inside function");
-      const updatesPetSitter = {
+      let valueExperience;
+      if (typeof experience === "object") {
+        let dataExperience = JSON.parse(experience);
+        valueExperience = parseFloat(dataExperience.value);
+      } else {
+        valueExperience = parseFloat(experience);
+      }
+      console.log("valueExperience", valueExperience);
+      const updataPetSitterData = {
         introduction: introduction,
         address_detail: addressDetail,
         sub_district: subDistrict,
@@ -414,17 +424,21 @@ const SitterManagement = () => {
         sitter_name: tradeName,
         service: services,
         place: myPlace,
-        experience: experience,
+        experience: valueExperience,
         account_name: accountName,
         account_type: accountType,
         etcs: etcs,
         updated_at: new Date(),
       };
-      console.log("updatesPets", updatesPetSitter);
+      console.log("updatesPets", updataPetSitterData);
+      console.log("userId 425", userId);
       const { data, error } = await supabase
         .from("pet_sitter")
-        .update(updatesPetSitter)
+        .update(updataPetSitterData)
         .eq("user_id", userId);
+      if (error) {
+        console.error("Error updating user:", error);
+      }
       console.log("after await");
       console.log(`User updated successfully ${data}`);
     } catch (error) {
@@ -503,7 +517,7 @@ const SitterManagement = () => {
   };
 
   const handleFormSubmit = async (event) => {
-    event.preventDefault();
+    // event.preventDefault();
     console.log("submit push");
 
     setLoading(true); // Show spinner
