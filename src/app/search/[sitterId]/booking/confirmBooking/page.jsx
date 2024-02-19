@@ -2,9 +2,9 @@
 import React from "react";
 import Image from "next/image";
 import Navbar from "@/components/common/Navbar";
-
 import left from "@/asset/images/left_cat_meow_meow.svg";
 import right from "@/asset/images/right_cat_meow_meow.svg";
+
 
 function page() {
   return (

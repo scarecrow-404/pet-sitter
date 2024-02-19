@@ -1,10 +1,50 @@
 import React from "react";
 import Image from "next/image";
 import xicon from "@/asset/images/iconX.svg";
-
+import { useUser } from "@/hooks/hooks";
+import { useParams } from "next/navigation";
+import supabase from "@/lib/utils/db";
+import { useRouter } from "next/navigation";
 function PopupBooking(props) {
+  const router = useRouter();
+  const params = useParams();
+  const { bookingData, setBookingData,user, setUser } = useUser();
+  const sitterId = params.sitterId
 
+  const insert = { pet_sitter_id: sitterId,
+    user_id: user?.id,
+     booking_date: bookingData.date,
+      start_time: bookingData.startTime,
+      end_time: bookingData.endTime,
+      process_status: 'Confirmed',
+      payment_status: 'pending',
+      payment_type: 'cash',
+      total_amout: 1000,
+      additional_message:'love too much',}
 
+async function  handlesubmit() {
+  console.log("in fnc")
+  try{
+  const { error } = await supabase
+  .from('booking')
+  .insert(
+    insert).select()
+  
+  if(!error){
+    alert("booking success")
+    console.log("book success")
+    const path = `/search/${sitterId}/booking/confirmBooking`;
+    const url =String(path)
+    router.push(url);
+
+  }
+  if(error){console.log(error)}
+
+}
+    catch (error) {console.log(error)}
+  
+
+}
 
   
   return props.trigger ? (
@@ -39,7 +79,7 @@ function PopupBooking(props) {
             >
               close
             </button>
-            <button className="text-[16px] font-[700] leading-[24px] py-[12px] px-[24px] rounded-[99px] gap-[8px] text-white bg-[#FF7037]">
+            <button className="text-[16px] font-[700] leading-[24px] py-[12px] px-[24px] rounded-[99px] gap-[8px] text-white bg-[#FF7037]" onClick={handlesubmit}>
               Yes, I&apos;m sure
             </button>
           </div>

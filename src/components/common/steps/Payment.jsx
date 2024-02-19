@@ -12,7 +12,7 @@ function Payment({
   handleClickCash,
 }) {
   return (
-    <div className="flex flex-col justify-center ">
+    <div className="flex flex-col justify-center">
       <div>
         <div className="flex mx-[20px] lg:mx-[60px] gap-[16px] ">
           <button
