@@ -68,21 +68,17 @@ export function Sidebar({ active }) {
       .select("id")
       .eq("user_id", userId);
     setSitterId(data[0].id);
-    console.log("sit1", sitterId);
   }
 
   useEffect(() => {
     getSitterId();
   }, []);
-  console.log("sit", sitterId);
+
   const router = useRouter();
   const handleSignOut = () => {
     signOut();
     router.push("/");
   };
-  // const handleClickBookingList = () => {
-  //   router.push(`/sitter_management/${sitterId}/booking_list`);
-  // };
   return (
     <div className="w-60 h-[91vh] bg-sixthGray fixed">
       <div className="logo mx-6 my-6">
@@ -182,9 +178,7 @@ export function TopBar() {
     signOut();
     router.push("/");
   };
-  // const handleClickBookingList = () => {
-  //   router.push(`/sitter_management/${sitterId}/booking_list`);
-  // };
+
   return user ? (
     <div className="headBar flex items-center gap-5 p-5 bg-white justify-between">
       <div className="flex flex-col items-center md:flex-row md:gap-5">

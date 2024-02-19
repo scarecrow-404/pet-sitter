@@ -35,6 +35,7 @@ function PopupBooking() {
     }
     setBookingData({ ...bookingData, endTime: time });
   };
+  const date = new Date();
   return (
     <>
       <div className="w-full h-auto p-[20px]  rounded-b-lg shadow-2xl">
@@ -83,7 +84,7 @@ function PopupBooking() {
                     name="date-input"
                     date={bookingData.date}
                     onDateChange={handleDate}
-                    minDate={new Date()}
+                    minDate={date.setDate(date.getDate() - 1)}
                   />
                 </div>
                 <label className="flex gap-[16px] ">
