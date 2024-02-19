@@ -12,7 +12,7 @@ import { useUser } from "@/hooks/hooks";
 import { signIn, signInWithProvider } from "@/app/services/auth";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Link from "next/link";
-
+import xIcon from "@/asset/images/icons8-twitter.svg";
 const LoginPage = () => {
   const [values, setValues] = useState({
     name: "",
@@ -181,14 +181,14 @@ const LoginPage = () => {
                 <div className="flex gap-[12px] justify-between">
                   <button
                     className="flex justify-center gap-[10px] bg-[#F6F6F9] text-black w-1/2 rounded-[99px] px-[24px] py-[12px] h-[34px] sm:h-[48px]"
-                    onClick={() => handleOauthSignIn("facebook")}
+                    onClick={() => handleOauthSignIn("twitter")}
                   >
                     <span className="flex items-center">
-                      <Image src={Facebookicon} alt="Facebook_icon" />
+                      <Image src={xIcon} alt="x icon" />
                     </span>
-                    <span className="sm:block hidden text-[16px] font-[700] leading-[24px]">
-                      Facebook
-                    </span>
+                    {/* <span className="sm:block hidden text-[16px] font-[700] leading-[24px]">
+                      X
+                    </span> */}
                   </button>
                   <button
                     className="flex justify-center gap-[10px] bg-[#F6F6F9] text-black w-1/2 rounded-[99px] px-[24px] py-[6px] sm:py-[12px] h-[34px] sm:h-[48px]"
