@@ -149,6 +149,7 @@ const SitterManagement = () => {
       if (petSitterData) {
         await fetchDataPetTypesPrefer(petSitterData.id); // Pass petSitterID to fetchDataPetTypesPrefer
       }
+      fetchImageUrlData();
       fetchPetTypes();
       setLoading(false);
     };
@@ -182,6 +183,53 @@ const SitterManagement = () => {
       setImageUrl(data[0].image_url || previewImg);
     }
   };
+  const fetchImageUrlData = async () => {
+    if (!userId) {
+      console.error("User is null or user object is missing");
+      return;
+    }
+
+    const petSitterData = await fetchPetSitterData();
+
+    if (!petSitterData || !petSitterData.id) {
+      console.error("PetSitterData is null or missing id");
+      return;
+    }
+
+    const petSitterID = parseInt(petSitterData.id);
+
+    if (isNaN(petSitterID)) {
+      console.error("Invalid PetSitterID");
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("gallery_sitter")
+      .select("*")
+      .eq("pet_sitter_id", petSitterID);
+    console.log(data);
+    if (error) {
+      toast({
+        title: "Error",
+        position: "top",
+        description: `Error fetching gellery sitter data: ${error.message}`,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    } else {
+      // ตรวจสอบว่ามีข้อมูลใน data หรือไม่
+      if (data && data.length > 0) {
+        const ImageUrlData = data[0];
+        setPetImage(ImageUrlData.image_url);
+        setOldPetImage(ImageUrlData.image_url);
+      } else {
+        console.error("No data found in the column");
+        // ทำอะไรก็ตามที่คุณต้องการทำเมื่อไม่พบข้อมูลในคอลัมน์
+      }
+    }
+  };
+
   const fetchPetSitterData = async () => {
     if (!userId) {
       console.error("userId is null");
@@ -225,8 +273,7 @@ const SitterManagement = () => {
     setAccountName(petSitterData.account_name);
     setAccountType(petSitterData.account_type);
     setEtcs(petSitterData.etcs);
-    setPetImage(petSitterData.images);
-    setOldPetImage(petSitterData.images);
+
     setAddress({
       district: petSitterData.district,
       amphoe: petSitterData.sub_district,
@@ -418,7 +465,8 @@ const SitterManagement = () => {
     // ทำการ upsert ข้อมูลใหม่หรือเพิ่มข้อมูลใหม่เข้าไปในฐานข้อมูล
     const { error: upsertError } = await supabase
       .from("pet_prefer")
-      .upsert(newDataForUpsert);
+      .upsert(newDataForUpsert)
+      .eq("pet_sitter_id", petSitterID);
 
     if (upsertError) {
       console.error("Error upserting pet types:", upsertError);
@@ -442,7 +490,8 @@ const SitterManagement = () => {
         .in(
           "pet_type_master_id",
           dataToDelete.map((item) => item.pet_type_master_id)
-        );
+        )
+        .eq("pet_sitter_id", petSitterID);
 
       if (deleteError) {
         console.error("Error deleting old pet types:", deleteError);
@@ -460,12 +509,19 @@ const SitterManagement = () => {
     setLoading(true); // Show spinner
 
     try {
-      console.log("before await");
+      await console.log("start updatepetSitter");
       await updatesPetSitter();
+      await console.log("end updatepetSitter");
+      await console.log("start dataPetType");
       await dataPetType();
+      await console.log("end dataPetType");
+      await console.log("start UpdatesAvatarUser");
       await updatesAvatarUser();
+      await console.log("end UpdatesAvatarUser");
+      await console.log("start uploadPetImages");
       await uploadPetImages();
-      console.log("after await");
+      await console.log("end uploadPetImages");
+      await console.log("after await");
       toast({
         title: "Success",
         position: "top",
@@ -542,14 +598,19 @@ const SitterManagement = () => {
       } else {
         uploadedImageUrls.push(file);
       }
+      console.log("uploadedImageUrls", uploadedImageUrls);
+      console.log("petSitterID", petSitterID);
     }
 
     try {
       // Update data in Supabase database
       const { error } = await supabase
-        .from("pet_sitter")
-        .update({ images: uploadedImageUrls })
-        .eq("user_id", userId);
+        .from("gallery_sitter")
+        .upsert(
+          { image_url: uploadedImageUrls, pet_sitter_id: petSitterID },
+          { onConflict: "pet_sitter_id" }
+        )
+        .select();
 
       if (error) {
         throw error;
