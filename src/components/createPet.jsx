@@ -116,7 +116,14 @@ function CreatePet() {
       console.error("Error creating pet: ", error);
       return null;
     } else {
-      console.log("Pet created successfully");
+      toast({
+        title: "success",
+        position: "top",
+        description: `Pet created successfully`,
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
     }
   };
 
