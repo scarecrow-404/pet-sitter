@@ -894,7 +894,7 @@ const SitterManagement = () => {
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-5">
                   {renderPetImages()}
                   <label htmlFor="imagespet">
-                    {Object.keys(petImage).length > 9 ? (
+                    {petImage && Object.keys(petImage).length > 9 ? (
                       <>
                         <Image
                           className="pt-4 flex justify-center items-center cursor-not-allowed"
