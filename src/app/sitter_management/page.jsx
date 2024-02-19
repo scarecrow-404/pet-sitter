@@ -11,7 +11,15 @@ import {
   Input,
   Textarea,
   Avatar,
+  FormErrorMessage,
+  Spinner,
+  useToast,
+  Skeleton,
+  Box,
+  SkeletonCircle,
+  SkeletonText,
 } from "@chakra-ui/react";
+import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import supabase from "@/lib/utils/db";
 import deleteButton from "@/asset/images/delete.svg";
 import deleteButtonHover from "@/asset/images/deleteHover.svg";
@@ -59,23 +67,56 @@ const SitterManagement = () => {
   const [accountType, setAccountType] = useState("");
   const [bankName, setBankName] = useState("");
   const [etcs, setEtcs] = useState("");
-  // isError
+  //loading and toast start
+  const [loading, setLoading] = useState(false);
+  const toast = useToast();
+  //loading and toast end
 
-  //set horver
-  const [imageHoverStates, setImageHoverStates] = useState({});
-  const handleMouseEnter = (petImageKey) => {
-    setImageHoverStates((prevState) => ({
-      ...prevState,
-      [petImageKey]: true,
-    }));
+  //validate start
+  //email validate
+  const [isValidEmail, setIsValidEmail] = useState(true);
+  const handleEmailChange = (event) => {
+    const enteredEmail = event.target.value;
+    const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(enteredEmail); // Basic email validation
+    setIsValidEmail(isEmailValid);
+    setEmail(enteredEmail);
   };
+  //validate end
+  //validate full name start
+  const [isValidFullName, setIsValidFullName] = useState(true);
+  const handleFullNameChange = (event) => {
+    const enteredFullName = event.target.value;
+    const isFullNameValid = enteredFullName.length <= 60; // Check if length is within 60 characters
+    setIsValidFullName(isFullNameValid);
+    if (isFullNameValid) {
+      setFullName(enteredFullName);
+    }
+  };
+  //validate full name end
 
-  const handleMouseLeave = (petImageKey) => {
-    setImageHoverStates((prevState) => ({
-      ...prevState,
-      [petImageKey]: false,
-    }));
-  };
+  //My place start
+  // const [markers, setMarkers] = useState([]);
+  // const [position, setPosition] = useState({ lat: 0, lng: 0 });
+
+  // const handleMapClick = (event) => {
+  //   setMarkers([...markers, { id: markers.length, position: event.latLng }]);
+  // };
+  // const MapContainer = ({ center, zoom, markers }) => {
+  //   return (
+  //     <LoadScript googleMapsApiKey="AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg">
+  //       <GoogleMap
+  //         mapContainerStyle={{ width: "100%", height: "400px" }}
+  //         center={center}
+  //         zoom={zoom}
+  //       >
+  //         {markers.map((marker) => (
+  //           <Marker key={marker.id} position={marker.position} />
+  //         ))}
+  //       </GoogleMap>
+  //     </LoadScript>
+  //   );
+  // };
+  //My place end
 
   //ระบบกรอกที่อยู่
   const [address, setAddress] = useState({
@@ -102,12 +143,14 @@ const SitterManagement = () => {
   //fetch data
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       await fetchUserData();
       const petSitterData = await fetchPetSitterData(); // Wait for petSitterData to be fetched
       if (petSitterData) {
         await fetchDataPetTypesPrefer(petSitterData.id); // Pass petSitterID to fetchDataPetTypesPrefer
       }
       fetchPetTypes();
+      setLoading(false);
     };
     fetchData();
   }, [userId]);
@@ -122,9 +165,16 @@ const SitterManagement = () => {
       .from("users")
       .select("*")
       .eq("id", userId);
-    console.log("userData", data);
+
     if (error) {
-      console.error("Error fetching user data:", error);
+      toast({
+        title: "Error",
+        position: "top",
+        description: `Error fetching user data: ${error.message}`,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
     } else {
       setFullName(data[0].full_name);
       setEmail(data[0].email);
@@ -143,7 +193,14 @@ const SitterManagement = () => {
       .eq("user_id", userId);
     console.log(data);
     if (error) {
-      console.error("Error fetching user data:", error);
+      toast({
+        title: "Error",
+        position: "top",
+        description: `Error fetching pet_sitter data: ${error.message}`,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
     } else if (data[0].experience !== null) {
       const existingExperienceOption = options.find(
         (option) => option.value == data[0].experience
@@ -186,13 +243,19 @@ const SitterManagement = () => {
       return;
     }
 
-    console.log("petSitterID", petSitterID);
     const { data, error } = await supabase
       .from("pet_prefer")
       .select("*")
       .eq("pet_sitter_id", petSitterID);
     if (error) {
-      console.error("Error fetching pet type prefer data:", error);
+      toast({
+        title: "Error",
+        position: "top",
+        description: `Error fetching pet type prefer data: ${error.message}`,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
     } else {
       const petTypeOptions = data.map((item) => {
         if (item.pet_type_master_id == "1") {
@@ -241,7 +304,14 @@ const SitterManagement = () => {
         .upload(filePath, file);
       console.log(data);
       if (uploadError) {
-        console.error("Error uploading photo:", uploadError);
+        toast({
+          title: "Error",
+          position: "top",
+          description: `Error uploading photo: ${uploadError.message}`,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
         return;
       }
 
@@ -249,10 +319,15 @@ const SitterManagement = () => {
       let url = supabase.storage.from("images").getPublicUrl(data.path);
       console.log(url.data.publicUrl);
       if (!url.data.publicUrl) {
-        console.error(
-          "Error getting photo URL: File does not exist or bucket is not public",
-          url.data.publicUrl
-        );
+        toast({
+          title: "Error",
+          position: "top",
+          description: `Error getting photo URL: File does not exist or bucket is not public: ${url.data.publicUrl}`,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+
         return;
       }
 
@@ -380,7 +455,10 @@ const SitterManagement = () => {
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    console.log("summit push");
+    console.log("submit push");
+
+    setLoading(true); // Show spinner
+
     try {
       console.log("before await");
       await updatesPetSitter();
@@ -388,9 +466,25 @@ const SitterManagement = () => {
       await updatesAvatarUser();
       await uploadPetImages();
       console.log("after await");
-      alert("Update successfully");
+      toast({
+        title: "Success",
+        position: "top",
+        description: `Update successfully`,
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
     } catch (error) {
-      alert("Update failed " + error.message + "  " + error);
+      toast({
+        title: "error",
+        position: "top",
+        description: `Update failed ${error.message}  ${error}`,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false); // Hide spinner
     }
   };
 
@@ -576,6 +670,15 @@ const SitterManagement = () => {
         <TopBar />
         <div className="Title flex justify-between items-center py-3">
           <div className="nameTitle pl-5">Pet Sitter Profile</div>
+          {loading && (
+            <Spinner
+              thickness="4px"
+              speed="0.65s"
+              emptyColor="gray.200"
+              color="blue.500"
+              size="xl"
+            />
+          )}
           <div className="pr-5">
             <button
               className="bg-secondOrange rounded-3xl min-w-20 h-10 hidden md:block"
@@ -585,351 +688,406 @@ const SitterManagement = () => {
             </button>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-5 mb-5">
-          <div className="pb-6">Basic Information</div>
-          <div className="flex flex-col gap-2 mt-2 w-80">
-            <label htmlFor="profile">
-              {imageUrl && (
-                <div className="photo">
-                  <Avatar
-                    className="cursor-pointer"
-                    src={imageUrl}
-                    width={200}
-                    height={200}
-                    alt="Preview"
+        {/* //Skeleton */}
+        {loading ? (
+          <Box padding="6" boxShadow="lg" bg="white">
+            <SkeletonCircle size="10" />
+            <SkeletonText mt="4" noOfLines={4} spacing="4" skeletonHeight="2" />
+          </Box>
+        ) : (
+          <div className="bg-white rounded-xl p-5 mb-5">
+            <div className="pb-6">Basic Information</div>
+            <div className="flex flex-col gap-2 mt-2 w-80">
+              <label htmlFor="profile">
+                {imageUrl && (
+                  <div className="photo">
+                    <Avatar
+                      className="cursor-pointer"
+                      src={imageUrl}
+                      width={200}
+                      height={200}
+                      alt="Preview"
+                    />
+                  </div>
+                )}
+                <input
+                  type="file"
+                  id="profile"
+                  name="profile"
+                  accept="image/*"
+                  onChange={handleUploadPhoto}
+                  className="sr-only"
+                />
+              </label>
+            </div>
+            <div className="md:flex md:gap-9 md:justify-between">
+              <div className="fullname mt-5 md:w-80 lg:w-[474px] xl:w-[560px]">
+                <FormControl isRequired isInvalid={isError}>
+                  <FormLabel>Your full name</FormLabel>
+                  <Input
+                    type="text"
+                    minLength="6"
+                    maxLength="61"
+                    pattern="^[a-zA-Z\s]*$"
+                    value={fullName}
+                    onChange={handleFullNameChange}
                   />
-                </div>
-              )}
-              <input
-                type="file"
-                id="profile"
-                name="profile"
-                accept="image/*"
-                onChange={handleUploadPhoto}
-                className="sr-only"
-              />
-            </label>
-          </div>
-          <div className="md:flex md:gap-9 md:justify-between">
-            <div className="fullname md:w-80 lg:w-[474px] xl:w-[560px]">
-              <FormControl isRequired isInvalid={isError}>
-                <FormLabel>Your full name</FormLabel>
-                <Input
-                  type="text"
-                  minLength="6"
-                  maxLength="60"
-                  pattern="^[a-zA-Z\s]*$"
-                  value={fullName}
-                  onChange={(event) => {
-                    setFullName(event.target.value);
-                  }}
-                />
-              </FormControl>
-            </div>
-            <div className="Experience md:w-80 lg:w-[474px] xl:w-[560px]">
-              <FormControl isRequired>
-                <FormLabel>Experience</FormLabel>
-                <select
-                  name="experience"
-                  id="experience"
-                  value={experience ? experience.value : ""}
-                  onChange={(e) => handleExperience(e.target.value)}
-                  className="w-full h-10 px-3 py-2 border border-gray-300 rounded-lg "
-                >
-                  <option value="" disabled>
-                    Select Experience
-                  </option>
-                  {options.map((option, index) => (
-                    <option key={index} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </FormControl>
-            </div>
-          </div>
-          <div className="md:flex md:gap-9 md:justify-between">
-            <div className="phoneNumber md:w-80 lg:w-[474px] xl:w-[560px]">
-              <FormControl isRequired>
-                <FormLabel>Phone Number</FormLabel>
-                <Input
-                  type="tel"
-                  maxLength={10}
-                  value={
-                    phoneNumber
-                      ? phoneNumber
-                          .replace(/\D/g, "")
-                          .replace(
-                            /^(\d{3,3})(\d{3,3})(\d{4,4}).*$/,
-                            "$1 $2 $3"
-                          )
-                          .trim()
-                      : ""
-                  }
-                  onChange={(event) => {
-                    setPhoneNumber(event.target.value);
-                  }}
-                />
-              </FormControl>
-            </div>
-            <div className="email md:w-80 lg:w-[474px] xl:w-[560px]">
-              <FormControl isRequired>
-                <FormLabel>Email</FormLabel>
-                <Input
-                  type="email"
-                  value={email}
-                  onChange={(event) => {
-                    setEmail(event.target.value);
-                  }}
-                />
-              </FormControl>
-            </div>
-          </div>
-          <div>
-            <div className="Introduction">
-              <FormControl isRequired>
-                <FormLabel>
-                  Introduction (Describe about yourself as pet sitter)
-                </FormLabel>
-                <Textarea
-                  value={introduction}
-                  onChange={(event) => {
-                    setIntroduction(event.target.value);
-                  }}
-                />
-              </FormControl>
-            </div>
-          </div>
-        </div>
-        <div className="petSitter p-5 bg-white rounded-xl mb-5">
-          <p className="pb-6">Pet Sitter</p>
-          <div className="md:flex md:gap-9 md:justify-between">
-            <div className="TradeName md:w-80 lg:w-[474px] xl:w-[560px]">
-              <FormControl isRequired>
-                <FormLabel>Pet sitter name (Trade Name)</FormLabel>
-                <Input
-                  value={tradeName}
-                  onChange={(event) => {
-                    setTradeName(event.target.value);
-                  }}
-                />
-              </FormControl>
-            </div>
-            <div className="petType md:w-80 lg:w-[474px] xl:w-[560px]">
-              <FormControl isRequired>
-                <FormLabel>Pet type</FormLabel>
-                <Select
-                  isMulti
-                  name="petType"
-                  id="petType"
-                  options={optionPetType}
-                  placeholder="Select type"
-                  colorScheme="orange"
-                  closeMenuOnSelect={false}
-                  value={petType || []}
-                  onChange={handlePetType}
-                />
-              </FormControl>
-            </div>
-          </div>
-          <div className="md:flex md:gap-9 md:justify-between">
-            <div className="services md:w-80 lg:w-[474px] xl:w-[560px]">
-              <FormControl isRequired>
-                <FormLabel>
-                  Services (Describe all of your service for pet sitting)
-                </FormLabel>
-                <Input
-                  value={services}
-                  onChange={(event) => {
-                    setServices(event.target.value);
-                  }}
-                />
-              </FormControl>
-            </div>
-
-            <div className="myPlace md:w-80 md:pt-6 lg:w-[474px] lg:pt-0 xl:w-[560px]">
-              <FormControl isRequired>
-                <FormLabel>My Place (Describe you place)</FormLabel>
-                <Input
-                  value={myPlace}
-                  onChange={(event) => {
-                    setMyPlace(event.target.value);
-                  }}
-                />
-              </FormControl>
-            </div>
-          </div>
-          <div className="pt-6">
-            <p>Image Gallery (Maximum 10 images)</p>
-            <div className="flex flex-row my-4 gap-4 flex-wrap justify-center items-center md:justify-start">
-              <div className="flex flex-col gap-4 flex-wrap justify-center items-center md:flex-row md:justify-start">
-                {renderPetImages()}
-                <label htmlFor="imagespet">
-                  {Object.keys(petImage).length > 9 ? (
-                    <>
-                      <Image
-                        className="pt-4 flex  justify-center items-center cursor-not-allowed"
-                        src={uploadDisable}
-                        width={150}
-                        height={150}
-                        alt="Frame427321094"
-                      />
-                      <input
-                        disabled
-                        type="file"
-                        id="imagespet"
-                        name="imagespet"
-                        accept="image/*"
-                        onChange={handlePetImageChange}
-                        className="sr-only"
-                        multiple
-                        max="10"
-                      />
-                    </>
-                  ) : (
-                    <>
-                      <Image
-                        className="cursor-pointer pt-4"
-                        src={upload}
-                        width={150}
-                        height={150}
-                        alt="Frame427321094"
-                      />
-                      <input
-                        type="file"
-                        id="imagespet"
-                        name="imagespet"
-                        accept="image/*"
-                        onChange={handlePetImageChange}
-                        className="sr-only"
-                        multiple
-                        max="10"
-                      />
-                    </>
+                  {!isValidFullName && (
+                    <p className="text-red-600">
+                      Full name cannot exceed 60 characters.
+                    </p>
                   )}
-                </label>
+                </FormControl>
+              </div>
+              <div className="Experience md:w-80 lg:w-[474px] xl:w-[560px]">
+                <FormControl isRequired>
+                  <FormLabel>Experience</FormLabel>
+                  <select
+                    name="experience"
+                    id="experience"
+                    value={experience ? experience.value : ""}
+                    onChange={(e) => handleExperience(e.target.value)}
+                    className="w-full h-10 px-3 py-2 border border-gray-300 rounded-lg "
+                  >
+                    <option value="" disabled>
+                      Select Experience
+                    </option>
+                    {options.map((option, index) => (
+                      <option key={index} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </FormControl>
+              </div>
+            </div>
+            <div className="md:flex md:gap-9 md:justify-between">
+              <div className="phoneNumber md:w-80 lg:w-[474px] xl:w-[560px]">
+                <FormControl isRequired>
+                  <FormLabel>Phone Number</FormLabel>
+                  <Input
+                    type="tel"
+                    maxLength={10}
+                    value={
+                      phoneNumber
+                        ? phoneNumber
+                            .replace(/\D/g, "")
+                            .replace(
+                              /^(\d{3,3})(\d{3,3})(\d{4,4}).*$/,
+                              "$1 $2 $3"
+                            )
+                            .trim()
+                        : ""
+                    }
+                    onChange={(event) => {
+                      setPhoneNumber(event.target.value);
+                    }}
+                  />
+                </FormControl>
+              </div>
+              <div className="email md:w-80 lg:w-[474px] xl:w-[560px] ">
+                <FormControl isRequired>
+                  <FormLabel>Email</FormLabel>
+                  <Input
+                    type="email"
+                    value={email}
+                    onChange={handleEmailChange}
+                  />
+                  {!isValidEmail && (
+                    <p className=" text-red-600">
+                      The email format is incorrect.
+                    </p>
+                  )}
+                </FormControl>
+              </div>
+            </div>
+            <div>
+              <div className="Introduction">
+                <FormControl isRequired>
+                  <FormLabel>
+                    Introduction (Describe about yourself as pet sitter)
+                  </FormLabel>
+                  <Textarea
+                    value={introduction}
+                    onChange={(event) => {
+                      setIntroduction(event.target.value);
+                    }}
+                  />
+                </FormControl>
               </div>
             </div>
           </div>
-
-          <div className="bg-white rounded-xl p-5 mb-5">
-            <p className="pb-6">Address</p>
-            <div>
-              <FormControl isRequired>
-                <FormLabel>Address detail</FormLabel>
-                <Input
-                  value={addressDetail}
-                  onChange={(event) => {
-                    setAddressDetail(event.target.value);
-                  }}
-                />
-              </FormControl>
+        )}
+        {loading ? (
+          <Box padding="6" boxShadow="lg" bg="white">
+            <SkeletonCircle size="10" />
+            <SkeletonText mt="4" noOfLines={4} spacing="4" skeletonHeight="2" />
+          </Box>
+        ) : (
+          <div className="petSitter p-5 bg-white rounded-xl mb-5">
+            <p className="pb-6">Pet Sitter</p>
+            <div className="md:flex md:gap-9 md:justify-between">
+              <div className="TradeName md:w-80 lg:w-[474px] xl:w-[560px]">
+                <FormControl isRequired>
+                  <FormLabel>Pet sitter name (Trade Name)</FormLabel>
+                  <Input
+                    value={tradeName}
+                    onChange={(event) => {
+                      setTradeName(event.target.value);
+                    }}
+                  />
+                </FormControl>
+              </div>
+              <div className="petType md:w-80 lg:w-[474px] xl:w-[560px]">
+                <FormControl isRequired>
+                  <FormLabel>Pet type</FormLabel>
+                  <Select
+                    isMulti
+                    name="petType"
+                    id="petType"
+                    options={optionPetType}
+                    placeholder="Select type"
+                    colorScheme="orange"
+                    closeMenuOnSelect={false}
+                    value={petType || []}
+                    onChange={handlePetType}
+                  />
+                </FormControl>
+              </div>
             </div>
             <div className="md:flex md:gap-9 md:justify-between">
-              <FormControl isRequired>
-                <FormLabel>Province</FormLabel>
-                <InputThaiAddress.Province
-                  value={address["province"]}
-                  onChange={handleChange("province")}
-                  onSelect={handleSelect}
-                />
-              </FormControl>
+              <div className="services md:w-80 lg:w-[474px] xl:w-[560px]">
+                <FormControl isRequired>
+                  <FormLabel>
+                    Services (Describe all of your service for pet sitting)
+                  </FormLabel>
+                  <Input
+                    value={services}
+                    onChange={(event) => {
+                      setServices(event.target.value);
+                    }}
+                  />
+                </FormControl>
+              </div>
 
-              <FormControl isRequired>
-                <FormLabel>District</FormLabel>
-                <InputThaiAddress.Amphoe
-                  value={address["amphoe"]}
-                  onChange={handleChange("amphoe")}
-                  onSelect={handleSelect}
-                />
-              </FormControl>
+              <div className="myPlace md:w-80 md:pt-6 lg:w-[474px] lg:pt-0 xl:w-[560px]">
+                <FormControl isRequired>
+                  <FormLabel>My Place (Describe you place)</FormLabel>
+                  <Input
+                    value={myPlace}
+                    onChange={(event) => {
+                      setMyPlace(event.target.value);
+                    }}
+                  />
+                </FormControl>
+                {/* <MapContainer
+                center={position}
+                zoom={10}
+                markers={markers}
+                onClick={handleMapClick}
+              /> */}
+              </div>
             </div>
-            <div className="md:flex md:gap-9 md:justify-between">
-              <FormControl isRequired>
-                <FormLabel>Sub-district</FormLabel>
-                <InputThaiAddress.District
-                  value={address["district"]}
-                  onChange={handleChange("district")}
-                  onSelect={handleSelect}
-                />
-              </FormControl>
-
-              <FormControl isRequired>
-                <FormLabel>Post code</FormLabel>
-                <InputThaiAddress.Zipcode
-                  value={address["zipcode"]}
-                  onChange={handleChange("zipcode")}
-                  onSelect={handleSelect}
-                />
-              </FormControl>
+            <div className="pt-6">
+              <p>Image Gallery (Maximum 10 images)</p>
+              <div className="flex flex-row my-4 gap-4 flex-wrap justify-center items-center">
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-5">
+                  {renderPetImages()}
+                  <label htmlFor="imagespet">
+                    {Object.keys(petImage).length > 9 ? (
+                      <>
+                        <Image
+                          className="pt-4 flex justify-center items-center cursor-not-allowed"
+                          src={uploadDisable}
+                          width={150}
+                          height={150}
+                          alt="Frame427321094"
+                        />
+                        <input
+                          disabled
+                          type="file"
+                          id="imagespet"
+                          name="imagespet"
+                          accept="image/*"
+                          onChange={handlePetImageChange}
+                          className="sr-only"
+                          multiple
+                          max="10"
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <Image
+                          className="cursor-pointer"
+                          src={upload}
+                          width={150}
+                          height={150}
+                          alt="Frame427321094"
+                        />
+                        <input
+                          type="file"
+                          id="imagespet"
+                          name="imagespet"
+                          accept="image/*"
+                          onChange={handlePetImageChange}
+                          className="sr-only"
+                          multiple
+                          max="10"
+                        />
+                      </>
+                    )}
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
-          {/* //bank account  */}
-          <div className="bg-white rounded-xl p-5 mb-5">
-            <p className="pb-6">Bank</p>
-            <div>
-              <FormControl isRequired>
-                <FormLabel>Account Number</FormLabel>
-                <Input
-                  value={accountNumber}
-                  onChange={(event) => {
-                    setAccountNumber(event.target.value);
-                  }}
-                />
-              </FormControl>
-            </div>
-            <div className="md:flex md:gap-9 md:justify-between">
-              <FormControl isRequired>
-                <FormLabel>Account Name</FormLabel>
-                <Input
-                  value={accountName}
-                  onChange={(event) => {
-                    setAccountName(event.target.value);
-                  }}
-                />
-              </FormControl>
+        )}
+        {loading ? (
+          <Box padding="6" boxShadow="lg" bg="white">
+            <SkeletonCircle size="10" />
+            <SkeletonText mt="4" noOfLines={4} spacing="4" skeletonHeight="2" />
+          </Box>
+        ) : (
+          <div className="Address p-5 bg-white rounded-xl mb-5">
+            <div className="bg-white rounded-xl p-5 mb-5">
+              <p className="pb-6">Address</p>
+              <div>
+                <FormControl isRequired>
+                  <FormLabel>Address detail</FormLabel>
+                  <Input
+                    value={addressDetail}
+                    onChange={(event) => {
+                      setAddressDetail(event.target.value);
+                    }}
+                  />
+                </FormControl>
+              </div>
+              <div className="md:flex md:gap-9 md:justify-between">
+                <FormControl isRequired>
+                  <FormLabel>Province</FormLabel>
+                  <InputThaiAddress.Province
+                    value={address["province"]}
+                    onChange={handleChange("province")}
+                    onSelect={handleSelect}
+                  />
+                </FormControl>
 
-              <FormControl isRequired>
-                <FormLabel>Bank Name</FormLabel>
-                <Input
-                  value={bankName}
-                  onChange={(event) => {
-                    setBankName(event.target.value);
-                  }}
-                />
-              </FormControl>
-            </div>
-            <div className="md:flex md:gap-9 md:justify-between">
-              <FormControl isRequired>
-                <FormLabel>Account Type</FormLabel>
-                <Input
-                  value={accountType}
-                  onChange={(event) => {
-                    setAccountType(event.target.value);
-                  }}
-                />
-              </FormControl>
+                <FormControl isRequired>
+                  <FormLabel>District</FormLabel>
+                  <InputThaiAddress.Amphoe
+                    value={address["amphoe"]}
+                    onChange={handleChange("amphoe")}
+                    onSelect={handleSelect}
+                  />
+                </FormControl>
+              </div>
+              <div className="md:flex md:gap-9 md:justify-between">
+                <FormControl isRequired>
+                  <FormLabel>Sub-district</FormLabel>
+                  <InputThaiAddress.District
+                    value={address["district"]}
+                    onChange={handleChange("district")}
+                    onSelect={handleSelect}
+                  />
+                </FormControl>
 
-              <FormControl isRequired>
-                <FormLabel>Etc.</FormLabel>
-                <Input
-                  value={etcs}
-                  onChange={(event) => {
-                    setEtcs(event.target.value);
-                  }}
-                />
-              </FormControl>
+                <FormControl isRequired>
+                  <FormLabel>Post code</FormLabel>
+                  <InputThaiAddress.Zipcode
+                    value={address["zipcode"]}
+                    onChange={handleChange("zipcode")}
+                    onSelect={handleSelect}
+                  />
+                </FormControl>
+              </div>
             </div>
           </div>
-          <div className="flex justify-center pb-7 md:hidden">
-            <button
-              onClick={handleFormSubmit}
-              className="bg-secondOrange rounded-3xl w-80 h-10"
-            >
-              Update
-            </button>
+        )}
+        {loading ? (
+          <Box padding="6" boxShadow="lg" bg="white">
+            <SkeletonCircle size="10" />
+            <SkeletonText mt="4" noOfLines={4} spacing="4" skeletonHeight="2" />
+          </Box>
+        ) : (
+          <div className="bank account p-5 bg-white rounded-xl mb-5">
+            <div className="bg-white rounded-xl p-5 mb-5">
+              <p className="pb-6">Bank</p>
+              <div>
+                <FormControl isRequired>
+                  <FormLabel>Account Number</FormLabel>
+                  <Input
+                    type="tel"
+                    maxLength={13}
+                    value={
+                      accountNumber
+                        ? accountNumber
+                            .replace(/\D/g, "")
+                            .replace(
+                              /^(\d{3,3})(\d{3,3})(\d{4,4})(\d{3,3}).*$/,
+                              "$1 $2 $3 $4"
+                            )
+                            .trim()
+                        : ""
+                    }
+                    onChange={(event) => {
+                      setAccountNumber(event.target.value);
+                    }}
+                  />
+                </FormControl>
+              </div>
+              <div className="md:flex md:gap-9 md:justify-between">
+                <FormControl isRequired>
+                  <FormLabel>Account Name</FormLabel>
+                  <Input
+                    value={accountName}
+                    onChange={(event) => {
+                      setAccountName(event.target.value);
+                    }}
+                  />
+                </FormControl>
+
+                <FormControl isRequired>
+                  <FormLabel>Bank Name</FormLabel>
+                  <Input
+                    value={bankName}
+                    onChange={(event) => {
+                      setBankName(event.target.value);
+                    }}
+                  />
+                </FormControl>
+              </div>
+              <div className="md:flex md:gap-9 md:justify-between">
+                <FormControl isRequired>
+                  <FormLabel>Account Type</FormLabel>
+                  <Input
+                    value={accountType}
+                    onChange={(event) => {
+                      setAccountType(event.target.value);
+                    }}
+                  />
+                </FormControl>
+
+                <FormControl isRequired>
+                  <FormLabel>Etc.</FormLabel>
+                  <Input
+                    value={etcs}
+                    onChange={(event) => {
+                      setEtcs(event.target.value);
+                    }}
+                  />
+                </FormControl>
+              </div>
+            </div>
+            <div className="flex justify-center pb-7 md:hidden">
+              <button
+                onClick={handleFormSubmit}
+                className="bg-secondOrange rounded-3xl w-80 h-10"
+              >
+                Update
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
