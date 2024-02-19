@@ -7,6 +7,8 @@ import {
   Select,
   Textarea,
   useDisclosure,
+  Avatar,
+  useToast,
 } from "@chakra-ui/react";
 import supabase from "@/lib/utils/db";
 import previewImg from "@/asset/images/Frame427321094.svg";
@@ -29,7 +31,7 @@ function CreatePetModal({ onClose, fetchPets }) {
   const [weight, setWeight] = useState("");
   const [about, setAbout] = useState("");
   const imageUrlRef = useRef(previewImg);
-
+  const toast = useToast();
   const handleUploadPhoto = (event) => {
     const file = event.target.files[0];
     const timestamp = new Date().getTime(); // Generate unique timestamp
@@ -39,13 +41,30 @@ function CreatePetModal({ onClose, fetchPets }) {
     imageUrlRef.current = url;
   };
   const handleSubmit = async (event) => {
+    if (!petName || !petType || !breed || !sex || !age || !color || !weight) {
+      toast({
+        title: "Error",
+        position: "top",
+        description: "Please fill in all required fields",
+        status: "warning",
+        duration: 9000,
+        isClosable: true,
+      });
+      return;
+    }
+
     try {
       await createNewPet(imageUrlRef.current);
-      fetchPets(); 
-      onClose();
-
+      router.push("/account/pet/");
     } catch (error) {
-      alert("Error creating pet: " + error.message);
+      toast({
+        title: "Error",
+        position: "top",
+        description: `Error creating pet: + ${error.message}`,
+        status: "warning",
+        duration: 9000,
+        isClosable: true,
+      });
     }
   };
 
@@ -106,22 +125,8 @@ function CreatePetModal({ onClose, fetchPets }) {
         <label htmlFor="profile">
           {imageUrlRef.current && (
             <div className="photo">
-              <Image
-                className="block md:hidden lg:hidden cursor-pointer"
-                src={imageUrlRef.current}
-                width={150}
-                height={150}
-                alt="Preview"
-              />
-              <Image
-                className="hidden md:block lg:hidden cursor-pointer"
-                src={imageUrlRef.current}
-                width={200}
-                height={200}
-                alt="Preview"
-              />
-              <Image
-                className="hidden md:hidden lg:block cursor-pointer"
+              <Avatar
+                className="cursor-pointer"
                 src={imageUrlRef.current}
                 width={220}
                 height={220}
