@@ -68,7 +68,7 @@ export async function signInWithProvider(provider) {
 export async function signUpWithProvider(provider) {
   console.log(provider);
   const { user, session, error } = await supabase.auth.signInWithOAuth({
-    provider: provider,
+    provider,
   });
 
   if (error) {
