@@ -15,13 +15,14 @@ const BookingList = () => {
   const [keywords, setKeywords] = useState("");
   const [keywordsStatus, setKeywordsStatus] = useState("");
   const [petCount, setPetCount] = useState({});
+
   //คลิกแล้วไปหน้า bookingของคนฝากเลี้ยง
-  const handleClick = (id) => {
-    const path = `/sitter_management/${params.sitterId}/booking_list/${id}`;
+  const handleClick = (item) => {
+    const path = `/sitter_management/${params.sitterId}/booking_list/${item}`;
 
     // const queryString = new URLSearchParams(item).toString();
 
-    // const url = String(path) + "?" + queryString;
+    // const url = String(path);
 
     router.push(path);
   };
