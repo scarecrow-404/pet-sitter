@@ -68,8 +68,9 @@ export function Sidebar({ active }) {
       .select("id")
       .eq("user_id", userId);
     setSitterId(data[0].id);
+   
   }
-
+ console.log("sitter",sitterId);
   useEffect(() => {
     getSitterId();
   }, []);
