@@ -156,6 +156,20 @@ const SitterManagement = () => {
     };
     fetchData();
   }, [userId]);
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      await fetchUserData();
+      const petSitterData = await fetchPetSitterData(); // Wait for petSitterData to be fetched
+      if (petSitterData) {
+        await fetchDataPetTypesPrefer(petSitterData.id); // Pass petSitterID to fetchDataPetTypesPrefer
+      }
+      fetchImageUrlData();
+      fetchPetTypes();
+      setLoading(false);
+    };
+    fetchData();
+  }, []);
 
   //fetch data start
   const fetchUserData = async () => {
@@ -400,16 +414,17 @@ const SitterManagement = () => {
     }
   };
   console.log(experience);
+  console.log(typeof experience);
   //update pet sitter
   const updatesPetSitter = async () => {
     try {
       console.log("inside function");
       let valueExperience;
-      if (typeof experience === "object") {
+      if (typeof experience === "string") {
+        valueExperience = parseFloat(experience);
+      } else {
         let dataExperience = JSON.parse(experience);
         valueExperience = parseFloat(dataExperience.value);
-      } else {
-        valueExperience = parseFloat(experience);
       }
       console.log("valueExperience", valueExperience);
       const updataPetSitterData = {
