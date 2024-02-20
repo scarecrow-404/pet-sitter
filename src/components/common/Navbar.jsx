@@ -70,7 +70,8 @@ const Navbar = () => {
 
     if (session && session.user) {
       setUserId(session.user.id);
-      getUser(session).finally(() => setIsLoading(false));
+      getUser(session);
+      setIsLoading(false);
     }
 
     supabase.auth.onAuthStateChange(async (event, session) => {
@@ -116,6 +117,7 @@ const Navbar = () => {
   };
 
   const handleSignOut = () => {
+    console.log("sign out click");
     signOut();
     router.push("/");
   };
