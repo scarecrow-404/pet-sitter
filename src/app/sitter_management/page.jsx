@@ -326,9 +326,9 @@ const SitterManagement = () => {
         } else if (item.pet_type_master_id == "2") {
           return { value: item.pet_type_master_id, label: "Cat" };
         } else if (item.pet_type_master_id == "3") {
-          return { value: item.pet_type_master_id, label: "Rabbit" };
-        } else if (item.pet_type_master_id == "4") {
           return { value: item.pet_type_master_id, label: "Bird" };
+        } else if (item.pet_type_master_id == "4") {
+          return { value: item.pet_type_master_id, label: "Rabbit" };
         } else {
           null;
         }
