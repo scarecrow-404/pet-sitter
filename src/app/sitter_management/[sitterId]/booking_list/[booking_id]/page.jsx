@@ -31,16 +31,17 @@ import supabase from "@/lib/utils/db";
 
 const OrderDetails = () => {
   const params = useParams();
-  const [windowWidth, setWindowWidth] = useState(0);
   const [ownPet, setOwnPet] = useState([]);
   const [petData, setPetData] = useState([]);
+  const [isUpdated, setIsUpdated] = useState(false);
+
   async function getOwnPetData() {
     console.log("sdsds");
     console.log("paramm");
     let { data, error } = await supabase
       .from("booking_list_render")
       .select(
-        "pet_sitter_id,booking_date,process_status,total_amout,start_time,end_time,user_id,full_name,phone_number,email,date_of_birth,image_url,additional_message,personal_id"
+        "pet_sitter_id,booking_date,process_status,total_amout,start_time,end_time,user_id,full_name,phone_number,email,date_of_birth,image_url,additional_message,personal_id,transaction_no,transaction_date,duration"
       )
       .eq("pet_sitter_id", params.sitterId)
       .eq("id", params.booking_id);
@@ -77,15 +78,57 @@ const OrderDetails = () => {
     day: "2-digit",
     month: "short",
     year: "numeric",
-    hour: "numeric",
-    minute: "numeric",
   });
   const formattedDateTimeRange = `${formattedBookingDate} | ${ownPet.start_time} - ${ownPet.end_time}`;
 
   useEffect(() => {
     getPetDataBooking();
     getOwnPetData();
-  }, []);
+    // time();
+  }, [isUpdated]);
+
+  async function updateBookingStatus() {
+    try {
+      let updatedStatus = "";
+      if (ownPet.process_status === "Waiting for confirm") {
+        updatedStatus = "Waiting for service";
+      } else if (ownPet.process_status === "Waiting for service") {
+        updatedStatus = "In service";
+      } else if (ownPet.process_status === "In service") {
+        updatedStatus = "Success";
+      }
+      if (updatedStatus !== "") {
+        await supabase
+          .from("booking")
+          .update({ process_status: updatedStatus })
+          .eq("id", params.booking_id);
+
+        console.log("Booking status updated successfully");
+        setIsUpdated(true);
+      } else {
+        console.log("No status update needed");
+      }
+    } catch (error) {
+      console.error("Error updating booking status:", error.message);
+    }
+  }
+
+  function changeTransactionDate(transaction) {
+    let removeTAndAfterT = transaction?.replaceAll("-", "").replace(/T.*/, "");
+    return removeTAndAfterT;
+  }
+  // function time() {
+  //   const currentTime = new Date(); // เวลาปัจจุบัน
+  //   const endTimeParts = ownPet.end_time.split(":"); // แยกเวลาออกเป็นชั่วโมง, นาที, วินาที
+  //   const endTime = new Date(currentTime); // สร้าง object Date ของเวลาปัจจุบัน
+  //   endTime.setHours(
+  //     Number(endTimeParts[0]),
+  //     Number(endTimeParts[1]),
+  //     Number(endTimeParts[2])
+  //   ); // กำหนดเวลาสำหรับเวลาที่กำหนดใหม่
+
+  //   return currentTime >= endTime; // คืนค่าเป็น true ถ้าเวลาปัจจุบันมากกว่าหรือเท่ากับเวลาสิ้นสุด
+  // }
 
   return (
     <div className="flex  bg-sixthGray justify-center">
@@ -100,7 +143,7 @@ const OrderDetails = () => {
               <Link href={`/sitter_management/${params.sitterId}/booking_list`}>
                 <ChevronLeftIcon />
               </Link>
-              <p className="">{ownPet.full_name}</p>
+              <p className="font-bold text-[24px]">{ownPet.full_name}</p>
             </div>
             <div
               className={`${
@@ -115,7 +158,7 @@ const OrderDetails = () => {
                   : ownPet.process_status === "Canceled"
                   ? "text-red-400"
                   : null
-              }`}
+              } items-center flex`}
             >
               {ownPet.process_status}
             </div>
@@ -124,7 +167,10 @@ const OrderDetails = () => {
             {ownPet.process_status === "Waiting for confirm" && (
               <div className={`max-lg:hidden flex gap-5`}>
                 <AlertButton buttonName="Reject Booking" />
-                <button className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange ">
+                <button
+                  className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange "
+                  onClick={updateBookingStatus}
+                >
                   Confirm Booking
                 </button>
               </div>
@@ -132,7 +178,10 @@ const OrderDetails = () => {
 
             {ownPet.process_status === "Waiting for service" && (
               <div className={`max-lg:hidden`}>
-                <button className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange">
+                <button
+                  className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange "
+                  onClick={updateBookingStatus}
+                >
                   In Service
                 </button>
               </div>
@@ -140,7 +189,11 @@ const OrderDetails = () => {
 
             {ownPet.process_status === "In service" && (
               <div className={`max-lg:hidden`}>
-                <button className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange">
+                <button
+                  className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange"
+                  onClick={updateBookingStatus}
+                  // disabled={!time()}
+                >
                   Success
                 </button>
               </div>
@@ -155,10 +208,10 @@ const OrderDetails = () => {
             )}
           </div>
         </div>
-        <div className="flex flex-col justify-start items-start py-3 px-4 bg-white rounded-2xl lg:h-fit">
+        <div className="flex flex-col justify-start items-start py-3 px-4  bg-white rounded-2xl lg:h-fit lg:pl-[70px] lg:mx-[30px]">
           <div className="flex justify-between min-w-[340px] py-3 w-full">
             <div className="">
-              <h1 className=" text-fourthGray">Pet Owner Name</h1>
+              <h1 className=" text-fourthGray font-semibold">Pet Owner Name</h1>
               <div>{ownPet.full_name}</div>
             </div>
             <PopUpOwnerData
@@ -172,11 +225,11 @@ const OrderDetails = () => {
             />
           </div>
           <div className="flex flex-col w-[340px]">
-            <h1 className="text-fourthGray">Pet(s)</h1>
+            <h1 className="text-fourthGray font-semibold">Pet(s)</h1>
             <div>{petData.length}</div>
           </div>
-          <div className="flex flex-col min-w-[340px] w-full md:w-[740px] lg:w-full">
-            <h1 className="text-fourthGray pb-4">Pet Detail</h1>
+          <div className="flex flex-col min-w-[340px] w-full  lg:w-full">
+            <h1 className="text-fourthGray pb-4  font-semibold">Pet Detail</h1>
             <div className="flex flex-col flex-wrap justify-center items-center md:w-fit md:flex-row md:justify-start md:gap-6 lg:w-[740px] lg:justify-start xl:w-full">
               {petData.map((item, index) => {
                 return (
@@ -199,27 +252,33 @@ const OrderDetails = () => {
             </div>
             <div className="md:grid md:grid-cols-3 md:gap-4  lg:grid-cols-4 lg:gap-4 lg:flex lg:flex-col">
               <div className="flex flex-col w-[340px] pb-3 md:w-fit">
-                <h1 className="text-fourthGray">Duration</h1>
-                <div>hours</div>
+                <h1 className="text-fourthGray font-semibold">Duration</h1>
+                <div>{ownPet.duration} hours</div>
               </div>
               <div className="flex flex-col w-[340px] pb-3 md:w-fit">
-                <h1 className="text-fourthGray">Total Paid</h1>
+                <h1 className="text-fourthGray font-semibold">Total Paid</h1>
                 <div>{ownPet.total_amout} THB</div>
               </div>
               <div className="flex flex-col w-[340px] pb-3 md:w-fit">
-                <h1 className="text-fourthGray">Booking Date</h1>
+                <h1 className="text-fourthGray font-semibold">Booking Date</h1>
                 <div>{formattedDateTimeRange}</div>
               </div>
               <div className="flex flex-col w-[340px] pb-3 md:w-fit">
-                <h1 className="text-fourthGray">Transaction Date</h1>
-                <div>{ownPet.TransactionDate}</div>
+                <h1 className="text-fourthGray font-semibold">
+                  Transaction Date
+                </h1>
+                <div>{changeTransactionDate(ownPet.transaction_date)}</div>
               </div>
               <div className="flex flex-col w-[340px] pb-3 md:w-fit">
-                <h1 className="text-fourthGray">Transaction No.</h1>
-                <div>{ownPet.TransactionNo}</div>
+                <h1 className="text-fourthGray font-semibold">
+                  Transaction No.
+                </h1>
+                <div>{ownPet.transaction_no}</div>
               </div>
               <div className="flex flex-col w-[340px] pb-3 md:w-fit">
-                <h1 className="text-fourthGray">Additional Message</h1>
+                <h1 className="text-fourthGray font-semibold">
+                  Additional Message
+                </h1>
                 <div>{ownPet.additional_message}</div>
               </div>
               <div className="flex pr-5 gap-4 justify-center mb-10">
@@ -267,9 +326,25 @@ const OrderDetails = () => {
 export default OrderDetails;
 
 function AlertButton({ buttonName }) {
+  const params = useParams();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = React.useRef();
   const finalRef = React.useRef(null);
+  const [isUpdated, setIsUpdated] = useState(false);
+  async function rejectBookingStatus() {
+    try {
+      await supabase
+        .from("booking")
+        .update({ process_status: "Canceled" })
+        .eq("id", params.booking_id);
+
+      console.log("Booking reject already");
+      setIsUpdated(true);
+    } catch (error) {
+      console.error("Error updating booking status:", error.message);
+    }
+  }
+
   return (
     <>
       <button
@@ -304,7 +379,10 @@ function AlertButton({ buttonName }) {
                 </button>
                 <button
                   className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange"
-                  onClick={onClose}
+                  onClick={() => {
+                    onClose();
+                    rejectBookingStatus();
+                  }}
                 >
                   Reject Booking
                 </button>
@@ -472,27 +550,33 @@ function PopUpOwnerData({
               <div className="w-full h-full bg-sixthGray p-5 my-5 rounded-2xl ">
                 <div className="grid grid-cols-2 gap-4 pb-[15px] md:flex md:flex-col">
                   <div className=" justify-start">
-                    <div className="text-fourthGray ">Pet Owner Name</div>
+                    <div className="text-fourthGray font-semibold">
+                      Pet Owner Name
+                    </div>
                     <div className="text-[15px]">{name}</div>
                   </div>
                   <div className=" justify-end">
-                    <div className="text-fourthGray">Email</div>
+                    <div className="text-fourthGray font-semibold">Email</div>
                     <div className="text-[15px]">{Email}</div>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4 pb-[15px] md:flex md:flex-col">
                   <div>
-                    <div className="text-fourthGray">Phone</div>
+                    <div className="text-fourthGray font-semibold">Phone</div>
                     <div className="text-[15px]">{Phone}</div>
                   </div>
                   <div>
-                    <div className="text-fourthGray">ID Number</div>
+                    <div className="text-fourthGray font-semibold">
+                      ID Number
+                    </div>
                     <div className="text-[15px]">{IDNumber}</div>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4 pb-[15px] md:flex md:flex-col">
                   <div>
-                    <div className="text-fourthGray">Date Of Birth</div>
+                    <div className="text-fourthGray font-semibold">
+                      Date Of Birth
+                    </div>
                     <div className="text-[15px]">{DateOfBirth}</div>
                   </div>
                 </div>

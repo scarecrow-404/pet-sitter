@@ -26,6 +26,7 @@ import {
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import supabase from "@/lib/utils/db";
+import { error } from "jquery";
 
 export function Sidebar({ active }) {
   const [imageSrcPetSittetProfile, setImageSrcPetSittetProfile] =
@@ -69,8 +70,11 @@ export function Sidebar({ active }) {
       .eq("user_id", userId);
     console.log("data", data);
     setSitterId(data[0].id);
-   
+    if (error) {
+      console.error(error);
+    }
   }
+
   useEffect(() => {
     getSitterId();
   }, []);
@@ -108,9 +112,6 @@ export function Sidebar({ active }) {
               <p>Pet Sitter Profile</p>
             </div>
           </Link>
-          {/* <button onClick={handleClickBookingList}>
-            
-          </button> */}
           <Link href={`/sitter_management/${sitterId}/booking_list`}>
             <div
               onMouseEnter={handleMouseEnterBookingList}
@@ -167,6 +168,9 @@ export function TopBar() {
       .select("id")
       .eq("user_id", userId);
     setSitterId(data[0].id);
+    if (error) {
+      console.error(error);
+    }
   }
   useEffect(() => {
     getSitterId();
@@ -198,9 +202,6 @@ export function TopBar() {
             <Link href="/sitter_management">
               <MenuItem>Pet Sitter Profile</MenuItem>
             </Link>
-            {/* <button onClick={handleClickBookingList}>
-             
-            </button> */}
             <Link href={`/sitter_management/${sitterId}/booking_list`}>
               <MenuItem>Booking List</MenuItem>
             </Link>
