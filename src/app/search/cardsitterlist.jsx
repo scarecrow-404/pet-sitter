@@ -16,6 +16,7 @@ function CardSitter(props) {
   const { bookingData, setBookingData} = useUser();
   const [petId, setPetId] = useState([]);
   let id = props.id;
+  //console.log("Card Sitteriddddddddd", petId,id,props.sittername);
 
 
   const router = useRouter();
@@ -48,6 +49,8 @@ console.log("bookingdata", bookingData);
     if (error || !data) {
       console.log(error);
     }
+
+    console.log("dataaaaaaaaaaaaaaaaaa", data);
     setPetId(data);
   
   }
@@ -121,7 +124,7 @@ console.log("bookingdata", bookingData);
               <div className=" flex   gap-1 pt-2">
 
                 {petId.map((eachId,index) => {
-                  //console.log("eachid", eachId); 
+                  //console.log("eachid", eachId,id,props.sittername); 
                   if (eachId.pet_type_master_id=== 1) {
                     return (
                       <p key={index} className=" text-[10px]  border-solid border bg-secondGreen rounded-2xl  border-firstGreen pl-2 pr-2 text-firstGreen">

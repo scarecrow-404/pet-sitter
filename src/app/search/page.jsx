@@ -6,14 +6,13 @@ import CardSitter from "@/app/search/cardsitterlist.jsx";
 import SearchBar from "@/components/common/SearchBar";
 import supabase from "@/lib/utils/db";
 import { useUser } from "@/hooks/hooks";
-import  iconNext from "@/asset/images/IconButtonNext.svg";
-import  iconPrev  from "@/asset/images/IconButtonPrev.svg";
+import iconNext from "@/asset/images/IconButtonNext.svg";
+import iconPrev from "@/asset/images/IconButtonPrev.svg";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 
-
 const Search = () => {
-  const { search, setSearch,isNewSearch,setIsNewSearch } = useUser();
+  const { search, setSearch, isNewSearch, setIsNewSearch } = useUser();
   const [sitterData, setSitterData] = useState([]);
   const [idSitter, setIdSitter] = useState("");
   const [expStart, setExpStart] = useState(0);
@@ -21,7 +20,6 @@ const Search = () => {
   const [loading, setloading] = useState();
   const [page, setPage] = useState(1);
   const [lengthReview, setLengthReview] = useState(1);
-
 
   const reviewsPerPage = 5;
 
@@ -103,7 +101,7 @@ const Search = () => {
           rate_start: ratingStart,
         }
       );
-      let { data: sitterData, error: errorSitter } = await supabase.rpc(
+      let { data: sitterFetch, error: errorSitter } = await supabase.rpc(
         "fetch_data",
         {
           exp_end: expEnd,
@@ -116,15 +114,15 @@ const Search = () => {
           reviews_perpage: reviewsPerPage,
         }
       );
+
+
       if (!sitterData || errorSitter || !pageData || errorPage) {
         console.log(errorSitter, errorPage);
       }
 
-      console.log("data", sitterData);
-      console.log("dataPage", pageData);
       const totalPage = pageData.length ? pageData.length : 5;
       setLengthReview(Math.ceil(totalPage / reviewsPerPage));
-      setSitterData(sitterData);
+      setSitterData(sitterFetch);
     } catch (error) {
       console.log(error);
     }
@@ -132,9 +130,9 @@ const Search = () => {
 
   useEffect(() => {
     splitExpNum(expQuery);
-    if(isNewSearch){
-      setPage(1)
-      setIsNewSearch(false)
+    if (isNewSearch) {
+      setPage(1);
+      setIsNewSearch(false);
     }
     getSitterData(
       expStart,
@@ -157,6 +155,8 @@ const Search = () => {
     return pageArr;
   }
 
+  console.log("sitterDataxxx", sitterData);
+
   return (
     <>
       <section className=" max-w-[1440px]  mx-auto">
@@ -164,14 +164,12 @@ const Search = () => {
 
         <section className=" flex flex-col  lg:flex-row p-3">
           <div className=" w-[100%] lg:w-[30%]">
-            <SearchBar 
-       
-            />
+            <SearchBar />
           </div>
           <div className="  lg:w-[70%] w-[100%] flex flex-col gap-2  cursor-default ">
             {sitterData.map((item) => (
               <CardSitter
-                key={item.id}
+                // key={item.id}
                 sittername={item.sitter_name}
                 district={item.district}
                 province={item.province}
@@ -191,11 +189,11 @@ const Search = () => {
             disabled={page === 1} // ปิดปุ่มก่อนหน้าเมื่ออยู่ที่หน้าแรก
           >
             <Image
-                  objectFit="cover"
-                  className=" w-[15px] h-[15px] rounded-xl"
-                  src={iconPrev}
-                  alt="Prev icon"
-                />
+              objectFit="cover"
+              className=" w-[15px] h-[15px] rounded-xl"
+              src={iconPrev}
+              alt="Prev icon"
+            />
           </button>
           <div className="pages flex gap-2 ">
             {/* {page}/{lengthReview} */}
@@ -206,7 +204,11 @@ const Search = () => {
                   key={index}
                   onClick={(event) => setPage(event.target.value)}
                   value={item}
-                  className={`pl-4 pt-2 pr-4 pb-2  hover:bg-sixthOrange  rounded-full   font-medium hover:text-firstOrange ${page==item? "bg-sixthOrange text-firstOrange": "text-fourthGray"}`} 
+                  className={`pl-4 pt-2 pr-4 pb-2  hover:bg-sixthOrange  rounded-full   font-medium hover:text-firstOrange ${
+                    page == item
+                      ? "bg-sixthOrange text-firstOrange"
+                      : "text-fourthGray"
+                  }`}
                 >
                   {item}
                 </button>
@@ -218,13 +220,12 @@ const Search = () => {
             onClick={nextPage}
             disabled={page === lengthReview} // ปิดปุ่มถัดไปเมื่ออยู่ที่หน้าสุดท้าย
           >
-          <Image
-                  objectFit="cover"
-                  className=" w-[15px] h-[15px] rounded-xl"
-                  src={iconNext}
-                  alt="next icon"
-                />
-            
+            <Image
+              objectFit="cover"
+              className=" w-[15px] h-[15px] rounded-xl"
+              src={iconNext}
+              alt="next icon"
+            />
           </button>
         </div>
       </section>

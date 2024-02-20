@@ -10,6 +10,9 @@ function PopupBooking(props) {
   const params = useParams();
   const { bookingData, setBookingData,user, setUser } = useUser();
   const sitterId = params.sitterId
+  const values = props.values;
+let bookingId= ''
+  console.log("valueeee",bookingData.petselect)
 
   const insert = { pet_sitter_id: sitterId,
     user_id: user?.id,
@@ -18,17 +21,44 @@ function PopupBooking(props) {
       end_time: bookingData.endTime,
       process_status: 'Confirmed',
       payment_status: 'pending',
-      payment_type: 'cash',
-      total_amout: 1000,
-      additional_message:'love too much',}
+      payment_type: values.payment_type,
+      total_amout: bookingData.price,
+      additional_message:bookingData.additionMessage,}
+
+
+
+async function insertpet(bookingId,eachPet) {
+
+    console.log("eachpet",eachPet)
+    try{
+      const { data:petresult, error } = await supabase
+      .from('booking_pet')
+      .insert(
+        [{ booking_id:bookingId , pet_id: eachPet.id }],
+      )
+      .select()
+
+    if(petresult){
+      console.log("insert pet success",petresult);
+     
+    } else if(!data || error){
+      console.log("can not insert")
+    }
+    }catch(error)
+    {console.log(error)}
+
+
+}
+
+
 
 async function  handlesubmit() {
   console.log("in fnc")
   try{
-  const { error } = await supabase
+
+  const { error,data:resultinsert } = await supabase
   .from('booking')
-  .insert(
-    insert).select()
+  .insert(insert).select()
   
   if(!error){
     alert("booking success")
@@ -36,9 +66,12 @@ async function  handlesubmit() {
     const path = `/search/${sitterId}/booking/confirmBooking`;
     const url =String(path)
     router.push(url);
-
   }
   if(error){console.log(error)}
+ 
+
+bookingId = resultinsert[0]?.id
+bookingData.petselect.map((eachPet)=>{insertpet(bookingId,eachPet)})
 
 }
     catch (error) {console.log(error)}

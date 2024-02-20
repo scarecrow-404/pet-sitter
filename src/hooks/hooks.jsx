@@ -16,8 +16,8 @@ export function UserProvider({ children }) {
 
   const [bookingData, setBookingData] = useState({
     isModalOpen: false,
-    startTime: "07:00",
-    endTime: "07:15",
+    startTime: "07:00 AM",
+    endTime: "10:00 AM",
     date: new Date(),
     fullname: "",
     sittername: "",
