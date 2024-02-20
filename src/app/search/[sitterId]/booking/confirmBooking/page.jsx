@@ -2,14 +2,124 @@
 import React from "react";
 import Image from "next/image";
 import Navbar from "@/components/common/Navbar";
-
+import { useUser } from "@/hooks/hooks";
+import supabase from "@/lib/utils/db";
 import left from "@/asset/images/left_cat_meow_meow.svg";
 import right from "@/asset/images/right_cat_meow_meow.svg";
-
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 function page() {
+  const { bookingData, setBookingData } = useUser();
+  const [tranDate, setTranDate] = useState("");
+  const [tranNo, setTranNo] = useState("");
+  const [dateBook, setDateBook] = useState("");
+  const [sitterName, setSitterName] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [duration, setDuration] = useState("");
+  const [total, setTotal] = useState("");
+  const [pet, setPet] = useState([]);
+  console.log("bookkkkkkkkk", bookingData);
+  const idBook = bookingData.bookid;
+  const router = useRouter();
+  async function getBooking(id) {
+    try {
+      let { data: booking, error: bookError } = await supabase.rpc(
+        "fetch_book_detail",
+        { idbook: id }
+      );
+
+      let { data: bookPet, error: petError } = await supabase
+        .from("booking_pet")
+        .select(`*, pet(name)`)
+        .eq("booking_id", id);
+
+      if (booking && bookPet) {
+        console.log("Booking Details:", booking[0]);
+        console.log("PetBooking Details:", bookPet);
+        petName(bookPet);
+       const datebook = formatDate(booking[0].booking_date);
+       setDateBook(datebook)
+        setSitterName(booking[0].sitter_name);
+        setFullName(booking[0].full_name);
+        const start = cutSeconds(booking[0].start_time);
+        setStartTime(start);
+        const end = cutSeconds(booking[0].end_time);
+        setEndTime(end);
+        setTotal(booking[0].total_amount);
+        setDuration(booking[0].duration);
+        setTranNo(booking[0].transaction_no);
+        const dateTranSactionBook = formatDate(booking[0].transaction_date);
+        setTranDate(dateTranSactionBook)
+      } else {
+        console.error("Booking or Pet Error:", bookError, petError);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+
+  function HandleClickHome (){
+    const path = `/`;
+    const url =String(path)
+    router.push(url);
+   
+
+  }
+
+  function HandleClickBookHistory (){
+    const path = `/account/booking-history`;
+    const url =String(path)
+    router.push(url);
+
+  }
+
+
+
+
+  function cutSeconds(timeString) {
+    // Split the time string into hours, minutes, and seconds
+    const [hours, minutes, seconds] = timeString.split(":");
+
+    // Return the time string with seconds removed
+
+    return `${hours}:${minutes}`;
+  }
+
+  function petName(arr) {
+    let allPetName = [];
+    arr.map((item) => {
+      allPetName.push(item.pet.name);
+    });
+    setPet(allPetName);
+  }
+
+  useEffect(() => {
+    getBooking(idBook);
+  }, []);
+
+
+  function formatDate(date){
+    const bookingDate = new Date(date);
+
+    const formattedBookingDate = bookingDate.toLocaleString("en-Uk", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+    return `${formattedBookingDate}`;}
+  
+
+  console.log("totalllllllll",total)
   return (
+    <>
+    <div className=" max-w-[1440px] mx-auto">
+    <Navbar />
+    </div>
+    
     <div className="bg-[#FAFAFB] flex flex-col justify-center">
-      <Navbar />
+      
       <div className="flex justify-center h-full">
         <div className="lg:w-[1440px] lg:h-[1024px] h-screen flex justify-center">
           <div className="hidden lg:block pr-[40px] ">
@@ -30,15 +140,15 @@ function page() {
               </div>
               <div className="p-[20px] sm:p-[40px] gap-[24px] bg-white ">
                 <div className="text-[16px] text-[#AEB1C3] font-[500] leading-[28px]">
-                  <p>Transaction Date: (date)</p>
-                  <p>Transaction No. : (number)</p>
+                  <p>Transaction Date: {tranDate}</p>
+                  <p>Transaction No. : {tranNo}</p>
                 </div>
                 <div className="mt-[24px]">
                   <p className="text-[14px] text-[#7B7E8F] font-[500] leading-[24px]">
                     Pet Sitter:
                   </p>
                   <p className="text-[16px] font-[500] leading-[24px]">
-                    (name) By (ownerName)
+                    {sitterName} By {fullName}
                   </p>
                 </div>
                 <div className="lg:flex flex-row">
@@ -47,7 +157,7 @@ function page() {
                       Date & Time:
                     </p>
                     <p className="text-[16px] font-[500] leading-[24px]">
-                      (Date) | (Time)
+                      {dateBook}| {startTime}-{endTime}
                     </p>
                   </div>
                   <div className="mt-[10px] sm:mt-[24px] lg:ml-[24px] w-full">
@@ -55,7 +165,7 @@ function page() {
                       Duration:
                     </p>
                     <p className="text-[16px] font-[500] leading-[24px]">
-                      (hours)
+                      {duration} hours
                     </p>
                   </div>
                 </div>
@@ -63,25 +173,27 @@ function page() {
                   <p className="text-[14px] text-[#7B7E8F] font-[500] leading-[24px]">
                     Pet:
                   </p>
-                  <p className="text-[16px] font-[500] leading-[24px]">
-                    (pet name)
-                  </p>
+                  <div className="flex  gap-2 text-[16px] font-[500] leading-[24px]">
+                    {pet.map((item) => {
+                      return <p key={item.id}>{item}</p>;
+                    })}
+                  </div>
                 </div>
                 <hr />
                 <div className="flex flex-row justify-between mt-[10px] sm:mt-[24px]">
-                  <p className="text-[16px] font-[500] leading-[28px]">total</p>
+                  <p className="text-[16px] font-[500] leading-[28px]">Total</p>
                   <p className="text-[18px] font-[500] leading-[26px]">
-                    (price)
+                    {total}
                   </p>
                 </div>
               </div>
             </div>
 
             <div className="flex justify-center items-end w-full mt-[20px] sm:mt-[24px] gap-[5px] sm:gap-[16px]  h-[48px]">
-              <button className="text-[14px] md:text-[16px] font-[700] leading-[24px] w-[157px] sm:w-[165px] md:w-[180px] h-[48] py-[12px] sm:px-[24px] rounded-[99px] text-[#FF7037] bg-[#FFF1EC]">
+              <button className="text-[14px] md:text-[16px] font-[700] leading-[24px] w-[157px] sm:w-[165px] md:w-[180px] h-[48] py-[12px] sm:px-[24px] rounded-[99px] text-[#FF7037] bg-[#FFF1EC]" onClick={HandleClickBookHistory}>
                 Booking History
               </button>
-              <button className="text-[14px] md:text-[16px] font-[700] leading-[24px] w-[157px] sm:w-[165px] md:w-[180px] h-[48] py-[12px] sm:px-[24px] rounded-[99px] text-white bg-[#FF7037]">
+              <button className="text-[14px] md:text-[16px] font-[700] leading-[24px] w-[157px] sm:w-[165px] md:w-[180px] h-[48] py-[12px] sm:px-[24px] rounded-[99px] text-white bg-[#FF7037]" onClick={HandleClickHome}>
                 Back to Home
               </button>
             </div>
@@ -94,6 +206,7 @@ function page() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 
