@@ -30,58 +30,6 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import supabase from "@/lib/utils/db";
 const Payment = () => {
-  const dataAccount = [
-    {
-      id: 1,
-      date: "25 Aug 2023",
-      name: "John Wick",
-      TransactionNo: 122312,
-      amount: 900,
-    },
-    {
-      id: 2,
-      date: "25 Aug 2023",
-      name: "John Wick",
-      TransactionNo: 122312,
-      amount: 900,
-    },
-    {
-      id: 3,
-      date: "25 Aug 2023",
-      name: "John Wick",
-      TransactionNo: 122312,
-      amount: 900,
-    },
-    {
-      id: 4,
-      date: "25 Aug 2023",
-      name: "John Wick",
-      TransactionNo: 122312,
-      amount: 900,
-    },
-    {
-      id: 5,
-      date: "25 Aug 2023",
-      name: "John Wick",
-      TransactionNo: 122312,
-      amount: 900,
-    },
-    {
-      id: 6,
-      date: "25 Aug 2023",
-      name: "John Wick",
-      TransactionNo: 122312,
-      amount: 900,
-    },
-    {
-      id: 7,
-      date: "25 Aug 2023",
-      name: "John Wick",
-      TransactionNo: 122312,
-      amount: 900,
-    },
-  ];
-
   const params = useParams();
   const [ownPet, setOwnPet] = useState([]);
 
@@ -130,10 +78,7 @@ const Payment = () => {
                 <p>Total Earning</p>
               </div>
               <div>
-                <p>
-                  {totalAmout1}
-                  THB
-                </p>
+                <p>{totalAmout1} THB</p>
               </div>
             </div>
             <div className=" bg-white rounded-xl w-full px-5 flex flex-row justify-between items-center h-16">
@@ -193,10 +138,10 @@ const Payment = () => {
                         {item.full_name}
                       </td>
                       <td className="text-center py-2 md:py-6 hidden md:table-cell">
-                        {item.transactionNo}
+                        {item.transaction_no}
                       </td>
-                      <td className="text-center py-2 md:py-6 text-success-500">
-                        {item.total_amout}
+                      <td className="text-center py-2 md:py-6 text-success-500 text-[#1ccd75]">
+                        {item.total_amout} THB
                       </td>
                     </tr>
                   );
