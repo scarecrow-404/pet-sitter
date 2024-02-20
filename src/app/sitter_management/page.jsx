@@ -31,6 +31,7 @@ const InputThaiAddress = CreateInput();
 import { useUser } from "@/hooks/hooks";
 import previewImg from "@/asset/images/Frame427321094.svg";
 import { set } from "date-fns";
+import MapPage from "@/components/MapPage";
 const SitterManagement = () => {
   const [optionPetType, setOptionPetType] = useState([]);
   const { userId, user } = useUser();
@@ -71,7 +72,7 @@ const SitterManagement = () => {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
   //loading and toast end
-
+  const [getMarkers, setGetMarkers] = useState([]);
   //validate start
   //email validate
   const [isValidEmail, setIsValidEmail] = useState(true);
@@ -94,30 +95,6 @@ const SitterManagement = () => {
   };
   console.log(userId);
   //validate full name end
-
-  //My place start
-  // const [markers, setMarkers] = useState([]);
-  // const [position, setPosition] = useState({ lat: 0, lng: 0 });
-
-  // const handleMapClick = (event) => {
-  //   setMarkers([...markers, { id: markers.length, position: event.latLng }]);
-  // };
-  // const MapContainer = ({ center, zoom, markers }) => {
-  //   return (
-  //     <LoadScript googleMapsApiKey="AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg">
-  //       <GoogleMap
-  //         mapContainerStyle={{ width: "100%", height: "400px" }}
-  //         center={center}
-  //         zoom={zoom}
-  //       >
-  //         {markers.map((marker) => (
-  //           <Marker key={marker.id} position={marker.position} />
-  //         ))}
-  //       </GoogleMap>
-  //     </LoadScript>
-  //   );
-  // };
-  //My place end
 
   //ระบบกรอกที่อยู่
   const [address, setAddress] = useState({
@@ -152,6 +129,7 @@ const SitterManagement = () => {
       }
       fetchImageUrlData();
       fetchPetTypes();
+      fetchMarkersFromSupabase();
       setLoading(false);
     };
     fetchData();
@@ -166,11 +144,32 @@ const SitterManagement = () => {
       }
       fetchImageUrlData();
       fetchPetTypes();
+      fetchMarkersFromSupabase();
       setLoading(false);
     };
     fetchData();
   }, []);
-
+  console.log("getMarkers typeof", typeof petSitterID);
+  console.log("getMarkers 152", getMarkers);
+  const fetchMarkersFromSupabase = async () => {
+    try {
+      console.log("getMarkers typeof 156", typeof petSitterID);
+      const { data, error } = await supabase
+        .from("markers")
+        .select("*")
+        .eq("user_id", userId);
+      if (error) {
+        throw error;
+      }
+      console.log("dddddddd", data);
+      if (data && data.length > 0) {
+        setGetMarkers(data);
+      }
+    } catch (error) {
+      console.error("Error fetching markers from Supabase:", error.message);
+    }
+  };
+  console.log("getMarkers 169", getMarkers);
   //fetch data start
   const fetchUserData = async () => {
     if (!userId) {
@@ -953,6 +952,7 @@ const SitterManagement = () => {
                     Services (Describe all of your service for pet sitting)
                   </FormLabel>
                   <Textarea
+                    rows={10}
                     value={services}
                     onChange={(event) => {
                       setServices(event.target.value);
@@ -964,11 +964,17 @@ const SitterManagement = () => {
               <div className="myPlace md:w-80 md:pt-6 lg:w-[474px] lg:pt-0 xl:w-[560px]">
                 <FormControl isRequired>
                   <FormLabel>My Place (Describe you place)</FormLabel>
-                  <Input
+                  {/* <Input
                     value={myPlace}
                     onChange={(event) => {
                       setMyPlace(event.target.value);
                     }}
+                  /> */}
+                  <MapPage
+                    petSitterId={petSitterID}
+                    getMarkers={getMarkers}
+                    setGetMarkers={setGetMarkers}
+                    user_id={userId}
                   />
                 </FormControl>
                 {/* <MapContainer
