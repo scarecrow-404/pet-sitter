@@ -174,7 +174,7 @@ const RegisterPage = () => {
                   id="phone"
                   name="phone"
                   placeholder="Your phone number"
-                  input
+                  maxLength={10}
                   onChange={handleInput}
                 />
               </div>
