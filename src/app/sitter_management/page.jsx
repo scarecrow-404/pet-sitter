@@ -92,6 +92,7 @@ const SitterManagement = () => {
       setFullName(enteredFullName);
     }
   };
+  console.log(userId);
   //validate full name end
 
   //My place start
@@ -155,6 +156,20 @@ const SitterManagement = () => {
     };
     fetchData();
   }, [userId]);
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      await fetchUserData();
+      const petSitterData = await fetchPetSitterData(); // Wait for petSitterData to be fetched
+      if (petSitterData) {
+        await fetchDataPetTypesPrefer(petSitterData.id); // Pass petSitterID to fetchDataPetTypesPrefer
+      }
+      fetchImageUrlData();
+      fetchPetTypes();
+      setLoading(false);
+    };
+    fetchData();
+  }, []);
 
   //fetch data start
   const fetchUserData = async () => {
@@ -253,6 +268,7 @@ const SitterManagement = () => {
       const existingExperienceOption = options.find(
         (option) => option.value == data[0].experience
       );
+      console.log(data[0].experience);
       setExperience(existingExperienceOption);
       console.log("exp", existingExperienceOption);
     } else {
@@ -397,38 +413,51 @@ const SitterManagement = () => {
       console.log("User updated successfully");
     }
   };
-
+  console.log(experience);
+  console.log(typeof experience);
   //update pet sitter
   const updatesPetSitter = async () => {
-    console.log("inside function");
-    const updatesPetSitter = {
-      introduction: introduction,
-      address_detail: addressDetail,
-      sub_district: subDistrict,
-      district: district,
-      bank_name: bankName,
-      bank_acc_number: accountNumber,
-      province: province,
-      post_code: postCode,
-      sitter_name: tradeName,
-      service: services,
-      place: myPlace,
-      experience: experience,
-      account_name: accountName,
-      account_type: accountType,
-      etcs: etcs,
-      updated_at: new Date(),
-    };
-    console.log("updatesPets", updatesPetSitter);
-    const { error } = await supabase
-      .from("pet_sitter")
-      .update(updatesPetSitter)
-      .eq("user_id", userId);
-    console.log("after await");
-    if (error) {
+    try {
+      console.log("inside function");
+      let valueExperience;
+      if (typeof experience === "string") {
+        valueExperience = parseFloat(experience);
+      } else {
+        let dataExperience = JSON.parse(experience);
+        valueExperience = parseFloat(dataExperience.value);
+      }
+      console.log("valueExperience", valueExperience);
+      const updataPetSitterData = {
+        introduction: introduction,
+        address_detail: addressDetail,
+        sub_district: subDistrict,
+        district: district,
+        bank_name: bankName,
+        bank_acc_number: accountNumber,
+        province: province,
+        post_code: postCode,
+        sitter_name: tradeName,
+        service: services,
+        place: myPlace,
+        experience: valueExperience,
+        account_name: accountName,
+        account_type: accountType,
+        etcs: etcs,
+        updated_at: new Date(),
+      };
+      console.log("updatesPets", updataPetSitterData);
+      console.log("userId 425", userId);
+      const { data, error } = await supabase
+        .from("pet_sitter")
+        .update(updataPetSitterData)
+        .eq("user_id", userId);
+      if (error) {
+        console.error("Error updating user:", error);
+      }
+      console.log("after await");
+      console.log(`User updated successfully ${data}`);
+    } catch (error) {
       console.error("Error updating user:", error);
-    } else {
-      console.log("User updated successfully");
     }
   };
   //update petsitter end
@@ -503,25 +532,25 @@ const SitterManagement = () => {
   };
 
   const handleFormSubmit = async (event) => {
-    event.preventDefault();
+    // event.preventDefault();
     console.log("submit push");
 
     setLoading(true); // Show spinner
 
     try {
-      await console.log("start updatepetSitter");
+      console.log("start updatepetSitter");
       await updatesPetSitter();
-      await console.log("end updatepetSitter");
-      await console.log("start dataPetType");
+      console.log("end updatepetSitter");
+      console.log("start dataPetType");
       await dataPetType();
-      await console.log("end dataPetType");
-      await console.log("start UpdatesAvatarUser");
+      console.log("end dataPetType");
+      console.log("start UpdatesAvatarUser");
       await updatesAvatarUser();
-      await console.log("end UpdatesAvatarUser");
-      await console.log("start uploadPetImages");
+      console.log("end UpdatesAvatarUser");
+      console.log("start uploadPetImages");
       await uploadPetImages();
-      await console.log("end uploadPetImages");
-      await console.log("after await");
+      console.log("end uploadPetImages");
+      console.log("after await");
       toast({
         title: "Success",
         position: "top",
@@ -731,15 +760,6 @@ const SitterManagement = () => {
         <TopBar />
         <div className="Title flex justify-between items-center py-3">
           <div className="nameTitle pl-5">Pet Sitter Profile</div>
-          {loading && (
-            <Spinner
-              thickness="4px"
-              speed="0.65s"
-              emptyColor="gray.200"
-              color="blue.500"
-              size="xl"
-            />
-          )}
           <div className="pr-5">
             <button
               className="bg-secondOrange rounded-3xl min-w-20 h-10 hidden md:block"
@@ -753,7 +773,12 @@ const SitterManagement = () => {
         {loading ? (
           <Box padding="6" boxShadow="lg" bg="white">
             <SkeletonCircle size="10" />
-            <SkeletonText mt="4" noOfLines={4} spacing="4" skeletonHeight="2" />
+            <SkeletonText
+              mt="10"
+              noOfLines={15}
+              spacing="4"
+              skeletonHeight="2"
+            />
           </Box>
         ) : (
           <div className="bg-white rounded-xl p-5 mb-5">
@@ -781,7 +806,7 @@ const SitterManagement = () => {
                 />
               </label>
             </div>
-            <div className="md:flex md:gap-9 md:justify-between">
+            <div className=" md:items-end md:flex md:gap-9 md:justify-between">
               <div className="fullname mt-5 md:w-80 lg:w-[474px] xl:w-[560px]">
                 <FormControl isRequired isInvalid={isError}>
                   <FormLabel>Your full name</FormLabel>
@@ -800,7 +825,7 @@ const SitterManagement = () => {
                   )}
                 </FormControl>
               </div>
-              <div className="Experience md:w-80 lg:w-[474px] xl:w-[560px]">
+              <div className="Experience  md:w-80 lg:w-[474px] xl:w-[560px]">
                 <FormControl isRequired>
                   <FormLabel>Experience</FormLabel>
                   <select
@@ -882,7 +907,12 @@ const SitterManagement = () => {
         {loading ? (
           <Box padding="6" boxShadow="lg" bg="white">
             <SkeletonCircle size="10" />
-            <SkeletonText mt="4" noOfLines={4} spacing="4" skeletonHeight="2" />
+            <SkeletonText
+              mt="10"
+              noOfLines={15}
+              spacing="4"
+              skeletonHeight="2"
+            />
           </Box>
         ) : (
           <div className="petSitter p-5 bg-white rounded-xl mb-5">
@@ -922,7 +952,7 @@ const SitterManagement = () => {
                   <FormLabel>
                     Services (Describe all of your service for pet sitting)
                   </FormLabel>
-                  <Input
+                  <Textarea
                     value={services}
                     onChange={(event) => {
                       setServices(event.target.value);
@@ -1006,7 +1036,12 @@ const SitterManagement = () => {
         {loading ? (
           <Box padding="6" boxShadow="lg" bg="white">
             <SkeletonCircle size="10" />
-            <SkeletonText mt="4" noOfLines={4} spacing="4" skeletonHeight="2" />
+            <SkeletonText
+              mt="10"
+              noOfLines={15}
+              spacing="4"
+              skeletonHeight="2"
+            />
           </Box>
         ) : (
           <div className="Address p-5 bg-white rounded-xl mb-5">
@@ -1067,7 +1102,12 @@ const SitterManagement = () => {
         {loading ? (
           <Box padding="6" boxShadow="lg" bg="white">
             <SkeletonCircle size="10" />
-            <SkeletonText mt="4" noOfLines={4} spacing="4" skeletonHeight="2" />
+            <SkeletonText
+              mt="10"
+              noOfLines={15}
+              spacing="4"
+              skeletonHeight="2"
+            />
           </Box>
         ) : (
           <div className="bank account p-5 bg-white rounded-xl mb-5">
@@ -1139,7 +1179,7 @@ const SitterManagement = () => {
                 </FormControl>
               </div>
             </div>
-            <div className="flex justify-center pb-7 md:hidden">
+            <div className="flex justify-center pb-7">
               <button
                 onClick={handleFormSubmit}
                 className="bg-secondOrange rounded-3xl w-80 h-10"

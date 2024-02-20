@@ -66,14 +66,15 @@ export function Sidebar({ active }) {
   async function getSitterId() {
     let { data, error } = await supabase
       .from("pet_sitter")
-      .select("id")
+      .select("*")
       .eq("user_id", userId);
+    console.log("data", data);
     setSitterId(data[0].id);
     if (error) {
       console.error(error);
     }
   }
-  console.log("sitter", sitterId);
+
   useEffect(() => {
     getSitterId();
   }, []);
