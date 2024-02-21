@@ -106,7 +106,7 @@ setPetPrefer(newArr)
               disabled={petPrefer.includes(item.petType)?false:true}
                 onClick={() => handleClick(item)}
                 key={item.id}
-                className={`mb-5 border rounded-lg w-[210px] h-[240px] flex flex-col justify-center items-center gap-6 cursor-pointer  disabled:bg-gray-200  disabled:opacity-50 ${
+                className={`mb-5 border rounded-lg w-[210px] h-[240px] flex flex-col justify-center items-center gap-6 cursor-pointer  disabled:bg-fifthGray  disabled:opacity-50 ${
                   selectedPets.find((pet) => pet.id === item.id)
                    ? " border-thirdOrange border-[3px]"
                     : ""

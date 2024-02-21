@@ -42,7 +42,7 @@ const Booking = () => {
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [message, setMessage] = useState("");
-  const [totalAmout, setTotalAmout] = useState(0);
+  const [totalAmount, setTotalAmout] = useState(0);
   let hoursWtMin = "";
   const [values, setValues] = useState({
     pets_id: "",
@@ -213,11 +213,11 @@ const Booking = () => {
     let newStep = currentStep;
 
     if (newStep === 1) {
-      console.log("amout", totalAmout);
+      console.log("amout", totalAmount);
       setBookingData({
         ...bookingData,
         petselect: selectedPets,
-        price: totalAmout,
+        price: totalAmount,
         duration: hoursWtMin,
       });
       setCurrentStep(newStep + 1);
@@ -225,8 +225,12 @@ const Booking = () => {
       setBookingData({ ...bookingData, additionMessage: message });
       setCurrentStep(newStep + 1);
     } else if (newStep === 3) {
-      const checkStep3 = {};
-      if (values.payment_type === "creditcard") {
+      const checkStep3 = {}
+      if (values.payment_type === "" ) {
+        setErrors({});
+        setPopupButton("Payment Type is required");
+      }
+      else if (values.payment_type === "creditcard") {
         if (values.cardNumber === "") {
           checkStep3.cardNumber = "*Please Enter Your Credit Card Number";
         }
@@ -366,7 +370,7 @@ const Booking = () => {
                 <div className="bg-black p-[24px] flex rounded-b-[16px] text-[14px] font-[500] leading-[26px] justify-between ">
                   <span className="text-white ">Total</span>
                   <span className="text-white ">
-                    {selectedPets.length > 0 ? `${totalAmout} THB` : "0 THB"}
+                    {selectedPets.length > 0 ? `${totalAmount} THB` : "0 THB"}
                   </span>
                 </div>
 
