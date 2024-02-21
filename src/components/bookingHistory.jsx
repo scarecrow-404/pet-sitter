@@ -21,16 +21,27 @@ import supabase from "@/lib/utils/db";
 import { useUser } from "@/hooks/hooks";
 import star from "@/asset/images/star2.svg";
 
-function BookingHistoryList({ bookingDetail }, props) {
+function BookingHistoryList(props) {
   const [isOpenReview, setIsOpenReview] = useState(null);
   const [isOpenYourReview, setIsOpenYourReview] = useState(null);
   const [isOpenHistory, setIsOpenHistory] = useState(null);
   const [hoverStar, setHoverStar] = useState(null);
   const [writeRating, setWriteRating] = useState("");
+  const [pet, setPet] = useState([]);
+  const [petSitterFullname, setPetSitterFullname] = useState([]);
+  const [petSitterImage, setPetSitterImage] = useState([]);
+  const [description, setDescription] = useState();
 
-  console.log(props, "poi");
-  console.log(bookingDetail, "pois");
+  function petName(arr) {
+    console.log("infncccccccc")
+    let allPetName = [];
+    arr.map((item) => {
+      allPetName.push(`${item.pet.name} `);
+    });
+    setPet(allPetName);
+  }
 
+console.log("proppppppppppp",props)
   function Duration(start, end) {
     const startTime = start ? moment(start, "HH:mm:ss") : null;
     const endTime = end ? moment(end, "HH:mm:ss") : null;
@@ -191,35 +202,26 @@ function BookingHistoryList({ bookingDetail }, props) {
     return true;
   }
 
-  // useEffect(() => {
-  //   if (props.id && props.booking_id) {
-  //     fetchData(props.id, props.booking_id);
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (props.id && props.booking_id) {
+      fetchData(props.id, props.booking_id);
+    }
+  }, []);
 
   async function fetchData(sitterId, bookingId) {
+
+    console.log("iddddddd",sitterId, bookingId)
     let { data: sitter, error: sitterError } = await supabase
       .from("pet_sitter")
       .select(`users(full_name, image_url)`)
       .eq("id", sitterId);
     if (sitter) {
-      console.log(sitter, "1234");
-      setBookingDetail([...bookingDetail, sitter]);
+  
+      
       console.log(sitter[0].users.full_name, "aaaaaaaaaaaaaaa");
       setPetSitterFullname([...petSitterFullname, sitter[0].users.full_name]);
       setPetSitterImage([...petSitterFullname, sitter[0].users.image_url]);
-      let { data: review, error: reviewError } = await supabase
-        .from("review")
-        .select(`*`)
-        .eq("booking_id", bookingId);
-      if (review) {
-        console.log(review, "12345");
-        setDescription(review[0].description);
-        setRating(review[0].rating);
-        console.log(review, "aaaaaaaaaaaaaaah");
-      } else if (reviewError || !review) {
-        console.log(reviewError);
-      }
+      
       let { data: bookPet, error: petError } = await supabase
         .from("booking_pet")
         .select(`*, pet(name)`)
@@ -233,8 +235,20 @@ function BookingHistoryList({ bookingDetail }, props) {
     } else if (sitterError || !sitterError) {
       console.log(sitterError);
     }
+    let { data: review, error: reviewError } = await supabase
+        .from("review")
+        .select(`*`)
+        .eq("booking_id", bookingId);
+      if (review) {
+        console.log(review, "12345");
+       setDescription(review[0].description);
+      setRating(review[0].rating);
+        console.log(review, "aaaaaaaaaaaaaaah");
+      } else if (reviewError || !review) {
+        console.log(reviewError);
+      }
   }
-
+console.log("petttt",pet)
   return (
     <div className="flex flex-col justify-center items-center py-6 gap-5 max-w-[1440px] mx-auto lg:gap-10 lg:py-14">
       <div className="w-[90%] flex flex-row justify-between md:w-[85%] lg:w-[83%]">
@@ -252,7 +266,7 @@ function BookingHistoryList({ bookingDetail }, props) {
                     height={14}
                     // width="auto"
                     // height="auto"
-                    // src={petSitterImage}
+                    src={petSitterImage}
                     alt="preview-pet"
                     className="rounded-full w-[80px] h-[80px] md:w-[65px] md:h-[65px]"
                   />
@@ -262,7 +276,7 @@ function BookingHistoryList({ bookingDetail }, props) {
                     {props.sitterName}
                   </div>
                   <div className="text-sm font-semibold md:text-base lg:text-lg">
-                    By {props.petSitterFullname}
+                    By {petSitterFullname}
                   </div>
                 </div>
               </div>
@@ -329,7 +343,14 @@ function BookingHistoryList({ bookingDetail }, props) {
                 <div className="text-thirdGray text-[13px] font-medium lg:text-[15px]">
                   Pet:
                 </div>
-                <div className="text-sm font-medium lg:text-base">pet</div>
+                <div className="text-sm font-medium lg:text-base">{pet.length > 0
+                        ? pet.map(
+                            (eachPet, index) =>
+                              `${eachPet}${
+                                index !== pet.length - 1 ? ", " : ""
+                              }`
+                          )
+                        : "-"}</div>
               </div>
             </div>
           </div>
@@ -375,7 +396,7 @@ function BookingHistoryList({ bookingDetail }, props) {
                 <div>{props.Date}</div>
               </div>
               <button
-                onClick={() => openReview(item)}
+                onClick={() => openReview()}
                 className="bg-secondOrange p-2 rounded-full text-xs font-medium text-white md:text-sm md:px-5 md:py-3"
               >
                 Review
