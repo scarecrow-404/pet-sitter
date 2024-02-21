@@ -10,6 +10,7 @@ const UserContext = createContext();
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
   const [userId, setUserId] = useState(null);
+
   const [isNewSearch, setIsNewSearch] = useState(true);
   const [search, setSearch] = useState({
     exp: "0-10",
@@ -17,6 +18,7 @@ export function UserProvider({ children }) {
     pet: [1, 2, 3, 4],
     keyword: "",
   });
+
 
   const [bookingData, setBookingData] = useState({
     isModalOpen: false,
