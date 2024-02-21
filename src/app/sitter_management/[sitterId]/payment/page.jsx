@@ -42,17 +42,19 @@ const Payment = () => {
       .from("booking_list_render")
       .select("*")
       .eq("pet_sitter_id", params.sitterId);
-
     if (error) {
       console.error(error);
     }
-
-    let uniqueData = Array.from(new Set(data.map((item) => item.id))).map(
-      (id) => {
-        return data.find((item) => item.id === id);
-      }
-    );
-
+    let uniqueData;
+    if (data) {
+      uniqueData = Array.from(new Set(data.map((item) => item.id))).map(
+        (id) => {
+          return data.find((item) => item.id === id);
+        }
+      );
+    } else {
+      uniqueData = [];
+    }
     console.log("own", uniqueData);
     setOwnPet(uniqueData);
   }
