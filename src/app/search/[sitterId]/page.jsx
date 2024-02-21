@@ -13,9 +13,29 @@ import Footer from "@/components/common/Footer";
 
 const SitterProfile = () => {
   const images = [{ url: avatar }, { url: avatar2 }, { url: avatar3 }];
+  const [gallery, setGallery] = useState([]);
   const [detailUser, setDetailUser] = useState([]);
   const params = useParams();
   const [petPrefer, setPrefer] = useState([]);
+
+  console.log("images", gallery);
+
+  async function getSitterData() {
+    let { data, error } = await supabase
+      .from("sitter_detail")
+      .select("*")
+      .eq("id", params.sitterId);
+    if (error || !data) {
+      console.log(error);
+    }
+    if (data) {
+      const filterData = filterSitterData(data);
+      setDetailUser(filterData);
+      setGallery(data[0]?.carousel_image);
+    }
+    console.log(data, "data");
+  }
+  console.log(detailUser, "detailUser");
 
   function filterSitterData(array) {
     const petType = [];
@@ -36,35 +56,22 @@ const SitterProfile = () => {
     return sitterArr;
   }
 
-  async function getSitterData() {
-    let { data, error } = await supabase
-      .from("sitter_detail")
-      .select("*")
-      .eq("pet_sitter_id", params.sitterId);
-    if (error || !data) {
-      console.log(error);
-    }
-    console.log(data);
-    const filterData = filterSitterData(data);
-    setDetailUser(filterData);
-  }
-
   useEffect(() => {
     getSitterData();
   }, []);
-
+  console.log("detailUser", detailUser);
   return (
     <>
       <Navbar />
       <div className=" max-w-[1440px] mx-auto">
         <div className="lg:hidden md:hidden  ">
-          <Carousel images={images} picNum={1} />
+          <Carousel images={gallery ? gallery : images} picNum={1} />
         </div>
         <div className="hidden md:block lg:hidden">
-          <Carousel images={images} picNum={2} />
+          <Carousel images={gallery ? gallery : images} picNum={2} />
         </div>
         <div className="hidden lg:block md:hidden ">
-          <Carousel images={images} picNum={3} />
+          <Carousel images={gallery ? gallery : images} picNum={3} />
         </div>
 
         <div>

@@ -48,15 +48,7 @@ function SitterDetail(props) {
     reviewsPerPage,
     sitterId
   ) {
-    // console.log(
-    //   "dada1",
-    //   ratingStart,
-    //   ratingEnd,
-    //   page,
-    //   reviewsPerPage,
-    //   params.sitterId
-    // );
-
+ 
     try {
       //.range
       let { data: pageOfReview, error: errorPageOfReview } = await supabase.rpc(
