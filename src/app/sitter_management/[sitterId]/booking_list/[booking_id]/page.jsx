@@ -28,13 +28,13 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import supabase from "@/lib/utils/db";
+import { tr } from "date-fns/locale";
 
 const OrderDetails = () => {
   const params = useParams();
   const [ownPet, setOwnPet] = useState([]);
   const [petData, setPetData] = useState([]);
   const [isUpdated, setIsUpdated] = useState(false);
-
   async function getOwnPetData() {
     console.log("sdsds");
     console.log("paramm");
@@ -72,8 +72,13 @@ const OrderDetails = () => {
     setPetData(data);
   }
 
-  const bookingDate = new Date(`${ownPet.booking_date}`);
-
+  const currentDate = new Date();
+  const currentDateString = `${currentDate.getDate()} ${currentDate.toLocaleString(
+    "en",
+    { month: "short" }
+  )} ${currentDate.getFullYear()}`;
+  const currentTime = currentDate.toTimeString().slice(0, 8);
+  const bookingDate = new Date(ownPet.booking_date);
   const formattedBookingDate = bookingDate.toLocaleString("en-Uk", {
     day: "2-digit",
     month: "short",
@@ -117,18 +122,13 @@ const OrderDetails = () => {
     let removeTAndAfterT = transaction?.replaceAll("-", "").replace(/T.*/, "");
     return removeTAndAfterT;
   }
-  // function time() {
-  //   const currentTime = new Date(); // เวลาปัจจุบัน
-  //   const endTimeParts = ownPet.end_time.split(":"); // แยกเวลาออกเป็นชั่วโมง, นาที, วินาที
-  //   const endTime = new Date(currentTime); // สร้าง object Date ของเวลาปัจจุบัน
-  //   endTime.setHours(
-  //     Number(endTimeParts[0]),
-  //     Number(endTimeParts[1]),
-  //     Number(endTimeParts[2])
-  //   ); // กำหนดเวลาสำหรับเวลาที่กำหนดใหม่
 
-  //   return currentTime >= endTime; // คืนค่าเป็น true ถ้าเวลาปัจจุบันมากกว่าหรือเท่ากับเวลาสิ้นสุด
-  // }
+  // console.log(
+  //   "current",
+  //   currentDateString,
+  //   "ownpet1111",
+  //   formattedBookingDate
+  // );
 
   return (
     <div className="flex  bg-sixthGray justify-center">
@@ -190,19 +190,15 @@ const OrderDetails = () => {
             {ownPet.process_status === "In service" && (
               <div className={`max-lg:hidden`}>
                 <button
-                  className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange"
+                  className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange disabled:bg-fifthGray"
                   onClick={updateBookingStatus}
-                  // disabled={!time()}
+                  disabled={
+                    currentDateString < formattedBookingDate || // ถ้าวันที่ปัจจุบันน้อยกว่าวันที่จอง
+                    (currentDateString === formattedBookingDate &&
+                      currentTime < ownPet.end_time) // ถ้าวันที่ปัจจุบันเท่ากับวันที่จองและเวลาปัจจุบันน้อยกว่าเวลาจอง
+                  }
                 >
                   Success
-                </button>
-              </div>
-            )}
-
-            {ownPet.process_status === "Success" && (
-              <div className={`max-lg:hidden`}>
-                <button className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange">
-                  Review
                 </button>
               </div>
             )}
@@ -301,7 +297,14 @@ const OrderDetails = () => {
 
                 {ownPet.process_status === "In service" && (
                   <div className={`lg:hidden`}>
-                    <button className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange">
+                    <button
+                      className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange disabled:bg-fifthGray"
+                      disabled={
+                        currentDateString < formattedBookingDate ||
+                        (currentDateString === formattedBookingDate &&
+                          currentTime < ownPet.end_time)
+                      }
+                    >
                       Success
                     </button>
                   </div>
