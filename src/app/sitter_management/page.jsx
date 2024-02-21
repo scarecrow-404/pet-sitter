@@ -134,21 +134,6 @@ const SitterManagement = () => {
     };
     fetchData();
   }, [userId]);
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      await fetchUserData();
-      const petSitterData = await fetchPetSitterData(); // Wait for petSitterData to be fetched
-      if (petSitterData) {
-        await fetchDataPetTypesPrefer(petSitterData.id); // Pass petSitterID to fetchDataPetTypesPrefer
-      }
-      fetchImageUrlData();
-      fetchPetTypes();
-      fetchMarkersFromSupabase();
-      setLoading(false);
-    };
-    fetchData();
-  }, []);
   console.log("getMarkers typeof", typeof petSitterID);
   console.log("getMarkers 152", getMarkers);
   const fetchMarkersFromSupabase = async () => {

@@ -13,19 +13,19 @@ function UserManagementProfile() {
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [photo, setPhoto] = useState({});
   const imageUrlRef = useRef(previewImg);
-  const { user } = useUser();
-  const [imageUrl, setImageUrl] = useState(imageUrlRef);
+  const { user, userId } = useUser();
+  const [imageUrl, setImageUrl] = useState();
   const router = useRouter();
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!user || !user.id) {
+      if (!user || !userId) {
         console.error("User ID is null or user object is missing");
         return;
       }
       const { data: userData, error } = await supabase
         .from("users")
         .select("*")
-        .eq("id", user.id);
+        .eq("id", userId);
 
       if (error) {
         console.error("Error fetching user data:", error);
@@ -105,7 +105,7 @@ function UserManagementProfile() {
     const { error } = await supabase
       .from("users")
       .update(updates)
-      .eq("id", user.id);
+      .eq("id", userId);
 
     if (error) {
       console.error("Error updating user:", error);
