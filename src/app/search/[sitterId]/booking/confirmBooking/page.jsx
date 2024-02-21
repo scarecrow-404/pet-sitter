@@ -60,6 +60,7 @@ function page() {
     }
   }
 
+  console.log("pettt",pet)
   function HandleClickHome (){
     const path = `/`;
     const url =String(path)
@@ -177,7 +178,7 @@ function page() {
                   {pet.length > 0
                         ? pet.map(
                             (eachPet, index) =>
-                              `${eachPet.name}${
+                              `${eachPet}${
                                 index !== pet.length - 1 ? ", " : ""
                               }`
                           )
