@@ -10,20 +10,40 @@ const UserContext = createContext();
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
   const [userId, setUserId] = useState(null);
-  const[isNewSearch,setIsNewSearch]=useState(true)
-  const [search, setSearch] = useState({"exp":"0-10","rating":0,"pet": [1,2,3,4],"keyword":''});
+
+  const [isNewSearch, setIsNewSearch] = useState(true);
+  const [search, setSearch] = useState({
+    exp: "0-10",
+    rating: 0,
+    pet: [1, 2, 3, 4],
+    keyword: "",
+  });
+
 
   const [bookingData, setBookingData] = useState({
     isModalOpen: false,
-    startTime: "07:00",
-    endTime: "07:15",
+    startTime: "07:00 AM",
+    endTime: "10:00 AM",
     date: new Date(),
     fullname: "",
     sittername: "",
   });
 
   return (
-    <UserContext.Provider value={{ user, setUser, userId, setUserId, bookingData, setBookingData ,search,setSearch,setIsNewSearch,isNewSearch}}>
+    <UserContext.Provider
+      value={{
+        user,
+        setUser,
+        userId,
+        setUserId,
+        bookingData,
+        setBookingData,
+        search,
+        setSearch,
+        setIsNewSearch,
+        isNewSearch,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );

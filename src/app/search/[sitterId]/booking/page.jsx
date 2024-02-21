@@ -42,7 +42,8 @@ const Booking = () => {
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [message, setMessage] = useState("");
-
+  const [totalAmout, setTotalAmout] = useState(0);
+  let hoursWtMin = "";
   const [values, setValues] = useState({
     pets_id: "",
     name: "",
@@ -82,8 +83,22 @@ const Booking = () => {
   }
 
   function getTimeDifference(startTime, endTime) {
-    const formattedStartTime = startTime.replace(".", ":");
-    const formattedEndTime = endTime.replace(".", ":");
+    let startTimeCutAM;
+    let endTimeCutAM;
+    if (startTime.includes("AM")) {
+      startTimeCutAM = startTime.replace("AM", "");
+    } else {
+      startTimeCutAM = startTime.replace("PM", "");
+    }
+    const formattedStartTime = startTimeCutAM.replace(".", ":");
+
+    if (endTime.includes("AM")) {
+      endTimeCutAM = endTime.replace("AM", "");
+    } else {
+      endTimeCutAM = endTime.replace("PM", "");
+    }
+
+    const formattedEndTime = endTimeCutAM.replace(".", ":");
 
     const [startHour, startMinute] = formattedStartTime.split(":").map(Number);
     const [endHour, endMinute] = formattedEndTime.split(":").map(Number);
@@ -94,17 +109,18 @@ const Booking = () => {
     const diff = end.getTime() - start.getTime();
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
+    hoursWtMin = hours + "." + minutes;
     return { hours, minutes };
   }
 
   const formattedDate = formatDate(dataForSearch.date);
   console.log("dateselect", formattedDate);
   useEffect(() => {
+    calculateTotal(selectedPets.length, startTime, endTime);
     //const { startTime, endTime } = dataForSearch;
     // const { hours, minutes } = getTimeDifference(startTime, endTime);
     // console.log(hours, minutes);
-  }, [dataForSearch]);
+  }, [selectedPets]);
 
   const { startTime, endTime } = dataForSearch;
   const { hours, minutes } = getTimeDifference(startTime, endTime);
@@ -112,7 +128,7 @@ const Booking = () => {
   console.log("s and e", startTime, endTime);
 
   const calculateTotal = (numberOfPets, startTime, endTime) => {
-    console.log("calculate total called", numberOfPets, startTime, endTime);
+    //console.log("calculate total called", numberOfPets, startTime, endTime);
     const baseCost = 600; // Base cost for 3-hour booking
     const additionalCostPerPet = 300; // Additional cost per extra pet
     const additionalHourlyRate = 200; // Additional hourly rate for bookings over 3 hours
@@ -135,8 +151,7 @@ const Booking = () => {
     // Calculate additional cost for pets
     const additionalPetCost = (numberOfPets - 1) * additionalCostPerPet;
     totalCost += additionalPetCost;
-
-    return totalCost;
+    setTotalAmout(totalCost);
   };
 
   const displayStep = (step) => {
@@ -198,42 +213,39 @@ const Booking = () => {
     let newStep = currentStep;
 
     if (newStep === 1) {
+      console.log("amout", totalAmout);
+      setBookingData({
+        ...bookingData,
+        petselect: selectedPets,
+        price: totalAmout,
+        duration: hoursWtMin,
+      });
       setCurrentStep(newStep + 1);
     } else if (newStep === 2) {
-      // const checkStep2 = {};
-      // if (values.name === "") {
-      //   checkStep2.name = "*Please Enter Your Name";
-      // }
-      // if (values.email === "") {
-      //   checkStep2.email = "*Please Enter Your Email";
-      // }
-      // if (values.phoneNumber === "") {
-      //   checkStep2.phoneNumber = "*Please Enter Your Number";
-      // }
-      // if (Object.keys(checkStep2).length) {
-      //   setErrors({ ...checkStep2 });
-      // } else {
-      //   setErrors({});
-      //   setCurrentStep(newStep + 1);
-      // }
+      setBookingData({ ...bookingData, additionMessage: message });
       setCurrentStep(newStep + 1);
     } else if (newStep === 3) {
       const checkStep3 = {};
-      if (values.cardNumber === "") {
-        checkStep3.cardNumber = "*Please Enter Your Credit Card Number";
-      }
-      if (values.cardOwner === "") {
-        checkStep3.cardOwner = "*Please Enter Card Owner Name";
-      }
-      if (values.expiryDate === "") {
-        checkStep3.expiryDate = "*Please Enter Card Expiry Date";
-      }
-      if (values.cvccvv === "") {
-        checkStep3.cvccvv = "*Please Enter Card CVC/CVV";
-      }
-      if (Object.keys(checkStep3).length) {
-        setErrors({ ...checkStep3 });
-      } else {
+      if (values.payment_type === "creditcard") {
+        if (values.cardNumber === "") {
+          checkStep3.cardNumber = "*Please Enter Your Credit Card Number";
+        }
+        if (values.cardOwner === "") {
+          checkStep3.cardOwner = "*Please Enter Card Owner Name";
+        }
+        if (values.expiryDate === "") {
+          checkStep3.expiryDate = "*Please Enter Card Expiry Date";
+        }
+        if (values.cvccvv === "") {
+          checkStep3.cvccvv = "*Please Enter Card CVC/CVV";
+        }
+        if (Object.keys(checkStep3).length) {
+          setErrors({ ...checkStep3 });
+        } else {
+          setErrors({});
+          setPopupButton(true);
+        }
+      } else if (values.payment_type === "cash") {
         setErrors({});
         setPopupButton(true);
       }
@@ -264,7 +276,11 @@ const Booking = () => {
     <div className="bg-[#FAFAFB] ">
       <div className="bg-[#FAFAFB] h-full ">
         <Navbar />
-        <PopupBooking trigger={popupButton} closePopup={closePopup} />
+        <PopupBooking
+          trigger={popupButton}
+          closePopup={closePopup}
+          values={values}
+        />
         <div className="flex lg:flex-row flex-col">
           <div className="w-full flex lg:flex-row flex-col justify-center 2xl:w-[1440px] lg:mx-auto pt-[40px] md:px-[80px] gap-[16px]">
             <div className="bg-[#FFFFFF] flex flex-col md:w-full h-auto mb-[20px] pb-[20px] ">
@@ -350,13 +366,7 @@ const Booking = () => {
                 <div className="bg-black p-[24px] flex rounded-b-[16px] text-[14px] font-[500] leading-[26px] justify-between ">
                   <span className="text-white ">Total</span>
                   <span className="text-white ">
-                    {selectedPets.length > 0
-                      ? `${calculateTotal(
-                          selectedPets.length,
-                          startTime,
-                          endTime
-                        )} THB`
-                      : "0 THB"}
+                    {selectedPets.length > 0 ? `${totalAmout} THB` : "0 THB"}
                   </span>
                 </div>
 

@@ -9,7 +9,7 @@ import { useParams } from "next/navigation";
 import supabase from "@/lib/utils/db";
 import iconNext from "@/asset/images/IconButtonNext.svg";
 import iconPrev from "@/asset/images/IconButtonPrev.svg";
-
+import MapPageOnSitterDeatail from "./MapPageOnSitterDeatail";
 function SitterDetail(props) {
   const [rating, setRating] = useState("");
   const [review, setReview] = useState([]);
@@ -232,7 +232,9 @@ function SitterDetail(props) {
             </div>
             <div className="sitterPlace-box pb-[48px]">
               <p className=" font-bold text-[24px] pb-[12px]">My Place</p>
-              <p>{props.place}</p>
+              <p>
+                <MapPageOnSitterDeatail petsitterid={params.sitterId} />
+              </p>
             </div>
           </div>
 
