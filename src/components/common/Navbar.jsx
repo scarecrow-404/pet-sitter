@@ -121,8 +121,9 @@ const Navbar = () => {
     signOut();
     router.push("/");
   };
-  const closeModal = () => {
-    setIsModalOpen(false);
+
+  const handleHistoryClick = () => {
+    router.push("/account/booking-history");
   };
 
   return (
@@ -176,7 +177,7 @@ const Navbar = () => {
                   />
                   <p className="ml-2">Yout Pet</p>
                 </MenuItem>
-                <MenuItem>
+                <MenuItem onClick={handleHistoryClick}>
                   <Image
                     src={historyIcon}
                     alt="profile icon"

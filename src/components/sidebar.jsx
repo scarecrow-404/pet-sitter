@@ -61,23 +61,23 @@ export function Sidebar({ active }) {
   };
 
   const params = useParams();
-  const { user, setUser, userId } = useUser();
-  const [sitterId, setSitterId] = useState();
-  async function getSitterId() {
-    let { data, error } = await supabase
-      .from("pet_sitter")
-      .select("*")
-      .eq("user_id", userId);
-    console.log("data", data);
-    setSitterId(data[0].id);
-    if (error) {
-      console.error(error);
-    }
-  }
+  const { user, setUser, userId, sitterId } = useUser();
+  // const [sitterId, setSitterId] = useState();
+  // async function getSitterId() {
+  //   let { data, error } = await supabase
+  //     .from("pet_sitter")
+  //     .select("*")
+  //     .eq("user_id", userId);
+  //   console.log("data", data);
+  //   setSitterId(data[0].id);
+  //   if (error) {
+  //     console.error(error);
+  //   }
+  // }
 
-  useEffect(() => {
-    getSitterId();
-  }, []);
+  // useEffect(() => {
+  //   getSitterId();
+  // }, []);
 
   const router = useRouter();
   const handleSignOut = () => {
@@ -160,21 +160,21 @@ export function Sidebar({ active }) {
 
 export function TopBar() {
   const router = useRouter();
-  const { user, setUser, userId } = useUser();
-  const [sitterId, setSitterId] = useState();
-  async function getSitterId() {
-    let { data, error } = await supabase
-      .from("pet_sitter")
-      .select("id")
-      .eq("user_id", userId);
-    setSitterId(data[0].id);
-    if (error) {
-      console.error(error);
-    }
-  }
-  useEffect(() => {
-    getSitterId();
-  }, []);
+  const { user, setUser, userId, sitterId } = useUser();
+  // const [sitterId, setSitterId] = useState();
+  // async function getSitterId() {
+  //   let { data, error } = await supabase
+  //     .from("pet_sitter")
+  //     .select("id")
+  //     .eq("user_id", userId);
+  //   setSitterId(data[0].id);
+  //   if (error) {
+  //     console.error(error);
+  //   }
+  // }
+  // useEffect(() => {
+  //   getSitterId();
+  // }, []);
   const handleLogin = () => {
     user ? router.push("/") : router.push("/login");
   };

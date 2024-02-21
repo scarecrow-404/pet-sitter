@@ -34,7 +34,7 @@ import { set } from "date-fns";
 import MapPage from "@/components/MapPage";
 const SitterManagement = () => {
   const [optionPetType, setOptionPetType] = useState([]);
-  const { userId, user } = useUser();
+  const { userId, user, setSitterId } = useUser();
   //profile
   const [fullName, setFullName] = useState("");
   const [experience, setExperience] = useState(null);
@@ -274,6 +274,7 @@ const SitterManagement = () => {
     }
     const petSitterData = data[0];
     setPetSitterID(petSitterData.id);
+    setSitterId(petSitterData.id);
     setIntroduction(petSitterData.introduction);
     setAddressDetail(petSitterData.address_detail);
     setSubDistrict(petSitterData.sub_district);

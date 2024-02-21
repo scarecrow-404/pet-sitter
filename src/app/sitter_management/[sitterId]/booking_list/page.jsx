@@ -11,14 +11,15 @@ import { useUser } from "@/hooks/hooks";
 const BookingList = () => {
   const params = useParams();
   const router = useRouter();
+  const { sitterId } = useUser();
   const [petData, setPetData] = useState([]);
   const [keywords, setKeywords] = useState("");
   const [keywordsStatus, setKeywordsStatus] = useState("");
   const [petCount, setPetCount] = useState({});
-  
+
   //คลิกแล้วไปหน้า bookingของคนฝากเลี้ยง
   const handleClick = (item) => {
-    const path = `/sitter_management/${params.sitterId}/booking_list/${item}`;
+    const path = `/sitter_management/${sitterId}/booking_list/${item}`;
 
     // const queryString = new URLSearchParams(item).toString();
 
@@ -39,7 +40,7 @@ const BookingList = () => {
     // สร้างเซตเพื่อเก็บ id ที่เป็น unique
     let idSet = new Set();
     let uniqueData = [];
-    data.forEach((item) => {
+    data?.forEach((item) => {
       if (!idSet.has(item.id)) {
         uniqueData.push(item);
         idSet.add(item.id);
@@ -47,7 +48,7 @@ const BookingList = () => {
     });
 
     let idCount = {};
-    data.forEach((item) => {
+    data?.forEach((item) => {
       idSet.add(item.id);
       if (idCount[item.id]) {
         idCount[item.id]++;
@@ -68,7 +69,6 @@ const BookingList = () => {
     console.log("dataa", data);
     setPetData(uniqueData);
     setPetCount(idCount);
-    console.log("time", data.start_time);
   }
 
   //เอาไว้คำนวนความต่างของเวลา
