@@ -174,9 +174,14 @@ function page() {
                     Pet:
                   </p>
                   <div className="flex  gap-2 text-[16px] font-[500] leading-[24px]">
-                    {pet.map((item) => {
-                      return <p key={item.id}>{item}</p>;
-                    })}
+                  {pet.length > 0
+                        ? pet.map(
+                            (eachPet, index) =>
+                              `${eachPet.name}${
+                                index !== pet.length - 1 ? ", " : ""
+                              }`
+                          )
+                        : "-"}
                   </div>
                 </div>
                 <hr />
