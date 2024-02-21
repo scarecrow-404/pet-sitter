@@ -19,7 +19,6 @@ export function UserProvider({ children }) {
     keyword: "",
   });
 
-
   const [bookingData, setBookingData] = useState({
     isModalOpen: false,
     startTime: "07:00 AM",
