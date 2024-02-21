@@ -6,7 +6,7 @@ import { UserProvider } from "@/hooks/hooks";
 export function Providers({ children }) {
   return (
     <UserProvider>
-      <ChakraProvider> {children}</ChakraProvider>
+      <ChakraProvider>{children}</ChakraProvider>
     </UserProvider>
   );
 }
