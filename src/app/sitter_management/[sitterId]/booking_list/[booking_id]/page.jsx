@@ -306,14 +306,6 @@ const OrderDetails = () => {
                     </button>
                   </div>
                 )}
-
-                {ownPet.process_status === "Success" && (
-                  <div className={`lg:hidden`}>
-                    <button className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange">
-                      Review
-                    </button>
-                  </div>
-                )}
               </div>
             </div>
           </div>
@@ -416,7 +408,7 @@ function PopUpPetData({
         className=" mb-5 border-2 rounded-2xl w-[210px] h-[240px] flex flex-col justify-center items-center gap-6 cursor-pointer"
       >
         <Avatar size="xl" name={name} src={image} className="" />
-        <div className="flex flex-col justify-center">
+        <div className="flex flex-col justify-center items-center">
           <p className="mx-auto pb-[10px] font-bold text-[20px]">{name}</p>
           <p
             className={` border rounded-xl w-fit px-3 text-[16px] ${

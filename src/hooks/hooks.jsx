@@ -13,7 +13,6 @@ export function UserProvider({ children }) {
   const[isNewSearch,setIsNewSearch]=useState(true)
   const [search, setSearch] = useState({"exp":"0-10","rating":0,"pet": [1,2,3,4],"keyword":''});
 
-
   const [bookingData, setBookingData] = useState({
     isModalOpen: false,
     startTime: "07:00",
