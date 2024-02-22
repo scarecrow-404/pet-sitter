@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
+
 import { CreateInput } from "thai-address-autocomplete-react";
 import Image from "next/image";
 import { Sidebar, TopBar } from "@/components/Sidebar";
@@ -10,6 +11,8 @@ import {
   Input,
   Textarea,
   Avatar,
+  FormErrorMessage,
+  Spinner,
   useToast,
   Skeleton,
   Box,
@@ -18,6 +21,7 @@ import {
 } from "@chakra-ui/react";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import { createClient } from "@/lib/utils/client";
+const supabase = createClient();
 import deleteButton from "@/asset/images/delete.svg";
 import deleteButtonHover from "@/asset/images/deleteHover.svg";
 import frameFray from "@/asset/images/photoFrameOutlineRounded.svg";
@@ -27,11 +31,12 @@ import withAuth from "@/lib/utils/withAuth";
 const InputThaiAddress = CreateInput();
 import { useUser } from "@/hooks/hooks";
 import previewImg from "@/asset/images/Frame427321094.svg";
+import { set } from "date-fns";
+import dynamic from "next/dynamic";
+const MapPage = dynamic(() => import("@/components/MapPage"), { ssr: false });
 
-import MapPage from "@/components/MapPage";
-import iconX from "@/asset/images/iconXwhite.svg";
+// import MapPage from "@/components/MapPage";
 const SitterManagement = () => {
-  const supabase = createClient();
   const [optionPetType, setOptionPetType] = useState([]);
   const { userId, user, setSitterId } = useUser();
   //profile
@@ -49,9 +54,7 @@ const SitterManagement = () => {
   const [myPlace, setMyPlace] = useState("");
   const [logo, setLogo] = useState({});
   const [photo, setPhoto] = useState({});
-  const [photoSitter, setPhotoSitter] = useState({});
   const [imageUrl, setImageUrl] = useState();
-  const [imageUrlSitter, setImageUrlSitter] = useState();
   const [previewUrl, setPreviewUrl] = useState(previewImg);
   const [previewUrlPet, setPreviewUrlPet] = useState();
   const [petImage, setPetImage] = useState([]);
@@ -135,6 +138,21 @@ const SitterManagement = () => {
     };
     fetchData();
   }, [userId]);
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      await fetchUserData();
+      const petSitterData = await fetchPetSitterData(); // Wait for petSitterData to be fetched
+      if (petSitterData) {
+        await fetchDataPetTypesPrefer(petSitterData.id); // Pass petSitterID to fetchDataPetTypesPrefer
+      }
+      fetchImageUrlData();
+      fetchPetTypes();
+      fetchMarkersFromSupabase();
+      setLoading(false);
+    };
+    fetchData();
+  }, []);
   console.log("getMarkers typeof", typeof petSitterID);
   console.log("getMarkers 152", getMarkers);
   const fetchMarkersFromSupabase = async () => {
@@ -164,7 +182,7 @@ const SitterManagement = () => {
     }
     const { data, error } = await supabase
       .from("users")
-      .select(`*,pet_sitter(image_url)`)
+      .select("*")
       .eq("id", userId);
 
     if (error) {
@@ -177,7 +195,6 @@ const SitterManagement = () => {
         isClosable: true,
       });
     } else {
-      setImageUrlSitter(data[0].pet_sitter[0].image_url);
       setFullName(data[0].full_name);
       setEmail(data[0].email);
       setPhoneNumber(data[0].phone_number);
@@ -323,16 +340,9 @@ const SitterManagement = () => {
       setPetType(petTypeOptions);
     }
   };
-  // Function to generate a unique filename
-  const generateUniqueFileName = (fileName) => {
-    const timestamp = new Date().getTime(); // Get current timestamp
-    const randomString = Math.random().toString(36).substring(7); // Generate random string
-    const fileExtension = fileName.split(".").pop(); // Get file extension
-    return `${timestamp}_${randomString}.${fileExtension}`;
-  };
+
   //upload Avatar
   const handleUploadPhoto = (event) => {
-    console.log("hereeeeeeeeeeeeee1");
     const file = event.target.files[0];
     if (file) {
       const url = URL.createObjectURL(file);
@@ -344,75 +354,13 @@ const SitterManagement = () => {
       }
     }
   };
-
-  const handleUploadSitterPhoto = (event) => {
-    console.log("hereeeeeeeeeeeeee");
-    const file = event.target.files[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      if (url) {
-        const uniqueFileName = generateUniqueFileName(file.name);
-        console.log("Generated unique filename:", uniqueFileName); // Log the generated filename
-        setPhotoSitter({ [uniqueFileName]: file });
-        setImageUrlSitter(url);
-      }
-    }
+  // Function to generate a unique filename
+  const generateUniqueFileName = (fileName) => {
+    const timestamp = new Date().getTime(); // Get current timestamp
+    const randomString = Math.random().toString(36).substring(7); // Generate random string
+    const fileExtension = fileName.split(".").pop(); // Get file extension
+    return `${timestamp}_${randomString}.${fileExtension}`;
   };
-
-  const updatesAvatarSitter = async () => {
-    let updatedImageUrl = imageUrl ?? "";
-    if (Object.keys(photoSitter).length > 0) {
-      const file = Object.values(photoSitter)[0];
-      const filePath = `public/${userId}/petsitterprofile/${file.name}`;
-      let { data, error: uploadError } = await supabase.storage
-        .from("images")
-        .upload(filePath, file);
-      console.log(data);
-      if (uploadError) {
-        toast({
-          title: "Error",
-          position: "top",
-          description: `Error uploading photo: ${uploadError.message}`,
-          status: "error",
-          duration: 9000,
-          isClosable: true,
-        });
-        return;
-      }
-
-      // Get URL of uploaded photo
-      let url = supabase.storage.from("images").getPublicUrl(data.path);
-      console.log(url.data.publicUrl);
-      if (!url.data.publicUrl) {
-        toast({
-          title: "Error",
-          position: "top",
-          description: `Error getting photo URL: File does not exist or bucket is not public: ${url.data.publicUrl}`,
-          status: "error",
-          duration: 9000,
-          isClosable: true,
-        });
-
-        return;
-      }
-
-      updatedImageUrl = url.data.publicUrl;
-    }
-    const updatesData = {
-      image_url: updatedImageUrl,
-      updated_at: new Date(),
-    };
-    const { error } = await supabase
-      .from("pet_sitter")
-      .update(updatesData)
-      .eq("user_id", userId);
-    if (error) {
-      console.error("Error updating sitter:", error);
-    } else {
-      console.log("Sitter updated successfully");
-    }
-  };
-
   const updatesAvatarUser = async () => {
     let updatedImageUrl = imageUrl ?? "";
     if (Object.keys(photo).length > 0) {
@@ -479,7 +427,7 @@ const SitterManagement = () => {
       if (typeof experience === "string") {
         valueExperience = parseFloat(experience);
       } else {
-        let dataExperience = JSON.parse(experience);
+        // let dataExperience = JSON.parse(experience);
         valueExperience = parseFloat(dataExperience.value);
       }
       console.log("valueExperience", valueExperience);
@@ -495,7 +443,7 @@ const SitterManagement = () => {
         sitter_name: tradeName,
         service: services,
         place: myPlace,
-        experience: valueExperience || experience,
+        experience: valueExperience,
         account_name: accountName,
         account_type: accountType,
         etcs: etcs,
@@ -601,9 +549,6 @@ const SitterManagement = () => {
       await dataPetType();
       console.log("end dataPetType");
       console.log("start UpdatesAvatarUser");
-      await updatesAvatarSitter();
-      console.log("end UpdatesAvatarsitter");
-      console.log("start uploadAvatarUser");
       await updatesAvatarUser();
       console.log("end UpdatesAvatarUser");
       console.log("start uploadPetImages");
@@ -754,14 +699,14 @@ const SitterManagement = () => {
 
       return (
         <div key={petImageKey} className="relative flex flex-row">
-          <div className="bg-sixthGray rounded-lg w-[167px] h-[167px] flex justify-center items-center">
+          <div className="bg-fifthGray rounded-lg w-[167px] h-[167px] flex justify-center items-center">
             <img src={src} alt={`Pet ${petImageKey}`} />
           </div>
           <button
-            className="absolute text-sm right-[-10px] top-[-10px]  items-center justify-center flex cursor-pointer bg-thirdOrange p-1 rounded-full hover:bg-fifthOrange hover:text-white w-6 h-6"
+            className="absolute text-sm right-1 top-1 cursor-pointer bg-secondOrange p-1 rounded-full hover:bg-fifthOrange hover:text-white w-6 h-6"
             onClick={() => handleRemoveImage(petImageKey)}
           >
-            <Image src={iconX} alt="icon X" />
+            X
           </button>
         </div>
       );
@@ -818,12 +763,10 @@ const SitterManagement = () => {
       <div className="flex-1 min-w-[375px] mx-auto md:w-auto md:mx-3 bg-sixthGray max-w-[1200px] lg:ml-60">
         <TopBar />
         <div className="Title flex justify-between items-center py-3">
-          <div className="nameTitle pl-5 text-[22px] font-semibold">
-            Pet Sitter Profile
-          </div>
+          <div className="nameTitle pl-5">Pet Sitter Profile</div>
           <div className="pr-5">
             <button
-              className="bg-secondOrange rounded-3xl min-w-20 h-10 hidden md:block text-white font-medium"
+              className="bg-secondOrange rounded-3xl min-w-20 h-10 hidden md:block"
               onClick={handleFormSubmit}
             >
               Update
@@ -842,9 +785,9 @@ const SitterManagement = () => {
             />
           </Box>
         ) : (
-          <div className="rounded-xl p-5  mb-5 bg-white flex  flex-col gap-4 md:px-[80px] md:py-[40px]">
-            <div className="pb-6 font-bold flex    ">User Information</div>
-            <div className="flex flex-col  lg:items-center gap-2 mt-2 ">
+          <div className="bg-white rounded-xl p-5 mb-5">
+            <div className="pb-6">Basic Information</div>
+            <div className="flex flex-col gap-2 mt-2 w-80">
               <label htmlFor="profile">
                 {imageUrl && (
                   <div className="photo">
@@ -867,7 +810,7 @@ const SitterManagement = () => {
                 />
               </label>
             </div>
-            <div className=" md:items-end md:flex md:gap-9 md:justify-between ">
+            <div className=" md:items-end md:flex md:gap-9 md:justify-between">
               <div className="fullname mt-5 md:w-80 lg:w-[474px] xl:w-[560px]">
                 <FormControl isRequired isInvalid={isError}>
                   <FormLabel>Your full name</FormLabel>
@@ -948,6 +891,21 @@ const SitterManagement = () => {
                 </FormControl>
               </div>
             </div>
+            <div>
+              <div className="Introduction">
+                <FormControl isRequired>
+                  <FormLabel>
+                    Introduction (Describe about yourself as pet sitter)
+                  </FormLabel>
+                  <Textarea
+                    value={introduction}
+                    onChange={(event) => {
+                      setIntroduction(event.target.value);
+                    }}
+                  />
+                </FormControl>
+              </div>
+            </div>
           </div>
         )}
         {loading ? (
@@ -961,35 +919,9 @@ const SitterManagement = () => {
             />
           </Box>
         ) : (
-          <div className="petSitter p-5  rounded-xl mb-1 flex flex-col gap-4 bg-white md:px-[80px] md:py-[40px]">
-            <p className=" font-bold">Pet Sitter</p>
-
-            <div className="flex flex-col gap-2 mt-2 ">
-              <p className=" pb-5">Pet Sitter Profile</p>
-              <label htmlFor="profilesitter">
-                {imageUrl && (
-                  <div className="photo   lg:flex lg:justify-center">
-                    <Image
-                      className="cursor-pointer rounded-xl  w-[150px] h-[100px]   md:w-[250px] md:h-[180px]  lg:w-[300px]"
-                      src={imageUrlSitter}
-                      width={300}
-                      height={120}
-                      alt="Preview"
-                    />
-                  </div>
-                )}
-                <input
-                  type="file"
-                  id="profilesitter"
-                  name="profilesitter"
-                  accept="image/*"
-                  onChange={handleUploadSitterPhoto}
-                  className="sr-only"
-                />
-              </label>
-            </div>
-
-            <div className="md:flex md:gap-9 md:justify-between pt-5  ">
+          <div className="petSitter p-5 bg-white rounded-xl mb-5">
+            <p className="pb-6">Pet Sitter</p>
+            <div className="md:flex md:gap-9 md:justify-between">
               <div className="TradeName md:w-80 lg:w-[474px] xl:w-[560px]">
                 <FormControl isRequired>
                   <FormLabel>Pet sitter name (Trade Name)</FormLabel>
@@ -1018,30 +950,14 @@ const SitterManagement = () => {
                 </FormControl>
               </div>
             </div>
-            <div className="md:flex flex-col md:gap-9 ">
-              <div>
-                <div className="Introduction">
-                  <FormControl isRequired>
-                    <FormLabel>
-                      Introduction (Describe about yourself as pet sitter)
-                    </FormLabel>
-                    <Textarea
-                      rows={8}
-                      value={introduction}
-                      onChange={(event) => {
-                        setIntroduction(event.target.value);
-                      }}
-                    />
-                  </FormControl>
-                </div>
-              </div>
-              <div className="services ">
+            <div className="md:flex md:gap-9 md:justify-between">
+              <div className="services md:w-80 lg:w-[474px] xl:w-[560px]">
                 <FormControl isRequired>
                   <FormLabel>
                     Services (Describe all of your service for pet sitting)
                   </FormLabel>
                   <Textarea
-                    rows={8}
+                    rows={10}
                     value={services}
                     onChange={(event) => {
                       setServices(event.target.value);
@@ -1049,60 +965,10 @@ const SitterManagement = () => {
                   />
                 </FormControl>
               </div>
-              <div className="bg-white rounded-xl  flex flex-col gap-4">
-                <div>
-                  <FormControl isRequired>
-                    <FormLabel>Address detail</FormLabel>
-                    <Input
-                      value={addressDetail}
-                      onChange={(event) => {
-                        setAddressDetail(event.target.value);
-                      }}
-                    />
-                  </FormControl>
-                </div>
-                <div className="md:flex md:gap-9 md:justify-between">
-                  <FormControl isRequired>
-                    <FormLabel>Province</FormLabel>
-                    <InputThaiAddress.Province
-                      value={address["province"]}
-                      onChange={handleChange("province")}
-                      onSelect={handleSelect}
-                    />
-                  </FormControl>
 
-                  <FormControl isRequired>
-                    <FormLabel>District</FormLabel>
-                    <InputThaiAddress.Amphoe
-                      value={address["amphoe"]}
-                      onChange={handleChange("amphoe")}
-                      onSelect={handleSelect}
-                    />
-                  </FormControl>
-                </div>
-                <div className="md:flex md:gap-9 md:justify-between">
-                  <FormControl isRequired>
-                    <FormLabel>Sub-district</FormLabel>
-                    <InputThaiAddress.District
-                      value={address["district"]}
-                      onChange={handleChange("district")}
-                      onSelect={handleSelect}
-                    />
-                  </FormControl>
-
-                  <FormControl isRequired>
-                    <FormLabel>Post code</FormLabel>
-                    <InputThaiAddress.Zipcode
-                      value={address["zipcode"]}
-                      onChange={handleChange("zipcode")}
-                      onSelect={handleSelect}
-                    />
-                  </FormControl>
-                </div>
-              </div>
-              <div className="myPlace ">
+              <div className="myPlace md:w-80 md:pt-6 lg:w-[474px] lg:pt-0 xl:w-[560px]">
                 <FormControl isRequired>
-                  <FormLabel>My Place (Pin your location)</FormLabel>
+                  <FormLabel>My Place (Describe you place)</FormLabel>
                   {/* <Input
                     value={myPlace}
                     onChange={(event) => {
@@ -1124,14 +990,10 @@ const SitterManagement = () => {
               /> */}
               </div>
             </div>
-            <div className="pt-8">
-              <p className=" font-semibold">Image Gallery</p>
-              <p>
-                Recommend adding at least 3 images, for addition adding image
-                maximum at 10 images.
-              </p>
+            <div className="pt-6">
+              <p>Image Gallery (Maximum 10 images)</p>
               <div className="flex flex-row my-4 gap-4 flex-wrap justify-center items-center">
-                <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-5 ">
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-5">
                   {renderPetImages()}
                   <label htmlFor="imagespet">
                     {petImage && Object.keys(petImage).length > 9 ? (
@@ -1182,7 +1044,6 @@ const SitterManagement = () => {
             </div>
           </div>
         )}
-
         {loading ? (
           <Box padding="6" boxShadow="lg" bg="white">
             <SkeletonCircle size="10" />
@@ -1194,9 +1055,75 @@ const SitterManagement = () => {
             />
           </Box>
         ) : (
-          <div className="bank account mt-5 p-5 bg-white rounded-xl mb-5">
-            <div className="bg-white rounded-xl p-5 mb-5 flex flex-col gap-4">
-              <p className="pb-6 font-bold">Bank</p>
+          <div className="Address p-5 bg-white rounded-xl mb-5">
+            <div className="bg-white rounded-xl p-5 mb-5">
+              <p className="pb-6">Address</p>
+              <div>
+                <FormControl isRequired>
+                  <FormLabel>Address detail</FormLabel>
+                  <Input
+                    value={addressDetail}
+                    onChange={(event) => {
+                      setAddressDetail(event.target.value);
+                    }}
+                  />
+                </FormControl>
+              </div>
+              <div className="md:flex md:gap-9 md:justify-between">
+                <FormControl isRequired>
+                  <FormLabel>Province</FormLabel>
+                  <InputThaiAddress.Province
+                    value={address["province"]}
+                    onChange={handleChange("province")}
+                    onSelect={handleSelect}
+                  />
+                </FormControl>
+
+                <FormControl isRequired>
+                  <FormLabel>District</FormLabel>
+                  <InputThaiAddress.Amphoe
+                    value={address["amphoe"]}
+                    onChange={handleChange("amphoe")}
+                    onSelect={handleSelect}
+                  />
+                </FormControl>
+              </div>
+              <div className="md:flex md:gap-9 md:justify-between">
+                <FormControl isRequired>
+                  <FormLabel>Sub-district</FormLabel>
+                  <InputThaiAddress.District
+                    value={address["district"]}
+                    onChange={handleChange("district")}
+                    onSelect={handleSelect}
+                  />
+                </FormControl>
+
+                <FormControl isRequired>
+                  <FormLabel>Post code</FormLabel>
+                  <InputThaiAddress.Zipcode
+                    value={address["zipcode"]}
+                    onChange={handleChange("zipcode")}
+                    onSelect={handleSelect}
+                  />
+                </FormControl>
+              </div>
+            </div>
+          </div>
+        )}
+        {loading ? (
+          <Box padding="6" boxShadow="lg" bg="white">
+            <SkeletonCircle size="10" />
+            <SkeletonText
+              mt="10"
+              noOfLines={15}
+              spacing="4"
+              skeletonHeight="2"
+            />
+          </Box>
+        ) : (
+          <div className="bank account p-5 bg-white rounded-xl mb-5">
+            <div className="bg-white rounded-xl p-5 mb-5">
+              <p className="pb-6">Bank</p>
               <div>
                 <FormControl isRequired>
                   <FormLabel>Account Number</FormLabel>
@@ -1252,7 +1179,7 @@ const SitterManagement = () => {
                   />
                 </FormControl>
 
-                <FormControl>
+                <FormControl isRequired>
                   <FormLabel>Etc.</FormLabel>
                   <Input
                     value={etcs}
@@ -1266,7 +1193,7 @@ const SitterManagement = () => {
             <div className="flex justify-center pb-7">
               <button
                 onClick={handleFormSubmit}
-                className="bg-secondOrange text-white font-medium rounded-3xl w-80 h-10"
+                className="bg-secondOrange rounded-3xl w-80 h-10"
               >
                 Update
               </button>
