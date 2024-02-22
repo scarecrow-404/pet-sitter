@@ -32,6 +32,7 @@ import { useUser } from "@/hooks/hooks";
 import previewImg from "@/asset/images/Frame427321094.svg";
 import { set } from "date-fns";
 import MapPage from "@/components/MapPage";
+import iconX from "@/asset/images/iconXwhite.svg"
 const SitterManagement = () => {
   const [optionPetType, setOptionPetType] = useState([]);
   const { userId, user, setSitterId } = useUser();
@@ -370,7 +371,7 @@ const SitterManagement = () => {
     let updatedImageUrl = imageUrl ?? "";
     if (Object.keys(photoSitter).length > 0) {
       const file = Object.values(photoSitter)[0];
-      const filePath = `public/${userId}/${file.name}`;
+      const filePath = `public/${userId}/petsitterprofile/${file.name}`;
       let { data, error: uploadError } = await supabase.storage
         .from("images")
         .upload(filePath, file);
@@ -764,14 +765,14 @@ const SitterManagement = () => {
 
       return (
         <div key={petImageKey} className="relative flex flex-row">
-          <div className="bg-fifthGray rounded-lg w-[167px] h-[167px] flex justify-center items-center">
+          <div className="bg-sixthGray rounded-lg w-[167px] h-[167px] flex justify-center items-center">
             <img src={src} alt={`Pet ${petImageKey}`} />
           </div>
           <button
-            className="absolute text-sm right-1 top-1 cursor-pointer bg-secondOrange p-1 rounded-full hover:bg-fifthOrange hover:text-white w-6 h-6"
+            className="absolute text-sm right-[-10px] top-[-10px]  items-center justify-center flex cursor-pointer bg-thirdOrange p-1 rounded-full hover:bg-fifthOrange hover:text-white w-6 h-6"
             onClick={() => handleRemoveImage(petImageKey)}
           >
-            X
+           <Image src={iconX} alt="icon X" />
           </button>
         </div>
       );
@@ -828,10 +829,10 @@ const SitterManagement = () => {
       <div className="flex-1 min-w-[375px] mx-auto md:w-auto md:mx-3 bg-sixthGray max-w-[1200px] lg:ml-60">
         <TopBar />
         <div className="Title flex justify-between items-center py-3">
-          <div className="nameTitle pl-5">Pet Sitter Profile</div>
+          <div className="nameTitle pl-5 text-[22px] font-semibold">Pet Sitter Profile</div>
           <div className="pr-5">
             <button
-              className="bg-secondOrange rounded-3xl min-w-20 h-10 hidden md:block"
+              className="bg-secondOrange rounded-3xl min-w-20 h-10 hidden md:block text-white font-medium"
               onClick={handleFormSubmit}
             >
               Update
@@ -850,9 +851,10 @@ const SitterManagement = () => {
             />
           </Box>
         ) : (
-          <div className="bg-white rounded-xl p-5 mb-5">
-            <div className="pb-6 font-bold">Basic Information</div>
-            <div className="flex flex-col gap-2 mt-2 w-80">
+          <div className="rounded-xl p-5  mb-5 bg-white flex  flex-col gap-4 md:px-[80px] md:py-[40px]">
+
+            <div className="pb-6 font-bold flex    ">User  Information</div>
+            <div className="flex flex-col  lg:items-center gap-2 mt-2 ">
               <label htmlFor="profile">
                 {imageUrl && (
                   <div className="photo">
@@ -875,7 +877,7 @@ const SitterManagement = () => {
                 />
               </label>
             </div>
-            <div className=" md:items-end md:flex md:gap-9 md:justify-between">
+            <div className=" md:items-end md:flex md:gap-9 md:justify-between ">
               <div className="fullname mt-5 md:w-80 lg:w-[474px] xl:w-[560px]">
                 <FormControl isRequired isInvalid={isError}>
                   <FormLabel>Your full name</FormLabel>
@@ -956,21 +958,7 @@ const SitterManagement = () => {
                 </FormControl>
               </div>
             </div>
-            <div>
-              <div className="Introduction">
-                <FormControl isRequired>
-                  <FormLabel>
-                    Introduction (Describe about yourself as pet sitter)
-                  </FormLabel>
-                  <Textarea
-                    value={introduction}
-                    onChange={(event) => {
-                      setIntroduction(event.target.value);
-                    }}
-                  />
-                </FormControl>
-              </div>
-            </div>
+          
           </div>
         )}
         {loading ? (
@@ -984,19 +972,19 @@ const SitterManagement = () => {
             />
           </Box>
         ) : (
-          <div className="petSitter p-5 bg-white rounded-xl mb-5">
-            <p className="pb-6 font-bold">Pet Sitter</p>
+          <div className="petSitter p-5  rounded-xl mb-1 flex flex-col gap-4 bg-white md:px-[80px] md:py-[40px]">
+            <p className=" font-bold">Pet Sitter</p>
              
-            <div className="flex flex-col gap-2 mt-2 w-80">
+            <div className="flex flex-col gap-2 mt-2 ">
             <p className=" pb-5">Pet Sitter Profile</p>
               <label htmlFor="profilesitter">
                 {imageUrl && (
-                  <div className="photo">
-                    <Avatar
-                      className="cursor-pointer"
+                  <div className="photo   lg:flex lg:justify-center">
+                    <Image
+                      className="cursor-pointer rounded-xl  w-[150px] h-[100px]   md:w-[250px] md:h-[180px]  lg:w-[300px]"
                       src={imageUrlSitter}
-                      width={200}
-                      height={200}
+                      width={300}
+                      height={120}
                       alt="Preview"
                     />
                   </div>
@@ -1041,14 +1029,30 @@ const SitterManagement = () => {
                 </FormControl>
               </div>
             </div>
-            <div className="md:flex md:gap-9 md:justify-between">
-              <div className="services md:w-80 lg:w-[474px] xl:w-[560px]">
+            <div className="md:flex flex-col md:gap-9 ">
+            <div>
+              <div className="Introduction">
+                <FormControl isRequired>
+                  <FormLabel>
+                    Introduction (Describe about yourself as pet sitter)
+                  </FormLabel>
+                  <Textarea
+                  rows={8}
+                    value={introduction}
+                    onChange={(event) => {
+                      setIntroduction(event.target.value);
+                    }}
+                  />
+                </FormControl>
+              </div>
+            </div>
+              <div className="services ">
                 <FormControl isRequired>
                   <FormLabel>
                     Services (Describe all of your service for pet sitting)
                   </FormLabel>
                   <Textarea
-                    rows={10}
+                    rows={8}
                     value={services}
                     onChange={(event) => {
                       setServices(event.target.value);
@@ -1056,99 +1060,8 @@ const SitterManagement = () => {
                   />
                 </FormControl>
               </div>
-
-              <div className="myPlace md:w-80 md:pt-6 lg:w-[474px] lg:pt-0 xl:w-[560px]">
-                <FormControl isRequired>
-                  <FormLabel>My Place (Describe you place)</FormLabel>
-                  {/* <Input
-                    value={myPlace}
-                    onChange={(event) => {
-                      setMyPlace(event.target.value);
-                    }}
-                  /> */}
-                  <MapPage
-                    petSitterId={petSitterID}
-                    getMarkers={getMarkers}
-                    setGetMarkers={setGetMarkers}
-                    user_id={userId}
-                  />
-                </FormControl>
-                {/* <MapContainer
-                center={position}
-                zoom={10}
-                markers={markers}
-                onClick={handleMapClick}
-              /> */}
-              </div>
-            </div>
-            <div className="pt-6">
-              <p>Image Gallery (Maximum 10 images)</p>
-              <div className="flex flex-row my-4 gap-4 flex-wrap justify-center items-center">
-                <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-5">
-                  {renderPetImages()}
-                  <label htmlFor="imagespet">
-                    {petImage && Object.keys(petImage).length > 9 ? (
-                      <>
-                        <Image
-                          className="pt-4 flex justify-center items-center cursor-not-allowed"
-                          src={uploadDisable}
-                          width={150}
-                          height={150}
-                          alt="Frame427321094"
-                        />
-                        <input
-                          disabled
-                          type="file"
-                          id="imagespet"
-                          name="imagespet"
-                          accept="image/*"
-                          onChange={handlePetImageChange}
-                          className="sr-only"
-                          multiple
-                          max="10"
-                        />
-                      </>
-                    ) : (
-                      <>
-                        <Image
-                          className="cursor-pointer"
-                          src={upload}
-                          width={150}
-                          height={150}
-                          alt="Frame427321094"
-                        />
-                        <input
-                          type="file"
-                          id="imagespet"
-                          name="imagespet"
-                          accept="image/*"
-                          onChange={handlePetImageChange}
-                          className="sr-only"
-                          multiple
-                          max="10"
-                        />
-                      </>
-                    )}
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-        {loading ? (
-          <Box padding="6" boxShadow="lg" bg="white">
-            <SkeletonCircle size="10" />
-            <SkeletonText
-              mt="10"
-              noOfLines={15}
-              spacing="4"
-              skeletonHeight="2"
-            />
-          </Box>
-        ) : (
-          <div className="Address p-5 bg-white rounded-xl mb-5">
-            <div className="bg-white rounded-xl p-5 mb-5">
-              <p className="pb-6 font-bold">Address</p>
+              <div className="bg-white rounded-xl  flex flex-col gap-4">
+              
               <div>
                 <FormControl isRequired>
                   <FormLabel>Address detail</FormLabel>
@@ -1199,8 +1112,86 @@ const SitterManagement = () => {
                 </FormControl>
               </div>
             </div>
+              <div className="myPlace ">
+                <FormControl isRequired>
+                  <FormLabel>My Place (Pin your location)</FormLabel>
+                  {/* <Input
+                    value={myPlace}
+                    onChange={(event) => {
+                      setMyPlace(event.target.value);
+                    }}
+                  /> */}
+                  <MapPage
+                    petSitterId={petSitterID}
+                    getMarkers={getMarkers}
+                    setGetMarkers={setGetMarkers}
+                    user_id={userId}
+                  />
+                </FormControl>
+                {/* <MapContainer
+                center={position}
+                zoom={10}
+                markers={markers}
+                onClick={handleMapClick}
+              /> */}
+              </div>
+            </div>
+            <div className="pt-8">
+              <p className=" font-semibold">Image Gallery</p>
+              <p>Recommend adding at least 3 images, for addition adding image maximum at 10 images.</p>
+              <div className="flex flex-row my-4 gap-4 flex-wrap justify-center items-center">
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-5 ">
+                  {renderPetImages()}
+                  <label htmlFor="imagespet">
+                    {petImage && Object.keys(petImage).length > 9 ? (
+                      <>
+                        <Image
+                          className="pt-4 flex justify-center items-center cursor-not-allowed"
+                          src={uploadDisable}
+                          width={150}
+                          height={150}
+                          alt="Frame427321094"
+                        />
+                        <input
+                          disabled
+                          type="file"
+                          id="imagespet"
+                          name="imagespet"
+                          accept="image/*"
+                          onChange={handlePetImageChange}
+                          className="sr-only"
+                          multiple
+                          max="10"
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <Image
+                          className="cursor-pointer"
+                          src={upload}
+                          width={150}
+                          height={150}
+                          alt="Frame427321094"
+                        />
+                        <input
+                          type="file"
+                          id="imagespet"
+                          name="imagespet"
+                          accept="image/*"
+                          onChange={handlePetImageChange}
+                          className="sr-only"
+                          multiple
+                          max="10"
+                        />
+                      </>
+                    )}
+                  </label>
+                </div>
+              </div>
+            </div>
           </div>
         )}
+       
         {loading ? (
           <Box padding="6" boxShadow="lg" bg="white">
             <SkeletonCircle size="10" />
@@ -1212,8 +1203,8 @@ const SitterManagement = () => {
             />
           </Box>
         ) : (
-          <div className="bank account p-5 bg-white rounded-xl mb-5">
-            <div className="bg-white rounded-xl p-5 mb-5">
+          <div className="bank account mt-5 p-5 bg-white rounded-xl mb-5">
+            <div className="bg-white rounded-xl p-5 mb-5 flex flex-col gap-4">
               <p className="pb-6 font-bold">Bank</p>
               <div>
                 <FormControl isRequired>
@@ -1270,7 +1261,7 @@ const SitterManagement = () => {
                   />
                 </FormControl>
 
-                <FormControl isRequired>
+                <FormControl>
                   <FormLabel>Etc.</FormLabel>
                   <Input
                     value={etcs}
@@ -1284,7 +1275,7 @@ const SitterManagement = () => {
             <div className="flex justify-center pb-7">
               <button
                 onClick={handleFormSubmit}
-                className="bg-secondOrange rounded-3xl w-80 h-10"
+                className="bg-secondOrange text-white font-medium rounded-3xl w-80 h-10"
               >
                 Update
               </button>

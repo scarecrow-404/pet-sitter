@@ -97,7 +97,9 @@ setGallery(gallery[0].image_url);
             src={gallery? gallery:catpic}
             alt="sitter pic"
             className=" w-[150px] h-[100px]  rounded-xl md:w-[250px] md:h-[180px]  lg:w-[300px] "
-          /></div>
+          />
+          
+          </div>
          
           <section className=" flex gap-2 w-[100%] relative p-2">
             <div className=" w-[100%]">

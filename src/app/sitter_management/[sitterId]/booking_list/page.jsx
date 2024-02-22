@@ -153,14 +153,14 @@ const BookingList = () => {
       </div>
       <div className="flex-1 min-w-[375px] mx-auto md:w-auto md:mx-3 bg-sixthGray max-w-[1200px] lg:ml-60">
         <TopBar />
-        <div className="Title flex justify-between items-center py-3">
-          <div className="nameTitle pl-5">Booking List</div>
+        <div className="Title flex  ml-3 flex-col md:flex-row justify-between items-center py-3">
+          <div className="nameTitle pl-5 text-[16px]  hidden md:flex lg:text-[22px] font-semibold">Booking List</div>
           <div className="flex pr-5 gap-4">
             <Input
               size="md"
-              htmlSize={4}
+              htmlSize={20}
               width="auto"
-              placeholder="Search..."
+              placeholder="Search name..."
               value={keywords}
               onChange={(event) => {
                 setKeywords(event.target.value);
@@ -193,19 +193,19 @@ const BookingList = () => {
             </Select>
           </div>
         </div>
-        <div className="Title flex justify-center items-start py-3 bg-white rounded-2xl lg:h-screen">
-          <table className="border-separate border-slate-400 min-w-[375px] w-full md:max-w-[768px] md:w-full xl:max-w-[1440px] xl:w-full rounded-3xl overflow-hidden ">
+        <div className="Title flex justify-center items-start  bg-white rounded-3xl lg:h-screen">
+          <table className=" border-slate-400 min-w-[375px] w-full  md:w-full xl:max-w-[1440px] xl:w-full rounded-3xl overflow-hidden ">
             <thead className="text-white bg-black text-[13px] md:text-[14px]">
               <tr>
-                <th className="text-center py-4 md:py-6">Name</th>
-                <th className="text-center py-4 md:py-6 hidden md:table-cell ">
+                <th className="text-center w-[200px] py-4 md:py-6">Name</th>
+                <th className="text-center w-[50px] py-4 md:py-6 hidden md:table-cell ">
                   Pet(s)
                 </th>
-                <th className="text-center py-4 md:py-6 hidden md:table-cell">
+                <th className="text-center w-[150px] py-4 md:py-6 hidden md:table-cell">
                   Duration
                 </th>
-                <th className="text-center py-4 md:py-6">Booked Date</th>
-                <th className="text-center py-4 md:py-6">Status</th>
+                <th className="text-center w-[200px] py-4 md:py-6">Booked Date</th>
+                <th className="text-center w-[200px] py-4 md:py-6">Status</th>
               </tr>
             </thead>
             <tbody className="text-[13px] md:text-[16px]">
@@ -214,7 +214,7 @@ const BookingList = () => {
                   <tr
                     key={item.id}
                     onClick={() => handleClick(item.id)}
-                    className="cursor-pointer hover:bg-fourthGray"
+                    className="cursor-pointer hover:bg-sixthGray"
                   >
                     <td className="text-center py-2 md:py-6 ">
                       {item.full_name}
