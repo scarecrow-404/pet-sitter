@@ -1,10 +1,17 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import previewImg from "@/asset/images/Frame427321094.svg";
-import { FormControl, FormLabel, Input, Avatar } from "@chakra-ui/react";
+import {
+  FormControl,
+  FormLabel,
+  Input,
+  Avatar,
+  useToast,
+} from "@chakra-ui/react";
 import supabase from "@/lib/utils/db";
 import { useUser } from "@/hooks/hooks";
 import { useRouter } from "next/navigation";
+
 function UserManagementProfile() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -16,6 +23,7 @@ function UserManagementProfile() {
   const { user, userId } = useUser();
   const [imageUrl, setImageUrl] = useState();
   const router = useRouter();
+  const toast = useToast();
   useEffect(() => {
     const fetchUserData = async () => {
       if (!user || !userId) {
@@ -110,7 +118,14 @@ function UserManagementProfile() {
     if (error) {
       console.error("Error updating user:", error);
     } else {
-      alert("User updated successfully");
+      toast({
+        title: "success",
+        position: "top",
+        description: "User updated successfully",
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
     }
   };
 
@@ -238,7 +253,7 @@ function UserManagementProfile() {
           <button
             className="bg-secondOrange p-2 text-sm rounded-3xl text-white md:text-xl"
             //for check useState (if connected to db already ,pls delete)
-            onClick={handleSubmit}
+            onClick={() => handleSubmit(imageUrl)}
           >
             Update Profile
           </button>

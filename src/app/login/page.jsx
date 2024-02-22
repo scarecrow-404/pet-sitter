@@ -69,7 +69,7 @@ const LoginPage = () => {
       // setUser(users[0]);
       console.log(userId);
 
-      if (user) {
+      if (result.user || userId) {
         router.push("/");
       }
     }
@@ -170,11 +170,11 @@ const LoginPage = () => {
               </div>
 
               <h3 className="flex items-center w-full">
-                <span class="flex-grow bg-gray-200 rounded h-[1px]"></span>
-                <span class="text-[14px] sm:text-[18px] text-[#7B7E8F] font-[500] leading-[26px] mx-3">
+                <span className="flex-grow bg-gray-200 rounded h-[1px]"></span>
+                <span className="text-[14px] sm:text-[18px] text-[#7B7E8F] font-[500] leading-[26px] mx-3">
                   Or Continue With
                 </span>
-                <span class="flex-grow bg-gray-200 rounded h-[1px]"></span>
+                <span className="flex-grow bg-gray-200 rounded h-[1px]"></span>
               </h3>
 
               <div className="text-center">
