@@ -50,7 +50,9 @@ const SitterManagement = () => {
   const [myPlace, setMyPlace] = useState("");
   const [logo, setLogo] = useState({});
   const [photo, setPhoto] = useState({});
+  const [photoSitter, setPhotoSitter] = useState({});
   const [imageUrl, setImageUrl] = useState();
+  const [imageUrlSitter, setImageUrlSitter] = useState();
   const [previewUrl, setPreviewUrl] = useState(previewImg);
   const [previewUrlPet, setPreviewUrlPet] = useState();
   const [petImage, setPetImage] = useState([]);
@@ -163,7 +165,7 @@ const SitterManagement = () => {
     }
     const { data, error } = await supabase
       .from("users")
-      .select("*")
+      .select(`*,pet_sitter(image_url)`)
       .eq("id", userId);
 
     if (error) {
@@ -176,6 +178,8 @@ const SitterManagement = () => {
         isClosable: true,
       });
     } else {
+      
+      setImageUrlSitter(data[0].pet_sitter[0].image_url)
       setFullName(data[0].full_name);
       setEmail(data[0].email);
       setPhoneNumber(data[0].phone_number);
@@ -324,6 +328,7 @@ const SitterManagement = () => {
 
   //upload Avatar
   const handleUploadPhoto = (event) => {
+    console.log("hereeeeeeeeeeeeee1")
     const file = event.target.files[0];
     if (file) {
       const url = URL.createObjectURL(file);
@@ -335,6 +340,24 @@ const SitterManagement = () => {
       }
     }
   };
+
+  const handleUploadSitterPhoto = (event) => {
+    console.log("hereeeeeeeeeeeeee")
+    const file = event.target.files[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      if (url) {
+        const uniqueFileName = generateUniqueFileName(file.name);
+        console.log("Generated unique filename:", uniqueFileName); // Log the generated filename
+        setPhotoSitter({ [uniqueFileName]: file });
+        setImageUrlSitter(url);
+      }
+    }
+  };
+
+
+
+
   // Function to generate a unique filename
   const generateUniqueFileName = (fileName) => {
     const timestamp = new Date().getTime(); // Get current timestamp
@@ -342,6 +365,64 @@ const SitterManagement = () => {
     const fileExtension = fileName.split(".").pop(); // Get file extension
     return `${timestamp}_${randomString}.${fileExtension}`;
   };
+
+  const updatesAvatarSitter = async () => {
+    let updatedImageUrl = imageUrl ?? "";
+    if (Object.keys(photoSitter).length > 0) {
+      const file = Object.values(photoSitter)[0];
+      const filePath = `public/${userId}/${file.name}`;
+      let { data, error: uploadError } = await supabase.storage
+        .from("images")
+        .upload(filePath, file);
+      console.log(data);
+      if (uploadError) {
+        toast({
+          title: "Error",
+          position: "top",
+          description: `Error uploading photo: ${uploadError.message}`,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+        return;
+      }
+
+      // Get URL of uploaded photo
+      let url = supabase.storage.from("images").getPublicUrl(data.path);
+      console.log(url.data.publicUrl);
+      if (!url.data.publicUrl) {
+        toast({
+          title: "Error",
+          position: "top",
+          description: `Error getting photo URL: File does not exist or bucket is not public: ${url.data.publicUrl}`,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+
+        return;
+      }
+
+      updatedImageUrl = url.data.publicUrl;
+    }
+    const updatesData = {
+      image_url: updatedImageUrl,
+      updated_at: new Date(),
+    };
+    const { error } = await supabase
+      .from("pet_sitter")
+      .update(updatesData)
+      .eq("user_id", userId);
+    if (error) {
+      console.error("Error updating sitter:", error);
+    } else {
+      console.log("Sitter updated successfully");
+    }
+  };
+
+
+
+
   const updatesAvatarUser = async () => {
     let updatedImageUrl = imageUrl ?? "";
     if (Object.keys(photo).length > 0) {
@@ -530,6 +611,9 @@ const SitterManagement = () => {
       await dataPetType();
       console.log("end dataPetType");
       console.log("start UpdatesAvatarUser");
+      await updatesAvatarSitter();
+      console.log("end UpdatesAvatarsitter");
+      console.log("start uploadAvatarUser");
       await updatesAvatarUser();
       console.log("end UpdatesAvatarUser");
       console.log("start uploadPetImages");
@@ -767,7 +851,7 @@ const SitterManagement = () => {
           </Box>
         ) : (
           <div className="bg-white rounded-xl p-5 mb-5">
-            <div className="pb-6">Basic Information</div>
+            <div className="pb-6 font-bold">Basic Information</div>
             <div className="flex flex-col gap-2 mt-2 w-80">
               <label htmlFor="profile">
                 {imageUrl && (
@@ -901,8 +985,34 @@ const SitterManagement = () => {
           </Box>
         ) : (
           <div className="petSitter p-5 bg-white rounded-xl mb-5">
-            <p className="pb-6">Pet Sitter</p>
-            <div className="md:flex md:gap-9 md:justify-between">
+            <p className="pb-6 font-bold">Pet Sitter</p>
+             
+            <div className="flex flex-col gap-2 mt-2 w-80">
+            <p className=" pb-5">Pet Sitter Profile</p>
+              <label htmlFor="profilesitter">
+                {imageUrl && (
+                  <div className="photo">
+                    <Avatar
+                      className="cursor-pointer"
+                      src={imageUrlSitter}
+                      width={200}
+                      height={200}
+                      alt="Preview"
+                    />
+                  </div>
+                )}
+                <input
+                  type="file"
+                  id="profilesitter"
+                  name="profilesitter"
+                  accept="image/*"
+                  onChange={handleUploadSitterPhoto}
+                  className="sr-only"
+                />
+              </label>
+            </div>
+
+            <div className="md:flex md:gap-9 md:justify-between pt-5  ">
               <div className="TradeName md:w-80 lg:w-[474px] xl:w-[560px]">
                 <FormControl isRequired>
                   <FormLabel>Pet sitter name (Trade Name)</FormLabel>
@@ -1038,7 +1148,7 @@ const SitterManagement = () => {
         ) : (
           <div className="Address p-5 bg-white rounded-xl mb-5">
             <div className="bg-white rounded-xl p-5 mb-5">
-              <p className="pb-6">Address</p>
+              <p className="pb-6 font-bold">Address</p>
               <div>
                 <FormControl isRequired>
                   <FormLabel>Address detail</FormLabel>
@@ -1104,7 +1214,7 @@ const SitterManagement = () => {
         ) : (
           <div className="bank account p-5 bg-white rounded-xl mb-5">
             <div className="bg-white rounded-xl p-5 mb-5">
-              <p className="pb-6">Bank</p>
+              <p className="pb-6 font-bold">Bank</p>
               <div>
                 <FormControl isRequired>
                   <FormLabel>Account Number</FormLabel>

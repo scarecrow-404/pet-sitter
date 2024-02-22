@@ -15,6 +15,7 @@ import { useUser } from "@/hooks/hooks";
 function CardSitter(props) {
   const { bookingData, setBookingData} = useUser();
   const [petId, setPetId] = useState([]);
+  const [gallery, setGallery] = useState();
   let id = props.id;
 
 
@@ -41,14 +42,25 @@ console.log("bookingdata", bookingData);
   async function getPetprefer(id) {
 
     
-      let { data, error } = await supabase
+      let { data:petPrefer, error:petPreferError } = await supabase
       .from("pet_prefer")
       .select("pet_type_master_id")
       .eq("pet_sitter_id", id);
-    if (error || !data) {
+    if (petPreferError  || !petPrefer) {
       console.log(error);
     }
-    setPetId(data);
+    setPetId(petPrefer);
+    let { data:gallery, error:galleryError} = await supabase
+    .from("pet_sitter")
+    .select("image_url")
+    .eq("id", id);
+    if (!gallery || galleryError) {
+      console.log(galleryError);}
+console.log("piccccc",gallery)
+setGallery(gallery[0].image_url);
+
+
+
   
   }
 
@@ -76,17 +88,17 @@ console.log("bookingdata", bookingData);
         variant="outline"
         onClick={()=>{HandleClick(props.id,props.sittername,props.fullname)}}
       >
-        <div className=" flex  gap-3 w-[100%]">
-       
-          <Image
-          width={100}
-          height={100}
+        <div className=" flex  gap-3 w-[100%] h-[100%]">
+       <div className="" > 
+       <Image
+          width={300}
+          height={120}
             objectFit="cover"
-            className=" w-[150px] h-[150px] rounded-xl   md:w-[250px]"
-            src={props.image? props.image:catpic}
+            src={gallery? gallery:catpic}
             alt="sitter pic"
-          />
-
+            className=" w-[150px] h-[100px]  rounded-xl md:w-[250px] md:h-[180px]  lg:w-[300px] "
+          /></div>
+         
           <section className=" flex gap-2 w-[100%] relative p-2">
             <div className=" w-[100%]">
               <div className="flex gap-2">
