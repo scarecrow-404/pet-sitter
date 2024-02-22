@@ -19,24 +19,21 @@ import callIcon from "@/asset/images/callIcon.svg";
 import verticalLine from "@/asset/images/VerticalLine.svg";
 import supabase from "@/lib/utils/db";
 import { useUser } from "@/hooks/hooks";
-import star from "@/asset/images/star2.svg";
-
+import star from "@/asset/images/Star2.svg";
 
 function BookingHistoryList(props) {
-
   const [isOpenReview, setIsOpenReview] = useState(null);
   const [isOpenYourReview, setIsOpenYourReview] = useState(null);
   const [isOpenHistory, setIsOpenHistory] = useState(null);
   const [hoverStar, setHoverStar] = useState(null);
   const [writeRating, setWriteRating] = useState("");
-
   const [pet, setPet] = useState([]);
   const [petSitterFullname, setPetSitterFullname] = useState([]);
   const [petSitterImage, setPetSitterImage] = useState([]);
   const [description, setDescription] = useState();
 
   function petName(arr) {
-    console.log("infncccccccc")
+    console.log("infncccccccc");
     let allPetName = [];
     arr.map((item) => {
       allPetName.push(`${item.pet.name} `);
@@ -44,9 +41,8 @@ function BookingHistoryList(props) {
     setPet(allPetName);
   }
 
-console.log("proppppppppppp",props)
-
-  function Duration(start, end) {
+  console.log("proppppppppppp", props);
+  function duration(start, end) {
     const startTime = start ? moment(start, "HH:mm:ss") : null;
     const endTime = end ? moment(end, "HH:mm:ss") : null;
 
@@ -62,7 +58,7 @@ console.log("proppppppppppp",props)
     );
   }
 
-  function CreateDay(timeCreated) {
+  function createDay(timeCreated) {
     const date = timeCreated;
     const dateObject = new Date(date);
 
@@ -78,7 +74,7 @@ console.log("proppppppppppp",props)
     return <div>{formattedDate}</div>;
   }
 
-  function BookDay(bookDate) {
+  function bookDay(bookDate) {
     const date = bookDate;
     const dateObject = new Date(date);
 
@@ -109,7 +105,7 @@ console.log("proppppppppppp",props)
     );
   }
 
-  function ChangeTime(time) {
+  function changeTime(time) {
     const startTimeString = time;
     const dateObject = new Date(`2000-01-01T${startTimeString}`);
     // The date '2000-01-01' is arbitrary; it's only used to set the time part
@@ -167,17 +163,17 @@ console.log("proppppppppppp",props)
 
   //////////////////
 
-  const openReview = (item) => {
+  const openReview = (event) => {
     setRating(null); // Reset rating when opening the modal
     setIsOpenReview(item);
   };
 
-  const openYourReview = (item) => {
+  const openYourReview = (event) => {
     setIsOpenYourReview(item);
   };
 
-  const openHistory = (item) => {
-    setIsOpenHistory(item);
+  const openHistory = (event) => {
+    setIsOpenHistory(event);
   };
 
   const submitReview = (event) => {
@@ -212,21 +208,17 @@ console.log("proppppppppppp",props)
     }
   }, []);
 
-
   async function fetchData(sitterId, bookingId) {
-
-    console.log("iddddddd",sitterId, bookingId)
+    console.log("iddddddd", sitterId, bookingId);
     let { data: sitter, error: sitterError } = await supabase
       .from("pet_sitter")
       .select(`users(full_name, image_url)`)
       .eq("id", sitterId);
     if (sitter) {
-  
-      
       console.log(sitter[0].users.full_name, "aaaaaaaaaaaaaaa");
       setPetSitterFullname([...petSitterFullname, sitter[0].users.full_name]);
       setPetSitterImage([...petSitterFullname, sitter[0].users.image_url]);
-      
+
       let { data: bookPet, error: petError } = await supabase
         .from("booking_pet")
         .select(`*, pet(name)`)
@@ -241,29 +233,24 @@ console.log("proppppppppppp",props)
       console.log(sitterError);
     }
     let { data: review, error: reviewError } = await supabase
-        .from("review")
-        .select(`*`)
-        .eq("booking_id", bookingId);
-      if (review) {
-        console.log(review, "12345");
-       setDescription(review[0].description);
+      .from("review")
+      .select(`*`)
+      .eq("booking_id", bookingId);
+    if (review) {
+      console.log(review, "12345");
+      setDescription(review[0].description);
       setRating(review[0].rating);
-        console.log(review, "aaaaaaaaaaaaaaah");
-      } else if (reviewError || !review) {
-        console.log(reviewError);
-      }
+      console.log(review, "aaaaaaaaaaaaaaah");
+    } else if (reviewError || !review) {
+      console.log(reviewError);
+    }
   }
-console.log("petttt",pet)
-
+  console.log("petttt", pet);
   return (
-    <div className="flex flex-col justify-center items-center py-6 gap-5 max-w-[1440px] mx-auto lg:gap-10 lg:py-14">
-      <div className="w-[90%] flex flex-row justify-between md:w-[85%] lg:w-[83%]">
-        <div className="font-bold text-lg">Booking History</div>
-      </div>
-
+    <div className="flex flex-col justify-center items-center gap-5 max-w-[1440px] mx-auto lg:gap-10">
       <div className="flex flex-col justify-center items-center w-[95%] py-5 gap-5">
         <div className="border-2 border-fifthGray w-[90%] flex flex-col p-3 gap-3 rounded-2xl md:p-4 md:w-[95%] lg:w-[90%] cursor-pointer">
-          <div onClick={() => openHistory(item)}>
+          <div onClick={(event) => openHistory(event)}>
             <div className="one flex flex-col gap-2 pb-2 border-b md:flex-row md:justify-between">
               <div className="flex md:items-center md:justify-start md:gap-1">
                 <div className="photo flex justify-center items-center w-[80px] h-[80px] md:w-[65px] md:h-[65px]">
@@ -279,35 +266,33 @@ console.log("petttt",pet)
                 </div>
                 <div className="w-[200px] flex flex-col justify-center gap-2 md:w-[250px] lg:w-[320px]">
                   <div className="text-base font-bold md:text-lg lg:text-xl">
-                    {bookingDetail.sitterName}
+                    {props.sitter_name}
                   </div>
                   <div className="text-sm font-semibold md:text-base lg:text-lg">
-
                     By {petSitterFullname}
-
                   </div>
                 </div>
               </div>
               <div className="flex flex-col gap-1 md:text-right md:gap-3 md:justify-center">
                 <div className="text-fourthGray text-[13px] font-medium md:text-[15px] lg:text-[17px]">
-                  Transaction date: {bookingDetail.created_at}
+                  Transaction date: {createDay(props.created_at)}
                 </div>
                 <div
                   className={`${
-                    bookingDetail.process_status === "Waiting for confirm"
+                    props.process_status === "Waiting for confirm"
                       ? "text-pink-500"
-                      : bookingDetail.process_status === "Waiting for service"
+                      : props.process_status === "Waiting for service"
                       ? "text-orange-300"
-                      : bookingDetail.process_status === "In service"
+                      : props.process_status === "In service"
                       ? "text-blue-500"
-                      : bookingDetail.process_status === "Success"
+                      : props.process_status === "Success"
                       ? "text-green-400"
-                      : bookingDetail.process_status === "Canceled"
+                      : props.process_status === "Canceled"
                       ? "text-red-400"
                       : null
                   } text-sm font-medium md:text-base lg:text-lg`}
                 >
-                  • {bookingDetail.process_status}
+                  • {props.process_status}
                 </div>
               </div>
             </div>
@@ -318,9 +303,8 @@ console.log("petttt",pet)
                   Date & Time:
                 </div>
                 <div className="flex gap-[5px] text-sm font-medium lg:text-base">
-                  {BookDay(bookingDetail.booking_date)} |{" "}
-                  {ChangeTime(bookingDetail.start_time)} -
-                  {ChangeTime(bookingDetail.end_time)}
+                  {bookDay(props.booking_date)} | {changeTime(props.start_time)}{" "}
+                  -{changeTime(props.end_time)}
                 </div>
               </div>
               <hr className="w-[80%] md:hidden" />
@@ -337,7 +321,7 @@ console.log("petttt",pet)
                 </div>
 
                 <div className="text-sm font-medium lg:text-base">
-                  {Duration(bookingDetail.start_time, bookingDetail.end_time)}
+                  {duration(props.start_time, props.end_time)}
                 </div>
               </div>
               <hr className="w-[80%] md:hidden" />
@@ -352,25 +336,25 @@ console.log("petttt",pet)
                 <div className="text-thirdGray text-[13px] font-medium lg:text-[15px]">
                   Pet:
                 </div>
-                <div className="text-sm font-medium lg:text-base">{pet.length > 0
-                        ? pet.map(
-                            (eachPet, index) =>
-                              `${eachPet}${
-                                index !== pet.length - 1 ? ", " : ""
-                              }`
-                          )
-                        : "-"}</div>
+                <div className="text-sm font-medium lg:text-base">
+                  {pet.length > 0
+                    ? pet.map(
+                        (eachPet, index) =>
+                          `${eachPet}${index !== pet.length - 1 ? ", " : ""}`
+                      )
+                    : "-"}
+                </div>
               </div>
             </div>
           </div>
 
-          {bookingDetail.process_status === "Waiting for confirm" ? (
+          {props.process_status === "Waiting for confirm" ? (
             <div className="three flex justify-center bg-sixthGray rounded-lg py-3 md:py-4 md:justify-start md:px-6 lg:py-6">
               <div className="text-thirdGray text-[13px] font-medium md:text-[15px] lg:text-[17px]">
                 Waiting Pet Sitter for confirm booking
               </div>
             </div>
-          ) : bookingDetail.process_status === "In service" ? (
+          ) : props.process_status === "In service" ? (
             <div className="three flex justify-evenly items-center bg-sixthGray rounded-lg py-3 gap-3 md:py-4 md:justify-between md:px-6 lg:py-6">
               <div className="text-thirdGray text-[13px] font-medium md:text-[15px] lg:text-[17px]">
                 Your pet is already in Pet Sitter care!
@@ -385,12 +369,11 @@ console.log("petttt",pet)
                 />
               </button>
             </div>
-          ) : bookingDetail.process_status === "Success" &&
-            bookingDetail.description !== "" ? (
+          ) : props.process_status === "Success" && props.description !== "" ? (
             <div className="three flex justify-evenly items-center gap-2 bg-secondGreen rounded-lg py-3 md:py-4 md:justify-between md:px-6 lg:py-6">
               <div className="text-firstGreen text-[13px] font-medium flex flex-col md:text-[15px] lg:text-[17px] lg:gap-2">
                 <div>Success date:</div>
-                <div>{CreateDay(bookingDetail.booking_date)}</div>
+                <div>{createDay(props.booking_date)}</div>
               </div>
               <button
                 onClick={() => openYourReview(item)}
@@ -399,12 +382,11 @@ console.log("petttt",pet)
                 Your Review
               </button>
             </div>
-          ) : bookingDetail.process_status === "Success" &&
-            bookingDetail.description === "" ? (
+          ) : props.process_status === "Success" && props.description === "" ? (
             <div className="three flex justify-evenly items-center gap-2 bg-secondGreen rounded-lg py-3 md:py-4 md:justify-between md:px-6 lg:py-6">
               <div className="text-firstGreen text-[13px] font-medium md:text-[15px] lg:text-[17px] lg:gap-2">
                 <div>Success date:</div>
-                <div>{bookingDetail.Date}</div>
+                <div>{props.Date}</div>
               </div>
               <button
                 onClick={() => openReview()}
@@ -413,16 +395,16 @@ console.log("petttt",pet)
                 Review
               </button>
             </div>
-          ) : bookingDetail.process_status === "Canceled" ? (
+          ) : props.process_status === "Canceled" ? (
             <div className="three flex justify-center bg-sixthGray rounded-lg py-3 md:py-4 md:justify-start md:px-6 lg:py-6">
               <div className="text-thirdGray text-[13px] font-medium md:text-[15px] lg:text-[17px]">
-                {bookingDetail.discription}
+                {props.description}
               </div>
             </div>
-          ) : bookingDetail.process_status === "Waiting for service" ? (
+          ) : props.process_status === "Waiting for service" ? (
             <div className="three flex justify-center bg-sixthGray rounded-lg py-3 md:py-4 md:justify-start md:px-6 lg:py-6">
               <div className="text-thirdGray text-[13px] font-medium md:text-[15px] lg:text-[17px]">
-                {bookingDetail.discription}
+                {props.description}
               </div>
             </div>
           ) : null}
@@ -531,7 +513,7 @@ console.log("petttt",pet)
                     <div className="flex justify-start gap-2 md:w-[48%]">
                       <div className="photo w-[70px] h-[70px] md:w-[65px] md:h-[65px]">
                         <Image
-                          src={isOpenYourReview.image_url}
+                          src={props.image_url}
                           width={70}
                           height={70}
                           alt="preview-pet"
@@ -540,10 +522,10 @@ console.log("petttt",pet)
                       </div>
                       <div className="w-[200px] flex flex-col justify-center gap-2 md:w-[170px]">
                         <div className="text-lg font-bold md:text-base">
-                          {isOpenYourReview.full_name}
+                          {props.full_name}
                         </div>
                         <div className="text-sm font-semibold text-thirdGray md:text-xs">
-                          {reviewDate(isOpenYourReview.created_at)}
+                          {reviewDate(props.created_at)}
                         </div>
                       </div>
                     </div>
@@ -583,30 +565,30 @@ console.log("petttt",pet)
                 <div className="flex flex-col gap-3 pb-3 md:gap-6">
                   <div
                     className={`${
-                      isOpenHistory.process_status === "Waiting for confirm"
+                      props.process_status === "Waiting for confirm"
                         ? "text-pink-500"
-                        : isOpenHistory.process_status === "Waiting for service"
+                        : props.process_status === "Waiting for service"
                         ? "text-orange-300"
-                        : isOpenHistory.process_status === "In service"
+                        : props.process_status === "In service"
                         ? "text-blue-500"
-                        : isOpenHistory.process_status === "Success"
+                        : props.process_status === "Success"
                         ? "text-green-400"
-                        : isOpenHistory.process_status === "Canceled"
+                        : props.process_status === "Canceled"
                         ? "text-red-400"
                         : null
                     } text-sm font-medium md:text-base`}
                   >
-                    • {isOpenHistory.process_status}
+                    • {props.process_status}
                   </div>
 
                   <div className="w-full flex flex-col gap-1">
                     <div className="text-fourthGray text-[13px] font-medium md:text-[15px]">
                       <div className="flex gap-[5px]">
-                        Transaction date: {CreateDay(isOpenHistory.created_at)}
+                        Transaction date: {createDay(props.created_at)}
                       </div>
                     </div>
                     <div className="text-fourthGray text-[13px] font-medium md:text-[15px]">
-                      Transaction No.: {isOpenHistory.id}
+                      Transaction No.: {props.transaction_no}
                     </div>
                   </div>
 
@@ -615,8 +597,7 @@ console.log("petttt",pet)
                       Pet Sitter:
                     </div>
                     <div className="text-sm font-medium md:text-[15px]">
-                      {isOpenHistory.pet_sitter_render?.sitter_name} By{" "}
-                      {isOpenHistory.pet_sitter_render?.full_name}
+                      {props.sitter_name} By {props.full_name}
                     </div>
                   </div>
 
@@ -626,9 +607,9 @@ console.log("petttt",pet)
                         Date & Time:
                       </div>
                       <div className="flex gap-[5px] text-sm font-medium md:text-[15px]">
-                        {BookDay(isOpenHistory.booking_date)} |{" "}
-                        {ChangeTime(isOpenHistory.start_time)} -
-                        {ChangeTime(isOpenHistory.end_time)}
+                        {bookDay(props.booking_date)} |{" "}
+                        {changeTime(props.start_time)} -
+                        {changeTime(props.end_time)}
                       </div>
                     </div>
                     <div className="w-full flex flex-col gap-1 md:w-[48%]">
@@ -636,10 +617,7 @@ console.log("petttt",pet)
                         Duration:
                       </div>
                       <div className="text-sm font-medium md:text-[15px]">
-                        {Duration(
-                          isOpenHistory.start_time,
-                          isOpenHistory.end_time
-                        )}
+                        {duration(props.start_time, props.end_time)}
                       </div>
                     </div>
                   </div>
@@ -649,13 +627,20 @@ console.log("petttt",pet)
                       Pet:
                     </div>
                     <div className="text-sm font-medium md:text-[15px]">
-                      {isOpenHistory.Pet}
+                      {pet.length > 0
+                        ? pet.map(
+                            (eachPet, index) =>
+                              `${eachPet}${
+                                index !== pet.length - 1 ? ", " : ""
+                              }`
+                          )
+                        : "-"}
                     </div>
                   </div>
                   <hr />
                   <div className="font-bold text-base flex justify-between">
                     <div>Total</div>
-                    <div>{isOpenHistory.total_amout}</div>
+                    <div>{props.total_amount}</div>
                   </div>
                 </div>
               </>
