@@ -32,7 +32,7 @@ import supabase from "@/lib/utils/db";
 const Payment = () => {
   const params = useParams();
   const [ownPet, setOwnPet] = useState([]);
-
+  const [bankNumber, setBankNumber] = useState([]);
   let totalAmout1 = ownPet.reduce(
     (acc, item) => acc + parseFloat(item.total_amout),
     0
@@ -58,9 +58,23 @@ const Payment = () => {
     console.log("own", uniqueData);
     setOwnPet(uniqueData);
   }
+  async function getBankNumber() {
+    let { data, error } = await supabase
+      .from("banknumber")
+      .select("*")
+      .eq("id", params.sitterId);
+    if (error) {
+      console.error(error);
+    }
+    console.log(data, "bk");
+    setBankNumber(data[0].bank_acc_number);
+  }
+  console.log(bankNumber, "bk");
+  const lastThreeDigits = bankNumber.slice(-3);
 
   useEffect(() => {
     getOwnPetData();
+    getBankNumber();
   }, []);
   return (
     <div className="flex bg-sixthGray justify-center h-screen">
@@ -70,14 +84,15 @@ const Payment = () => {
       <div className="flex-1 min-w-[375px] mx-auto md:w-auto md:mx-3 bg-sixthGray max-w-[1200px] lg:ml-60">
         <TopBar />
         <div className="Title flex justify-between items-center pt-3 pl-5">
-          <div className="nameTitle">Payout Option</div>
+          <div className="nameTitle hidden md:flex">Payout Option</div>
         </div>
         <div className="Title flex flex-col items-center py-3 gap-3  bg-sixthGray">
           <div className="flex  justify-between w-full gap-4">
-            <div className=" bg-white rounded-xl w-full px-5 flex flex-row justify-between items-center h-16">
-              <div className="flex gap-4">
+            <div className=" bg-white rounded-xl w-full px-5 flex flex-row justify-between items-center h-16 ">
+              <div className="flex md:gap-4">
                 <Image src={Thb} />
-                <p>Total Earning</p>
+                <p className="hidden md:flex">Total Earning</p>
+                <p className="md:hidden">Total</p>
               </div>
               <div>
                 <p>{totalAmout1} THB</p>
@@ -86,16 +101,19 @@ const Payment = () => {
             <div className=" bg-white rounded-xl w-full px-5 flex flex-row justify-between items-center h-16">
               <div className="flex gap-4">
                 <Image src={wallet} />
-                <p>Bank Account</p>
+                <p className="hidden md:flex">Bank Account</p>
+                <p className="md:hidden">Bank</p>
               </div>
-              <div className="flex items-center">
-                <p className="text-secondOrange">SCB *444 </p>
+              <div className="flex items-center pl-[20px]">
+                <p className="text-secondOrange text-[12px] md:text-[16px]">
+                  *** {lastThreeDigits}
+                </p>
                 <ChevronRightIcon />
               </div>
             </div>
           </div>
           <div className="bg-white rounded-xl w-full flex flex-row justify-center items-center">
-            <table className="border-separate border-slate-400 min-w-[375px] w-full md:max-w-[768px] md:w-full xl:max-w-[1440px] xl:w-full rounded-3xl overflow-hidden ">
+            <table className=" border-slate-400 min-w-[375px] w-full md:max-w-[768px] md:w-full xl:max-w-[1440px] xl:w-full rounded-3xl overflow-hidden ">
               <thead className="text-white bg-black text-[13px] md:text-[14px]">
                 <tr>
                   <th className="text-center py-4 md:py-6">Date</th>
@@ -131,7 +149,7 @@ const Payment = () => {
                   return (
                     <tr
                       key={item.id}
-                      className="cursor-pointer hover:bg-fourthGray"
+                      className="cursor-pointer hover:bg-sixthGray"
                     >
                       <td className="text-center py-2 md:py-6 ">
                         {formattedDate}
