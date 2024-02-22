@@ -60,31 +60,37 @@ const LoginPage = () => {
     event.preventDefault();
     setErrors(validation(values));
     if (Object.keys(errors).length === 0) {
-      let result = await signIn(values.email, values.password);
-
-      console.log(result.user);
-
-      // let { data: users, error } = await supabase
-      //   .from("users")
-      //   .select("*")
-      //   .eq("id", result.user.id);
-
-      // console.log(user);
-      // setUser(users[0]);
-      console.log(userId);
-
-      if (user) {
-        router.push("/");
-      } else {
-        toast({
-          title: "Error",
-          position: "top",
-          description: "Email or password is incorrect!",
-          status: "error",
-          duration: 9000,
-          isClosable: true,
+      const email = values.email;
+      const password = values.password;
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
         });
+
+        // let { data: users, error } = await supabase
+        //   .from("users")
+        //   .select("*")
+        //   .eq("id", result.user.id);
+
+        // console.log(user);
+        // setUser(users[0]);
+
+        if (data) {
+          router.push("/");
+        } else {
+          toast({
+            title: "Error",
+            position: "top",
+            description: "Email or password is incorrect!",
+            status: "error",
+            duration: 9000,
+            isClosable: true,
+          });
+        }
         console.log("error", error);
+      } catch (error) {
+        console.error(error.message);
       }
     }
   }
