@@ -26,11 +26,17 @@ function BookingHistoryList(props) {
   const [isOpenYourReview, setIsOpenYourReview] = useState(null);
   const [isOpenHistory, setIsOpenHistory] = useState(null);
   const [hoverStar, setHoverStar] = useState(null);
-  const [writeRating, setWriteRating] = useState("");
+  //supabase db
   const [pet, setPet] = useState([]);
   const [petSitterFullname, setPetSitterFullname] = useState([]);
   const [petSitterImage, setPetSitterImage] = useState([]);
   const [description, setDescription] = useState();
+  const [rating, setRating] = useState();
+  //input value
+  const [writeRating, setWriteRating] = useState(null);
+  const [writeDescription, setWriteDescription] = useState();
+  //
+  const [checkStatus, setCheckStatus] = useState(props.process_status);
 
   function petName(arr) {
     console.log("infncccccccc");
@@ -41,7 +47,6 @@ function BookingHistoryList(props) {
     setPet(allPetName);
   }
 
-  console.log("proppppppppppp", props);
   function duration(start, end) {
     const startTime = start ? moment(start, "HH:mm:ss") : null;
     const endTime = end ? moment(end, "HH:mm:ss") : null;
@@ -164,36 +169,66 @@ function BookingHistoryList(props) {
   //////////////////
 
   const openReview = (event) => {
-    setRating(null); // Reset rating when opening the modal
-    setIsOpenReview(item);
+    setWriteRating(null); // Reset rating when opening the modal
+    setIsOpenReview(event);
   };
 
   const openYourReview = (event) => {
-    setIsOpenYourReview(item);
+    setIsOpenYourReview(event);
   };
 
   const openHistory = (event) => {
     setIsOpenHistory(event);
   };
 
+  console.log("status1", checkStatus, description);
+
   const submitReview = (event) => {
+    console.log("status2", checkStatus, description);
     event.preventDefault();
-    alert(`Rating: ${rating}, Review: ${writeRating}`);
+    insertReview(
+      writeRating,
+      writeDescription,
+      props.booking_id,
+      props.user_id
+    );
+    setDescription(writeDescription);
+    setCheckStatus("Success");
+
+    setIsOpenReview(null);
   };
 
-  async function insertReview(reviewData) {
-    const rating = reviewData.get("rating");
-    const description = reviewData.get("description");
+  console.log(writeRating, "AABB");
+  console.log(writeDescription, "AABBC");
+  // console.log(reviewData, "AABBCC")
 
+  async function insertReview(
+    writeRating,
+    writeDescription,
+    booking_id,
+    user_id
+  ) {
+    console.log(
+      "infunction",
+      writeRating,
+      writeDescription,
+      booking_id,
+      user_id
+    );
     const { data, error } = await supabase
       .from("review")
       .insert([
         {
-          rating,
-          description,
+          booking_id: booking_id,
+          rating: writeRating,
+          description: writeDescription,
+          created_at: new Date(),
+          user_id: user_id,
         },
       ])
-      .select();
+      .eq("booking_id", booking_id);
+
+    console.log(data, "11AA");
     if (error) {
       console.log("found some error", error);
       return false;
@@ -238,8 +273,8 @@ function BookingHistoryList(props) {
       .eq("booking_id", bookingId);
     if (review) {
       console.log(review, "12345");
-      setDescription(review[0].description);
-      setRating(review[0].rating);
+      setDescription(review[0]?.description);
+      setRating(review[0]?.rating);
       console.log(review, "aaaaaaaaaaaaaaah");
     } else if (reviewError || !review) {
       console.log(reviewError);
@@ -348,13 +383,13 @@ function BookingHistoryList(props) {
             </div>
           </div>
 
-          {props.process_status === "Waiting for confirm" ? (
+          {checkStatus === "Waiting for confirm" ? (
             <div className="three flex justify-center bg-sixthGray rounded-lg py-3 md:py-4 md:justify-start md:px-6 lg:py-6">
               <div className="text-thirdGray text-[13px] font-medium md:text-[15px] lg:text-[17px]">
                 Waiting Pet Sitter for confirm booking
               </div>
             </div>
-          ) : props.process_status === "In service" ? (
+          ) : checkStatus === "In service" ? (
             <div className="three flex justify-evenly items-center bg-sixthGray rounded-lg py-3 gap-3 md:py-4 md:justify-between md:px-6 lg:py-6">
               <div className="text-thirdGray text-[13px] font-medium md:text-[15px] lg:text-[17px]">
                 Your pet is already in Pet Sitter care!
@@ -369,39 +404,39 @@ function BookingHistoryList(props) {
                 />
               </button>
             </div>
-          ) : props.process_status === "Success" && props.description !== "" ? (
+          ) : checkStatus === "Success" && description ? (
             <div className="three flex justify-evenly items-center gap-2 bg-secondGreen rounded-lg py-3 md:py-4 md:justify-between md:px-6 lg:py-6">
               <div className="text-firstGreen text-[13px] font-medium flex flex-col md:text-[15px] lg:text-[17px] lg:gap-2">
                 <div>Success date:</div>
                 <div>{createDay(props.booking_date)}</div>
               </div>
               <button
-                onClick={() => openYourReview(item)}
+                onClick={() => openYourReview(event)}
                 className="bg-sixthOrange p-2 rounded-full text-xs font-medium text-secondOrange md:text-sm md:px-5 md:py-3"
               >
                 Your Review
               </button>
             </div>
-          ) : props.process_status === "Success" && props.description === "" ? (
+          ) : checkStatus === "Success" && !description ? (
             <div className="three flex justify-evenly items-center gap-2 bg-secondGreen rounded-lg py-3 md:py-4 md:justify-between md:px-6 lg:py-6">
               <div className="text-firstGreen text-[13px] font-medium md:text-[15px] lg:text-[17px] lg:gap-2">
                 <div>Success date:</div>
                 <div>{props.Date}</div>
               </div>
               <button
-                onClick={() => openReview()}
+                onClick={() => openReview(event)}
                 className="bg-secondOrange p-2 rounded-full text-xs font-medium text-white md:text-sm md:px-5 md:py-3"
               >
                 Review
               </button>
             </div>
-          ) : props.process_status === "Canceled" ? (
+          ) : checkStatus === "Canceled" ? (
             <div className="three flex justify-center bg-sixthGray rounded-lg py-3 md:py-4 md:justify-start md:px-6 lg:py-6">
               <div className="text-thirdGray text-[13px] font-medium md:text-[15px] lg:text-[17px]">
                 {props.description}
               </div>
             </div>
-          ) : props.process_status === "Waiting for service" ? (
+          ) : checkStatus === "Waiting for service" ? (
             <div className="three flex justify-center bg-sixthGray rounded-lg py-3 md:py-4 md:justify-start md:px-6 lg:py-6">
               <div className="text-thirdGray text-[13px] font-medium md:text-[15px] lg:text-[17px]">
                 {props.description}
@@ -424,71 +459,69 @@ function BookingHistoryList(props) {
           <ModalBody>
             {isOpenReview && (
               <>
-                <form action="">
-                  <div className="flex flex-col gap-7 pb-3 md:gap-14">
-                    <div className="flex flex-col justify-center items-center gap-3">
-                      <div className="text-base font-semibold md:text-lg">
-                        What is your rate?
-                      </div>
-                      <div className="flex gap-2 md:gap-3">
-                        {[...Array(5)].map((star, index) => {
-                          const currentRating = index + 1;
-                          return (
-                            <label key={index}>
-                              <input
-                                type="radio"
-                                name="rating"
-                                value={rating}
-                                onClick={() => setRating(currentRating)}
-                                hidden
-                              />
-                              <FaStar
-                                className="cursor-pointer"
-                                size={40}
-                                color={
-                                  currentRating <= (hoverStar || rating)
-                                    ? "#1CCD83"
-                                    : "#e4e5e9"
-                                }
-                                onMouseEnter={() => setHoverStar(currentRating)}
-                                onMouseLeave={() => setHoverStar(null)}
-                              />
-                            </label>
-                          );
-                        })}
-                      </div>
+                <div className="flex flex-col gap-7 pb-3 md:gap-14">
+                  <div className="flex flex-col justify-center items-center gap-3">
+                    <div className="text-base font-semibold md:text-lg">
+                      What is your rate?
                     </div>
-                    <div className="flex flex-col gap-3">
-                      <div className="text-center text-base font-semibold md:text-lg">
-                        Share more about your experience
-                      </div>
-                      <label>
-                        <textarea
-                          id="description"
-                          name="description"
-                          rows="8"
-                          placeholder="Your Review..."
-                          className="w-full border-fifthGray text-sm rounded-md"
-                          value={description}
-                          onChange={(event) => {
-                            setDescription(event.target.value);
-                          }}
-                        ></textarea>
-                      </label>
-                    </div>
-                    <div className="flex justify-between">
-                      <button className="bg-sixthOrange p-2 rounded-full text-xs font-medium text-secondOrange md:text-sm md:px-5 md:py-3">
-                        Cancel
-                      </button>
-                      <button
-                        className="bg-secondOrange p-2 rounded-full text-xs font-medium text-white md:text-sm md:px-5 md:py-3"
-                        onClick={submitReview}
-                      >
-                        Send Review&Rating
-                      </button>
+                    <div className="flex gap-2 md:gap-3">
+                      {[...Array(5)].map((star, index) => {
+                        const currentRating = index + 1;
+                        return (
+                          <label key={index}>
+                            <input
+                              type="radio"
+                              name="rating"
+                              value={currentRating}
+                              onClick={() => setWriteRating(currentRating)}
+                              hidden
+                            />
+                            <FaStar
+                              className="cursor-pointer"
+                              size={40}
+                              color={
+                                currentRating <= (hoverStar || rating)
+                                  ? "#1CCD83"
+                                  : "#e4e5e9"
+                              }
+                              onMouseEnter={() => setHoverStar(currentRating)}
+                              onMouseLeave={() => setHoverStar(null)}
+                            />
+                          </label>
+                        );
+                      })}
                     </div>
                   </div>
-                </form>
+                  <div className="flex flex-col gap-3">
+                    <div className="text-center text-base font-semibold md:text-lg">
+                      Share more about your experience
+                    </div>
+                    <label>
+                      <textarea
+                        id="description"
+                        name="description"
+                        rows="8"
+                        placeholder="Your Review..."
+                        className="w-full border-fifthGray text-sm rounded-md"
+                        value={writeDescription}
+                        onChange={(event) => {
+                          setWriteDescription(event.target.value);
+                        }}
+                      ></textarea>
+                    </label>
+                  </div>
+                  <div className="flex justify-between">
+                    <button className="bg-sixthOrange p-2 rounded-full text-xs font-medium text-secondOrange md:text-sm md:px-5 md:py-3">
+                      Cancel
+                    </button>
+                    <button
+                      className="bg-secondOrange p-2 rounded-full text-xs font-medium text-white md:text-sm md:px-5 md:py-3"
+                      onClick={submitReview}
+                    >
+                      Send Review&Rating
+                    </button>
+                  </div>
+                </div>
               </>
             )}
           </ModalBody>
