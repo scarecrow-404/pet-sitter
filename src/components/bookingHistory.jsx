@@ -21,12 +21,15 @@ import supabase from "@/lib/utils/db";
 import { useUser } from "@/hooks/hooks";
 import star from "@/asset/images/star2.svg";
 
+
 function BookingHistoryList(props) {
+
   const [isOpenReview, setIsOpenReview] = useState(null);
   const [isOpenYourReview, setIsOpenYourReview] = useState(null);
   const [isOpenHistory, setIsOpenHistory] = useState(null);
   const [hoverStar, setHoverStar] = useState(null);
   const [writeRating, setWriteRating] = useState("");
+
   const [pet, setPet] = useState([]);
   const [petSitterFullname, setPetSitterFullname] = useState([]);
   const [petSitterImage, setPetSitterImage] = useState([]);
@@ -42,6 +45,7 @@ function BookingHistoryList(props) {
   }
 
 console.log("proppppppppppp",props)
+
   function Duration(start, end) {
     const startTime = start ? moment(start, "HH:mm:ss") : null;
     const endTime = end ? moment(end, "HH:mm:ss") : null;
@@ -208,6 +212,7 @@ console.log("proppppppppppp",props)
     }
   }, []);
 
+
   async function fetchData(sitterId, bookingId) {
 
     console.log("iddddddd",sitterId, bookingId)
@@ -249,6 +254,7 @@ console.log("proppppppppppp",props)
       }
   }
 console.log("petttt",pet)
+
   return (
     <div className="flex flex-col justify-center items-center py-6 gap-5 max-w-[1440px] mx-auto lg:gap-10 lg:py-14">
       <div className="w-[90%] flex flex-row justify-between md:w-[85%] lg:w-[83%]">
@@ -273,33 +279,35 @@ console.log("petttt",pet)
                 </div>
                 <div className="w-[200px] flex flex-col justify-center gap-2 md:w-[250px] lg:w-[320px]">
                   <div className="text-base font-bold md:text-lg lg:text-xl">
-                    {props.sitterName}
+                    {bookingDetail.sitterName}
                   </div>
                   <div className="text-sm font-semibold md:text-base lg:text-lg">
+
                     By {petSitterFullname}
+
                   </div>
                 </div>
               </div>
               <div className="flex flex-col gap-1 md:text-right md:gap-3 md:justify-center">
                 <div className="text-fourthGray text-[13px] font-medium md:text-[15px] lg:text-[17px]">
-                  Transaction date: {props.created_at}
+                  Transaction date: {bookingDetail.created_at}
                 </div>
                 <div
                   className={`${
-                    props.process_status === "Waiting for confirm"
+                    bookingDetail.process_status === "Waiting for confirm"
                       ? "text-pink-500"
-                      : props.process_status === "Waiting for service"
+                      : bookingDetail.process_status === "Waiting for service"
                       ? "text-orange-300"
-                      : props.process_status === "In service"
+                      : bookingDetail.process_status === "In service"
                       ? "text-blue-500"
-                      : props.process_status === "Success"
+                      : bookingDetail.process_status === "Success"
                       ? "text-green-400"
-                      : props.process_status === "Canceled"
+                      : bookingDetail.process_status === "Canceled"
                       ? "text-red-400"
                       : null
                   } text-sm font-medium md:text-base lg:text-lg`}
                 >
-                  • {props.process_status}
+                  • {bookingDetail.process_status}
                 </div>
               </div>
             </div>
@@ -310,8 +318,9 @@ console.log("petttt",pet)
                   Date & Time:
                 </div>
                 <div className="flex gap-[5px] text-sm font-medium lg:text-base">
-                  {BookDay(props.booking_date)} | {ChangeTime(props.start_time)}{" "}
-                  -{ChangeTime(props.end_time)}
+                  {BookDay(bookingDetail.booking_date)} |{" "}
+                  {ChangeTime(bookingDetail.start_time)} -
+                  {ChangeTime(bookingDetail.end_time)}
                 </div>
               </div>
               <hr className="w-[80%] md:hidden" />
@@ -328,7 +337,7 @@ console.log("petttt",pet)
                 </div>
 
                 <div className="text-sm font-medium lg:text-base">
-                  {Duration(props.start_time, props.end_time)}
+                  {Duration(bookingDetail.start_time, bookingDetail.end_time)}
                 </div>
               </div>
               <hr className="w-[80%] md:hidden" />
@@ -355,13 +364,13 @@ console.log("petttt",pet)
             </div>
           </div>
 
-          {props.process_status === "Waiting for confirm" ? (
+          {bookingDetail.process_status === "Waiting for confirm" ? (
             <div className="three flex justify-center bg-sixthGray rounded-lg py-3 md:py-4 md:justify-start md:px-6 lg:py-6">
               <div className="text-thirdGray text-[13px] font-medium md:text-[15px] lg:text-[17px]">
                 Waiting Pet Sitter for confirm booking
               </div>
             </div>
-          ) : props.process_status === "In service" ? (
+          ) : bookingDetail.process_status === "In service" ? (
             <div className="three flex justify-evenly items-center bg-sixthGray rounded-lg py-3 gap-3 md:py-4 md:justify-between md:px-6 lg:py-6">
               <div className="text-thirdGray text-[13px] font-medium md:text-[15px] lg:text-[17px]">
                 Your pet is already in Pet Sitter care!
@@ -376,11 +385,12 @@ console.log("petttt",pet)
                 />
               </button>
             </div>
-          ) : props.process_status === "Success" && props.description !== "" ? (
+          ) : bookingDetail.process_status === "Success" &&
+            bookingDetail.description !== "" ? (
             <div className="three flex justify-evenly items-center gap-2 bg-secondGreen rounded-lg py-3 md:py-4 md:justify-between md:px-6 lg:py-6">
               <div className="text-firstGreen text-[13px] font-medium flex flex-col md:text-[15px] lg:text-[17px] lg:gap-2">
                 <div>Success date:</div>
-                <div>{CreateDay(props.booking_date)}</div>
+                <div>{CreateDay(bookingDetail.booking_date)}</div>
               </div>
               <button
                 onClick={() => openYourReview(item)}
@@ -389,11 +399,12 @@ console.log("petttt",pet)
                 Your Review
               </button>
             </div>
-          ) : props.process_status === "Success" && props.description === "" ? (
+          ) : bookingDetail.process_status === "Success" &&
+            bookingDetail.description === "" ? (
             <div className="three flex justify-evenly items-center gap-2 bg-secondGreen rounded-lg py-3 md:py-4 md:justify-between md:px-6 lg:py-6">
               <div className="text-firstGreen text-[13px] font-medium md:text-[15px] lg:text-[17px] lg:gap-2">
                 <div>Success date:</div>
-                <div>{props.Date}</div>
+                <div>{bookingDetail.Date}</div>
               </div>
               <button
                 onClick={() => openReview()}
@@ -402,16 +413,16 @@ console.log("petttt",pet)
                 Review
               </button>
             </div>
-          ) : props.process_status === "Canceled" ? (
+          ) : bookingDetail.process_status === "Canceled" ? (
             <div className="three flex justify-center bg-sixthGray rounded-lg py-3 md:py-4 md:justify-start md:px-6 lg:py-6">
               <div className="text-thirdGray text-[13px] font-medium md:text-[15px] lg:text-[17px]">
-                {props.discription}
+                {bookingDetail.discription}
               </div>
             </div>
-          ) : props.process_status === "Waiting for service" ? (
+          ) : bookingDetail.process_status === "Waiting for service" ? (
             <div className="three flex justify-center bg-sixthGray rounded-lg py-3 md:py-4 md:justify-start md:px-6 lg:py-6">
               <div className="text-thirdGray text-[13px] font-medium md:text-[15px] lg:text-[17px]">
-                {props.discription}
+                {bookingDetail.discription}
               </div>
             </div>
           ) : null}

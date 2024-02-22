@@ -13,7 +13,11 @@ import { signIn, signInWithProvider } from "@/app/services/auth";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Link from "next/link";
 import xIcon from "@/asset/images/icons8-twitter.svg";
+import { el } from "date-fns/locale";
+import { error } from "jquery";
+import { useToast } from "@chakra-ui/react";
 const LoginPage = () => {
+  const toast = useToast();
   const [values, setValues] = useState({
     name: "",
     email: "",
@@ -71,6 +75,16 @@ const LoginPage = () => {
 
       if (user) {
         router.push("/");
+      } else {
+        toast({
+          title: "Error",
+          position: "top",
+          description: "Email or password is incorrect!",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+        console.log("error", error);
       }
     }
   }
@@ -170,11 +184,11 @@ const LoginPage = () => {
               </div>
 
               <h3 className="flex items-center w-full">
-                <span class="flex-grow bg-gray-200 rounded h-[1px]"></span>
-                <span class="text-[14px] sm:text-[18px] text-[#7B7E8F] font-[500] leading-[26px] mx-3">
+                <span className="flex-grow bg-gray-200 rounded h-[1px]"></span>
+                <span className="text-[14px] sm:text-[18px] text-[#7B7E8F] font-[500] leading-[26px] mx-3">
                   Or Continue With
                 </span>
-                <span class="flex-grow bg-gray-200 rounded h-[1px]"></span>
+                <span className="flex-grow bg-gray-200 rounded h-[1px]"></span>
               </h3>
 
               <div className="text-center">

@@ -33,9 +33,10 @@ const BookingHistory = () => {
     }
   }, [userId]);
 
+
   console.log(bookingDetail, "mmm");
 
-  async function fetchData(userId) {
+  async function fetchData() {
     try {
       let { data: bookDetail, error: bookDetailError } = await supabase
         .from("booking_detail")
@@ -52,8 +53,6 @@ const BookingHistory = () => {
     }
   }
 
-  console.log(bookingDetail, "fgh");
-
   return (
     <div className="max-w-[1440px] mx-auto bg-sixthGray gap-9">
       <Navbar />
@@ -62,6 +61,7 @@ const BookingHistory = () => {
           <AccountBar active={3} />
         </div>
         <div className="min-w-[375px] w-full bg-white rounded-xl md:ml-5 md:mr-5 md:mb-5 lg:ml-0">
+
   {bookingDetail.map((item) => (
     <BookingHistoryList
       key={item.booking_id}
@@ -80,6 +80,7 @@ const BookingHistory = () => {
     />
   ))}
 </div>
+
       </div>
     </div>
   );
