@@ -27,10 +27,11 @@ import previewPet from "@/asset/images/previewPetPhoto.svg";
 import deletePet from "@/asset/images/deletePetIcon.svg";
 import { useUser } from "@/hooks/hooks";
 import { useRouter } from "next/navigation";
-import supabase from "@/lib/utils/db";
+import { createClient } from "@/lib/utils/client";
 
 function UpdatePet({ searchParams }) {
   const { userId } = useUser();
+  const supabase = createClient();
   const router = useRouter();
   const [photo, setPhoto] = useState({});
   const [imageUrl, setImageUrl] = useState();

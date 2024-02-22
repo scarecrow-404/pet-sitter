@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import starpic from "@/asset/images/Star1.svg";
 import squarepic from "@/asset/images/Ellipse15(butblue).svg";
 import cathand from "@/asset/images/Vector(butorange).svg";
-import Facebookicon from "@/asset/images/Facebookicon.svg";
+
 import Googleicon from "@/asset/images/Googleicon.svg";
 import { useUser } from "@/hooks/hooks";
 import { signIn, signInWithProvider } from "@/app/services/auth";

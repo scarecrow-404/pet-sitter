@@ -27,8 +27,9 @@ import {
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useUser } from "@/hooks/hooks";
-import supabase from "@/lib/utils/db";
+import { createClient } from "@/lib/utils/client";
 export default function PetList() {
+  const supabase = createClient();
   const router = useRouter();
   const [dataPets, setDataPets] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);

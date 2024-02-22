@@ -1,6 +1,6 @@
-import supabase from "@/lib/utils/db";
-
+import { createClient } from "@/lib/utils/client";
 export async function signUp(email, password, values) {
+  const supabase = createClient();
   const { user, session, error } = await supabase.auth.signUp({
     email: values.email,
     password: values.password,
@@ -19,6 +19,7 @@ export async function signUp(email, password, values) {
 }
 
 export async function signIn(email, password) {
+  const supabase = createClient();
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -33,6 +34,7 @@ export async function signIn(email, password) {
 }
 
 export async function signOut() {
+  const supabase = createClient();
   console.log("sign out function called");
   const { error } = await supabase.auth.signOut();
   if (error) {
@@ -44,6 +46,7 @@ export async function signOut() {
 }
 
 export async function resetPassword(email) {
+  const supabase = createClient();
   const { data, error } = await supabase.auth.api.resetPasswordForEmail(email);
   if (error) {
     console.error("Error resetting password:", error);
@@ -55,6 +58,7 @@ export async function resetPassword(email) {
 }
 
 export async function signInWithProvider(provider) {
+  const supabase = createClient();
   const { user, session, error } = await supabase.auth.signInWithOAuth({
     provider,
   });
@@ -67,6 +71,7 @@ export async function signInWithProvider(provider) {
   return user;
 }
 export async function signUpWithProvider(provider) {
+  const supabase = createClient();
   console.log(provider);
   const { user, session, error } = await supabase.auth.signInWithOAuth({
     provider,

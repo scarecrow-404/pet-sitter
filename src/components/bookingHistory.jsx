@@ -17,13 +17,12 @@ import {
 import previewPet from "@/asset/images/catforsitterlist.jpg";
 import callIcon from "@/asset/images/callIcon.svg";
 import verticalLine from "@/asset/images/VerticalLine.svg";
-import supabase from "@/lib/utils/db";
+import { createClient } from "@/lib/utils/client";
 import { useUser } from "@/hooks/hooks";
-import star from "@/asset/images/star2.svg";
-
+import star from "@/asset/images/Star2.svg";
 
 function BookingHistoryList(props) {
-
+  const supabase = createClient();
   const [isOpenReview, setIsOpenReview] = useState(null);
   const [isOpenYourReview, setIsOpenYourReview] = useState(null);
   const [isOpenHistory, setIsOpenHistory] = useState(null);
@@ -36,7 +35,7 @@ function BookingHistoryList(props) {
   const [description, setDescription] = useState();
 
   function petName(arr) {
-    console.log("infncccccccc")
+    console.log("infncccccccc");
     let allPetName = [];
     arr.map((item) => {
       allPetName.push(`${item.pet.name} `);
@@ -44,7 +43,7 @@ function BookingHistoryList(props) {
     setPet(allPetName);
   }
 
-console.log("proppppppppppp",props)
+  console.log("proppppppppppp", props);
 
   function Duration(start, end) {
     const startTime = start ? moment(start, "HH:mm:ss") : null;
@@ -212,21 +211,17 @@ console.log("proppppppppppp",props)
     }
   }, []);
 
-
   async function fetchData(sitterId, bookingId) {
-
-    console.log("iddddddd",sitterId, bookingId)
+    console.log("iddddddd", sitterId, bookingId);
     let { data: sitter, error: sitterError } = await supabase
       .from("pet_sitter")
       .select(`users(full_name, image_url)`)
       .eq("id", sitterId);
     if (sitter) {
-  
-      
       console.log(sitter[0].users.full_name, "aaaaaaaaaaaaaaa");
       setPetSitterFullname([...petSitterFullname, sitter[0].users.full_name]);
       setPetSitterImage([...petSitterFullname, sitter[0].users.image_url]);
-      
+
       let { data: bookPet, error: petError } = await supabase
         .from("booking_pet")
         .select(`*, pet(name)`)
@@ -241,19 +236,19 @@ console.log("proppppppppppp",props)
       console.log(sitterError);
     }
     let { data: review, error: reviewError } = await supabase
-        .from("review")
-        .select(`*`)
-        .eq("booking_id", bookingId);
-      if (review) {
-        console.log(review, "12345");
-       setDescription(review[0].description);
+      .from("review")
+      .select(`*`)
+      .eq("booking_id", bookingId);
+    if (review) {
+      console.log(review, "12345");
+      setDescription(review[0].description);
       setRating(review[0].rating);
-        console.log(review, "aaaaaaaaaaaaaaah");
-      } else if (reviewError || !review) {
-        console.log(reviewError);
-      }
+      console.log(review, "aaaaaaaaaaaaaaah");
+    } else if (reviewError || !review) {
+      console.log(reviewError);
+    }
   }
-console.log("petttt",pet)
+  console.log("petttt", pet);
 
   return (
     <div className="flex flex-col justify-center items-center py-6 gap-5 max-w-[1440px] mx-auto lg:gap-10 lg:py-14">
@@ -282,9 +277,7 @@ console.log("petttt",pet)
                     {bookingDetail.sitterName}
                   </div>
                   <div className="text-sm font-semibold md:text-base lg:text-lg">
-
                     By {petSitterFullname}
-
                   </div>
                 </div>
               </div>
@@ -352,14 +345,14 @@ console.log("petttt",pet)
                 <div className="text-thirdGray text-[13px] font-medium lg:text-[15px]">
                   Pet:
                 </div>
-                <div className="text-sm font-medium lg:text-base">{pet.length > 0
-                        ? pet.map(
-                            (eachPet, index) =>
-                              `${eachPet}${
-                                index !== pet.length - 1 ? ", " : ""
-                              }`
-                          )
-                        : "-"}</div>
+                <div className="text-sm font-medium lg:text-base">
+                  {pet.length > 0
+                    ? pet.map(
+                        (eachPet, index) =>
+                          `${eachPet}${index !== pet.length - 1 ? ", " : ""}`
+                      )
+                    : "-"}
+                </div>
               </div>
             </div>
           </div>

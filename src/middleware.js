@@ -1,11 +1,36 @@
-import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
-import { NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function middleware(req) {
-  const res = NextResponse.next();
-  const supabase = createMiddlewareClient({ req, res });
+export function middleware(request) {
+  // Your middleware logic here
 
-  await supabase.auth.getSession();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    {
+      cookies: {
+        get: function (name) {
+          return request.cookies.get(name)?.value;
+        },
+        set: function (name, value, options) {
+          request.cookies.set({
+            name,
+            value,
+            ...options,
+          });
+        },
+        remove: function (name, options) {
+          request.cookies.set({
+            name,
+            value: "",
+            ...options,
+          });
+        },
+      },
+    }
+  );
 
-  return res;
+  let response = NextResponse.next();
+
+  return response;
 }

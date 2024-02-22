@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import logo from "@/asset/images/logoInBlack.svg";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,7 +10,7 @@ import bookingListHover from "@/asset/images/bookingListHover.svg";
 import payoutOptionHover from "@/asset/images/payoutOptionHover.svg";
 import logOut from "@/asset/images/logOut.svg";
 import logOutHover from "@/asset/images/logOutHover.svg";
-import profile from "@/asset/images/Frame427321006.svg";
+
 import { useUser } from "@/hooks/hooks";
 import { signOut } from "@/app/services/auth";
 import { useRouter } from "next/navigation";
@@ -21,12 +21,9 @@ import {
   MenuList,
   MenuItem,
   IconButton,
-  MenuOptionGroup,
   Avatar,
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
-import supabase from "@/lib/utils/db";
-import { error } from "jquery";
 
 export function Sidebar({ active }) {
   const [imageSrcPetSittetProfile, setImageSrcPetSittetProfile] =

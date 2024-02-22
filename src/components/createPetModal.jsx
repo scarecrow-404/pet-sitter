@@ -10,7 +10,7 @@ import {
   Avatar,
   useToast,
 } from "@chakra-ui/react";
-import supabase from "@/lib/utils/db";
+import createClient from "@/lib/utils/client";
 import previewImg from "@/asset/images/Frame427321094.svg";
 import Link from "next/link";
 import backIcon from "@/asset/images/backIcon.svg";
@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 
 function CreatePetModal({ onClose, fetchPets }) {
   // const { onClose } = useDisclosure();
+  const supabase = createClient();
   const { userId } = useUser();
   const router = useRouter();
   const [photo, setPhoto] = useState({});

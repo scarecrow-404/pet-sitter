@@ -28,13 +28,13 @@ import {
 import { useUser } from "@/hooks/hooks";
 import { signOut } from "@/app/services/auth";
 import { useRouter } from "next/navigation";
-import supabase from "@/lib/utils/db";
+import { createClient } from "@/lib/utils/client.js";
 import LoadingImage from "@/asset/images/paw-1.1s-200px.svg";
-import ReactModal from "react-modal";
+
 import PopUpSitterConfirm from "../PopupSitterConfirm";
-import { set } from "date-fns";
-import { is } from "date-fns/locale";
+
 const Navbar = () => {
+  const supabase = createClient();
   const { user, setUser, userId, setUserId } = useUser();
   const [isLoading, setIsLoading] = useState(true);
   const [profileImage, setProfileImage] = useState(null);

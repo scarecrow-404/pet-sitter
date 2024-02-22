@@ -2,11 +2,13 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "@/components/common/Navbar";
 import { AccountBar } from "@/components/AccountBar";
-import supabase from "@/lib/utils/db";
+import { createClient } from "@/lib/utils/client";
+
 import { useUser } from "@/hooks/hooks";
-import BookingHistoryList from "@/components/bookingHistory";
+import BookingHistoryList from "@/components/BookingHistory";
 
 const BookingHistory = () => {
+  const supabase = createClient();
   const [bookingDetail, setBookingDetail] = useState([]);
 
   const [rating, setRating] = useState();
@@ -26,13 +28,11 @@ const BookingHistory = () => {
     setPet(allPetName);
   }
 
-  
   useEffect(() => {
     if (userId) {
       fetchData(userId);
     }
   }, [userId]);
-
 
   console.log(bookingDetail, "mmm");
 
@@ -61,26 +61,24 @@ const BookingHistory = () => {
           <AccountBar active={3} />
         </div>
         <div className="min-w-[375px] w-full bg-white rounded-xl md:ml-5 md:mr-5 md:mb-5 lg:ml-0">
-
-  {bookingDetail.map((item) => (
-    <BookingHistoryList
-      key={item.booking_id}
-      sitterName={item.sitterName}
-      full_name={item.full_name}
-      created_at={item.created_at}
-      process_status={item.process_status}
-      booking_date={item.booking_date}
-      start_time={item.start_time}
-      end_time={item.end_time}
-      total_amount={item.total_amount}
-      img_url={item.img_url}
-      transaction_no={item.transaction_no}
-      booking_id={item.booking_id}
-      id={item.id}
-    />
-  ))}
-</div>
-
+          {bookingDetail.map((item) => (
+            <BookingHistoryList
+              key={item.booking_id}
+              sitterName={item.sitterName}
+              full_name={item.full_name}
+              created_at={item.created_at}
+              process_status={item.process_status}
+              booking_date={item.booking_date}
+              start_time={item.start_time}
+              end_time={item.end_time}
+              total_amount={item.total_amount}
+              img_url={item.img_url}
+              transaction_no={item.transaction_no}
+              booking_id={item.booking_id}
+              id={item.id}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

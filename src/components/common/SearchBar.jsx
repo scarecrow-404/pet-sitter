@@ -13,8 +13,9 @@ import {
 } from "@chakra-ui/react";
 import { usePathname } from "next/navigation";
 import { useUser } from "@/hooks/hooks";
-import supabase from "@/lib/utils/db";
+import { createClient } from "@/lib/utils/client";
 const SearchBar = () => {
+  const supabase = createClient();
   const { search, setSearch, setIsNewSearch } = useUser();
   const [experianceQuery, setExperianceQuery] = useState("0-10");
   const [searchQuery, setSearchQuery] = useState("");

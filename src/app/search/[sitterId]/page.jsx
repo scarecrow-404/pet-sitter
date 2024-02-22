@@ -6,12 +6,14 @@ import avatar3 from "@/asset/images/thirdSitterDetail.svg";
 import Carousel from "@/components/Carousel";
 import SitterDetail from "@/components/SitterDeatail";
 import withAuth from "@/lib/utils/withAuth";
-import supabase from "@/lib/utils/db";
+import { createClient } from "@/lib/utils/client";
+
 import { useParams } from "next/navigation";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 
 const SitterProfile = () => {
+  const supabase = createClient();
   const images = [{ url: avatar }, { url: avatar2 }, { url: avatar3 }];
   const [gallery, setGallery] = useState([]);
   const [detailUser, setDetailUser] = useState([]);

@@ -1,8 +1,10 @@
 "use client";
 import React, { useState, useCallback, useEffect } from "react";
 import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
-import supabase from "@/lib/utils/db";
+
 import { useToast } from "@chakra-ui/react";
+import { createClient } from "@/lib/utils/client";
+
 const containerStyle = {
   width: "100%",
   height: "250px",
@@ -10,6 +12,7 @@ const containerStyle = {
 
 import { useParams } from "next/navigation";
 const MapPageOnSitterDeatail = ({ props, petsitterid }) => {
+  const supabase = createClient();
   const toast = useToast();
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",

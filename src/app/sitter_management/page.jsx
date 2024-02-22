@@ -20,7 +20,7 @@ import {
   SkeletonText,
 } from "@chakra-ui/react";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
-import supabase from "@/lib/utils/db";
+import { createClient } from "@/lib/utils/client";
 import deleteButton from "@/asset/images/delete.svg";
 import deleteButtonHover from "@/asset/images/deleteHover.svg";
 import frameFray from "@/asset/images/photoFrameOutlineRounded.svg";
@@ -33,6 +33,7 @@ import previewImg from "@/asset/images/Frame427321094.svg";
 import { set } from "date-fns";
 import MapPage from "@/components/MapPage";
 const SitterManagement = () => {
+  const supabase = createClient();
   const [optionPetType, setOptionPetType] = useState([]);
   const { userId, user, setSitterId } = useUser();
   //profile

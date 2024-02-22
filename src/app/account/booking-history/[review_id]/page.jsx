@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import supabase from "@/lib/utils/db";
+import { createClient } from "@/lib/utils/client";
+
 import { useUser } from "@/hooks/hooks";
 
 import Image from "next/image";
@@ -9,6 +10,7 @@ import profile from "@/asset/images/connect-with-sitter.svg";
 import star from "@/asset/images/star2.svg";
 
 const ReviewPage = () => {
+  const supabase = createClient();
   const [dataReview, setDataReview] = useState([]);
 
   function CreateDay(timeCreated) {

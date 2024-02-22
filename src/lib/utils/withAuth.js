@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
-import supabase from "@/lib/utils/db";
+import { createClient } from "./client";
 import { useUser } from "@/hooks/hooks";
 import { set } from "date-fns";
 export default function withAuth(Component) {
+  const supabase = createClient();
   return function ProtectedRoute(props) {
     const router = useRouter();
     const [userSession, setUserSession] = useState(null);
@@ -41,7 +41,7 @@ export default function withAuth(Component) {
         setUser(user);
         supabase.auth.onAuthStateChange(async (event, session) => {
           console.log(`Supabase auth event: ${event}`);
-          // console.log(session);
+          console.log(session);
           if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
             const currentSession = supabase.auth.session;
             // use supabase.auth.session,
