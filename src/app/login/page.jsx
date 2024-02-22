@@ -13,7 +13,11 @@ import { signIn, signInWithProvider } from "@/app/services/auth";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Link from "next/link";
 import xIcon from "@/asset/images/icons8-twitter.svg";
+import { el } from "date-fns/locale";
+import { error } from "jquery";
+import { useToast } from "@chakra-ui/react";
 const LoginPage = () => {
+  const toast = useToast();
   const [values, setValues] = useState({
     name: "",
     email: "",
@@ -69,8 +73,18 @@ const LoginPage = () => {
       // setUser(users[0]);
       console.log(userId);
 
-      if (result.user || userId) {
+      if (user) {
         router.push("/");
+      } else {
+        toast({
+          title: "Error",
+          position: "top",
+          description: "Email or password is incorrect!",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+        console.log("error", error);
       }
     }
   }
