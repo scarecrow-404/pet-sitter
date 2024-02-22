@@ -79,6 +79,7 @@ const BookingHistory = () => {
               transaction_no={item.transaction_no}
               booking_id={item.booking_id}
               id={item.id}
+              user_id={item.user_id}
             />
           ))}
         </div>
