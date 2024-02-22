@@ -32,7 +32,9 @@ import { useUser } from "@/hooks/hooks";
 import previewImg from "@/asset/images/Frame427321094.svg";
 import { set } from "date-fns";
 import MapPage from "@/components/MapPage";
-import iconX from "@/asset/images/iconXwhite.svg"
+import iconX from "@/asset/images/iconXwhite.svg";
+import sitterStore from "@/asset/images/dog-house.svg";
+
 const SitterManagement = () => {
   const [optionPetType, setOptionPetType] = useState([]);
   const { userId, user, setSitterId } = useUser();
@@ -179,8 +181,7 @@ const SitterManagement = () => {
         isClosable: true,
       });
     } else {
-      
-      setImageUrlSitter(data[0].pet_sitter[0].image_url)
+      setImageUrlSitter(data[0].pet_sitter[0].image_url);
       setFullName(data[0].full_name);
       setEmail(data[0].email);
       setPhoneNumber(data[0].phone_number);
@@ -329,7 +330,7 @@ const SitterManagement = () => {
 
   //upload Avatar
   const handleUploadPhoto = (event) => {
-    console.log("hereeeeeeeeeeeeee1")
+    console.log("hereeeeeeeeeeeeee1");
     const file = event.target.files[0];
     if (file) {
       const url = URL.createObjectURL(file);
@@ -343,7 +344,7 @@ const SitterManagement = () => {
   };
 
   const handleUploadSitterPhoto = (event) => {
-    console.log("hereeeeeeeeeeeeee")
+    console.log("hereeeeeeeeeeeeee");
     const file = event.target.files[0];
     if (file) {
       const url = URL.createObjectURL(file);
@@ -355,9 +356,6 @@ const SitterManagement = () => {
       }
     }
   };
-
-
-
 
   // Function to generate a unique filename
   const generateUniqueFileName = (fileName) => {
@@ -420,9 +418,6 @@ const SitterManagement = () => {
       console.log("Sitter updated successfully");
     }
   };
-
-
-
 
   const updatesAvatarUser = async () => {
     let updatedImageUrl = imageUrl ?? "";
@@ -772,7 +767,7 @@ const SitterManagement = () => {
             className="absolute text-sm right-[-10px] top-[-10px]  items-center justify-center flex cursor-pointer bg-thirdOrange p-1 rounded-full hover:bg-fifthOrange hover:text-white w-6 h-6"
             onClick={() => handleRemoveImage(petImageKey)}
           >
-           <Image src={iconX} alt="icon X" />
+            <Image src={iconX} alt="icon X" />
           </button>
         </div>
       );
@@ -829,7 +824,9 @@ const SitterManagement = () => {
       <div className="flex-1 min-w-[375px] mx-auto md:w-auto md:mx-3 bg-sixthGray max-w-[1200px] lg:ml-60">
         <TopBar />
         <div className="Title flex justify-between items-center py-3">
-          <div className="nameTitle pl-5 text-[22px] font-semibold">Pet Sitter Profile</div>
+          <div className="nameTitle pl-5 text-[22px] font-semibold">
+            Pet Sitter Profile
+          </div>
           <div className="pr-5">
             <button
               className="bg-secondOrange rounded-3xl min-w-20 h-10 hidden md:block text-white font-medium"
@@ -852,8 +849,7 @@ const SitterManagement = () => {
           </Box>
         ) : (
           <div className="rounded-xl p-5  mb-5 bg-white flex  flex-col gap-4 md:px-[80px] md:py-[40px]">
-
-            <div className="pb-6 font-bold flex    ">User  Information</div>
+            <div className="pb-6 font-bold flex    ">User Information</div>
             <div className="flex flex-col  lg:items-center gap-2 mt-2 ">
               <label htmlFor="profile">
                 {imageUrl && (
@@ -958,7 +954,6 @@ const SitterManagement = () => {
                 </FormControl>
               </div>
             </div>
-          
           </div>
         )}
         {loading ? (
@@ -974,15 +969,15 @@ const SitterManagement = () => {
         ) : (
           <div className="petSitter p-5  rounded-xl mb-1 flex flex-col gap-4 bg-white md:px-[80px] md:py-[40px]">
             <p className=" font-bold">Pet Sitter</p>
-             
+
             <div className="flex flex-col gap-2 mt-2 ">
-            <p className=" pb-5">Pet Sitter Profile</p>
+              <p className=" pb-5">Pet Sitter Profile</p>
               <label htmlFor="profilesitter">
                 {imageUrl && (
                   <div className="photo   lg:flex lg:justify-center">
                     <Image
                       className="cursor-pointer rounded-xl  w-[150px] h-[100px]   md:w-[250px] md:h-[180px]  lg:w-[300px]"
-                      src={imageUrlSitter}
+                      src={imageUrlSitter ? imageUrlSitter : sitterStore}
                       width={300}
                       height={120}
                       alt="Preview"
@@ -1030,22 +1025,22 @@ const SitterManagement = () => {
               </div>
             </div>
             <div className="md:flex flex-col md:gap-9 ">
-            <div>
-              <div className="Introduction">
-                <FormControl isRequired>
-                  <FormLabel>
-                    Introduction (Describe about yourself as pet sitter)
-                  </FormLabel>
-                  <Textarea
-                  rows={8}
-                    value={introduction}
-                    onChange={(event) => {
-                      setIntroduction(event.target.value);
-                    }}
-                  />
-                </FormControl>
+              <div>
+                <div className="Introduction">
+                  <FormControl isRequired>
+                    <FormLabel>
+                      Introduction (Describe about yourself as pet sitter)
+                    </FormLabel>
+                    <Textarea
+                      rows={8}
+                      value={introduction}
+                      onChange={(event) => {
+                        setIntroduction(event.target.value);
+                      }}
+                    />
+                  </FormControl>
+                </div>
               </div>
-            </div>
               <div className="services ">
                 <FormControl isRequired>
                   <FormLabel>
@@ -1061,57 +1056,56 @@ const SitterManagement = () => {
                 </FormControl>
               </div>
               <div className="bg-white rounded-xl  flex flex-col gap-4">
-              
-              <div>
-                <FormControl isRequired>
-                  <FormLabel>Address detail</FormLabel>
-                  <Input
-                    value={addressDetail}
-                    onChange={(event) => {
-                      setAddressDetail(event.target.value);
-                    }}
-                  />
-                </FormControl>
-              </div>
-              <div className="md:flex md:gap-9 md:justify-between">
-                <FormControl isRequired>
-                  <FormLabel>Province</FormLabel>
-                  <InputThaiAddress.Province
-                    value={address["province"]}
-                    onChange={handleChange("province")}
-                    onSelect={handleSelect}
-                  />
-                </FormControl>
+                <div>
+                  <FormControl isRequired>
+                    <FormLabel>Address detail</FormLabel>
+                    <Input
+                      value={addressDetail}
+                      onChange={(event) => {
+                        setAddressDetail(event.target.value);
+                      }}
+                    />
+                  </FormControl>
+                </div>
+                <div className="md:flex md:gap-9 md:justify-between">
+                  <FormControl isRequired>
+                    <FormLabel>Province</FormLabel>
+                    <InputThaiAddress.Province
+                      value={address["province"]}
+                      onChange={handleChange("province")}
+                      onSelect={handleSelect}
+                    />
+                  </FormControl>
 
-                <FormControl isRequired>
-                  <FormLabel>District</FormLabel>
-                  <InputThaiAddress.Amphoe
-                    value={address["amphoe"]}
-                    onChange={handleChange("amphoe")}
-                    onSelect={handleSelect}
-                  />
-                </FormControl>
-              </div>
-              <div className="md:flex md:gap-9 md:justify-between">
-                <FormControl isRequired>
-                  <FormLabel>Sub-district</FormLabel>
-                  <InputThaiAddress.District
-                    value={address["district"]}
-                    onChange={handleChange("district")}
-                    onSelect={handleSelect}
-                  />
-                </FormControl>
+                  <FormControl isRequired>
+                    <FormLabel>District</FormLabel>
+                    <InputThaiAddress.Amphoe
+                      value={address["amphoe"]}
+                      onChange={handleChange("amphoe")}
+                      onSelect={handleSelect}
+                    />
+                  </FormControl>
+                </div>
+                <div className="md:flex md:gap-9 md:justify-between">
+                  <FormControl isRequired>
+                    <FormLabel>Sub-district</FormLabel>
+                    <InputThaiAddress.District
+                      value={address["district"]}
+                      onChange={handleChange("district")}
+                      onSelect={handleSelect}
+                    />
+                  </FormControl>
 
-                <FormControl isRequired>
-                  <FormLabel>Post code</FormLabel>
-                  <InputThaiAddress.Zipcode
-                    value={address["zipcode"]}
-                    onChange={handleChange("zipcode")}
-                    onSelect={handleSelect}
-                  />
-                </FormControl>
+                  <FormControl isRequired>
+                    <FormLabel>Post code</FormLabel>
+                    <InputThaiAddress.Zipcode
+                      value={address["zipcode"]}
+                      onChange={handleChange("zipcode")}
+                      onSelect={handleSelect}
+                    />
+                  </FormControl>
+                </div>
               </div>
-            </div>
               <div className="myPlace ">
                 <FormControl isRequired>
                   <FormLabel>My Place (Pin your location)</FormLabel>
@@ -1138,7 +1132,10 @@ const SitterManagement = () => {
             </div>
             <div className="pt-8">
               <p className=" font-semibold">Image Gallery</p>
-              <p>Recommend adding at least 3 images, for addition adding image maximum at 10 images.</p>
+              <p>
+                Recommend adding at least 3 images, for addition adding image
+                maximum at 10 images.
+              </p>
               <div className="flex flex-row my-4 gap-4 flex-wrap justify-center items-center">
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-5 ">
                   {renderPetImages()}
@@ -1191,7 +1188,7 @@ const SitterManagement = () => {
             </div>
           </div>
         )}
-       
+
         {loading ? (
           <Box padding="6" boxShadow="lg" bg="white">
             <SkeletonCircle size="10" />
