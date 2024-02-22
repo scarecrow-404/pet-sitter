@@ -15,8 +15,9 @@ import Image from "next/image";
 import React from "react";
 import { useUser } from "@/hooks/hooks";
 import { useRouter } from "next/navigation";
-import supabase from "@/lib/utils/db";
+import { createClient } from "@/lib/utils/client";
 export default function PopUpSitterConfirm() {
+  const supabase = createClient();
   const router = useRouter();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { user, userId } = useUser();

@@ -27,10 +27,12 @@ import { ChevronLeftIcon, ViewIcon, CloseIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import supabase from "@/lib/utils/db";
+import { createClient } from "@/lib/utils/client";
+
 import { tr } from "date-fns/locale";
 
 const OrderDetails = () => {
+  const supabase = createClient();
   const params = useParams();
   const [ownPet, setOwnPet] = useState([]);
   const [petData, setPetData] = useState([]);

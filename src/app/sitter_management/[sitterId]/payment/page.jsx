@@ -28,8 +28,10 @@ import Thb from "@/asset/images/thb.svg";
 import wallet from "@/asset/images/wallet.svg";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import supabase from "@/lib/utils/db";
+import { createClient } from "@/lib/utils/client";
+
 const Payment = () => {
+  const supabase = createClient();
   const params = useParams();
   const [ownPet, setOwnPet] = useState([]);
   const [bankNumber, setBankNumber] = useState([]);

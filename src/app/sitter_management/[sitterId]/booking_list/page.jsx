@@ -5,10 +5,12 @@ import { Input, Select } from "@chakra-ui/react";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { event } from "jquery";
-import supabase from "@/lib/utils/db";
+import { createClient } from "@/lib/utils/client";
+
 import { useUser } from "@/hooks/hooks";
 
 const BookingList = () => {
+  const supabase = createClient();
   const params = useParams();
   const router = useRouter();
   const { sitterId } = useUser();

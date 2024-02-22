@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import supabase from "@/lib/utils/db";
+import { createClient } from "@/lib/utils/client";
 import { useUser } from "@/hooks/hooks";
 function Information({
   values,
@@ -15,6 +15,7 @@ function Information({
   setPhoneNumber,
   setMessage,
 }) {
+  const supabase = createClient();
   const { userId } = useUser();
   useEffect(() => {
     const fetchUserData = async () => {

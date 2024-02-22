@@ -8,11 +8,12 @@ import {
   Avatar,
   useToast,
 } from "@chakra-ui/react";
-import supabase from "@/lib/utils/db";
+import { createClient } from "@/lib/utils/client";
 import { useUser } from "@/hooks/hooks";
 import { useRouter } from "next/navigation";
 
 function UserManagementProfile() {
+  const supabase = createClient();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");

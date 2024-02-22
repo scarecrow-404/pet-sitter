@@ -6,7 +6,7 @@ import star from "@/asset/images/Star2.svg";
 import PopupBooking from "./Popup";
 import { Avatar } from "@chakra-ui/react";
 import { useParams } from "next/navigation";
-import supabase from "@/lib/utils/db";
+import { createClient } from "@/lib/utils/client";
 import iconNext from "@/asset/images/IconButtonNext.svg";
 import iconPrev from "@/asset/images/IconButtonPrev.svg";
 import MapPageOnSitterDeatail from "./MapPageOnSitterDeatail";
@@ -20,7 +20,7 @@ function SitterDetail(props) {
   const sitterRating = ["All Reviews", 5, 4, 3, 2, 1];
   const [ratingStart, setRatingStart] = useState(1);
   const [ratingEnd, setRatingEnd] = useState(5);
-
+  const supabase = createClient();
   const nextPage = () => {
     setPage(page + 1);
   };
@@ -48,7 +48,15 @@ function SitterDetail(props) {
     reviewsPerPage,
     sitterId
   ) {
- 
+    // console.log(
+    //   "dada1",
+    //   ratingStart,
+    //   ratingEnd,
+    //   page,
+    //   reviewsPerPage,
+    //   params.sitterId
+    // );
+
     try {
       //.range
       let { data: pageOfReview, error: errorPageOfReview } = await supabase.rpc(

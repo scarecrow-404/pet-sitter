@@ -17,11 +17,12 @@ import {
 import previewPet from "@/asset/images/catforsitterlist.jpg";
 import callIcon from "@/asset/images/callIcon.svg";
 import verticalLine from "@/asset/images/VerticalLine.svg";
-import supabase from "@/lib/utils/db";
+import { createClient } from "@/lib/utils/client";
 import { useUser } from "@/hooks/hooks";
 import star from "@/asset/images/Star2.svg";
 
 function BookingHistoryList(props) {
+  const supabase = createClient();
   const [isOpenReview, setIsOpenReview] = useState(null);
   const [isOpenYourReview, setIsOpenYourReview] = useState(null);
   const [isOpenHistory, setIsOpenHistory] = useState(null);

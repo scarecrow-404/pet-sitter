@@ -11,7 +11,7 @@ import {
   AlertIcon,
   useToast,
 } from "@chakra-ui/react";
-import supabase from "@/lib/utils/db";
+import { createClient } from "@/lib/utils/client";
 import previewImg from "@/asset/images/Frame427321094.svg";
 import Link from "next/link";
 import backIcon from "@/asset/images/backIcon.svg";
@@ -19,6 +19,7 @@ import { useUser } from "@/hooks/hooks";
 import { useRouter } from "next/navigation";
 
 function CreatePet() {
+  const supabase = createClient();
   const { userId } = useUser();
   const router = useRouter();
   const [photo, setPhoto] = useState({});

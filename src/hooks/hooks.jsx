@@ -1,13 +1,14 @@
 "use client";
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { getUser } from "@supabase/auth-helpers-nextjs";
-import supabase from "@/lib/utils/db";
+import { createClient } from "@/lib/utils/client";
 import { set } from "date-fns";
 // Create a context
 const UserContext = createContext();
 
 // Create a provider component
 export function UserProvider({ children }) {
+  const supabase = createClient();
   const [user, setUser] = useState(null);
   const [userId, setUserId] = useState(null);
   const [sitterId, setSitterId] = useState(null);
