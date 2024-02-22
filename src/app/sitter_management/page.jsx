@@ -37,6 +37,7 @@ const MapPage = dynamic(() => import("@/components/MapPage"), { ssr: false });
 
 // import MapPage from "@/components/MapPage";
 const SitterManagement = () => {
+  const supabase = createClient();
   const [optionPetType, setOptionPetType] = useState([]);
   const { userId, user, setSitterId } = useUser();
   //profile
