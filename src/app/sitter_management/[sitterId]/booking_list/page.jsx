@@ -7,12 +7,13 @@ import { useRouter } from "next/navigation";
 import { event } from "jquery";
 import supabase from "@/lib/utils/db";
 import { useUser } from "@/hooks/hooks";
-
+import { Skeleton, Box, SkeletonCircle, SkeletonText } from "@chakra-ui/react";
 const BookingList = () => {
   const params = useParams();
   const router = useRouter();
   const { sitterId } = useUser();
   const [petData, setPetData] = useState([]);
+  const [loading, setloading] = useState(false);
   const [keywords, setKeywords] = useState("");
   const [keywordsStatus, setKeywordsStatus] = useState("");
   const [petCount, setPetCount] = useState({});
@@ -29,6 +30,7 @@ const BookingList = () => {
   };
 
   async function getBookingList() {
+    setloading(true);
     let { data, error } = await supabase
       .from("booking_list_render")
       .select("*")
@@ -69,6 +71,7 @@ const BookingList = () => {
     console.log("dataa", data);
     setPetData(uniqueData);
     setPetCount(idCount);
+    setloading(false);
   }
 
   //เอาไว้คำนวนความต่างของเวลา
@@ -154,7 +157,9 @@ const BookingList = () => {
       <div className="flex-1 min-w-[375px] mx-auto md:w-auto md:mx-3 bg-sixthGray max-w-[1200px] lg:ml-60">
         <TopBar />
         <div className="Title flex  ml-3 flex-col md:flex-row justify-between items-center py-3">
-          <div className="nameTitle pl-5 text-[16px]  hidden md:flex lg:text-[22px] font-semibold">Booking List</div>
+          <div className="nameTitle pl-5 text-[16px]  hidden md:flex lg:text-[22px] font-semibold">
+            Booking List
+          </div>
           <div className="flex pr-5 gap-4">
             <Input
               size="md"
@@ -193,64 +198,78 @@ const BookingList = () => {
             </Select>
           </div>
         </div>
-        <div className="Title flex justify-center items-start  bg-white rounded-3xl lg:h-screen">
-          <table className=" border-slate-400 min-w-[375px] w-full  md:w-full xl:max-w-[1440px] xl:w-full rounded-3xl overflow-hidden ">
-            <thead className="text-white bg-black text-[13px] md:text-[14px]">
-              <tr>
-                <th className="text-center w-[200px] py-4 md:py-6">Name</th>
-                <th className="text-center w-[50px] py-4 md:py-6 hidden md:table-cell ">
-                  Pet(s)
-                </th>
-                <th className="text-center w-[150px] py-4 md:py-6 hidden md:table-cell">
-                  Duration
-                </th>
-                <th className="text-center w-[200px] py-4 md:py-6">Booked Date</th>
-                <th className="text-center w-[200px] py-4 md:py-6">Status</th>
-              </tr>
-            </thead>
-            <tbody className="text-[13px] md:text-[16px]">
-              {filteredData.map((item) => {
-                return (
-                  <tr
-                    key={item.id}
-                    onClick={() => handleClick(item.id)}
-                    className="cursor-pointer hover:bg-sixthGray"
-                  >
-                    <td className="text-center py-2 md:py-6 ">
-                      {item.full_name}
-                    </td>
-                    <td className="text-center py-2 md:py-6 hidden md:table-cell">
-                      {petCount[item.id] || 1}
-                    </td>
-                    <td className="text-center py-2 md:py-6 hidden md:table-cell">
-                      {calculator(item.start_time, item.end_time)} hours
-                    </td>
-                    <td className="text-center py-2 md:py-6">
-                      {item.formatted_booking_date}
-                    </td>
-                    <td
-                      className={`${
-                        item.process_status === "Waiting for confirm"
-                          ? "text-pink-500"
-                          : item.process_status === "Waiting for service"
-                          ? "text-orange-300"
-                          : item.process_status === "In service"
-                          ? "text-blue-500"
-                          : item.process_status === "Success"
-                          ? "text-green-400"
-                          : item.process_status === "Canceled"
-                          ? "text-red-400"
-                          : null
-                      } text-center py-2 md:py-6`}
+        {loading ? (
+          <Box padding="6" boxShadow="lg" bg="white">
+            <SkeletonCircle size="10" />
+            <SkeletonText
+              mt="10"
+              noOfLines={15}
+              spacing="4"
+              skeletonHeight="2"
+            />
+          </Box>
+        ) : (
+          <div className="Title flex justify-center items-start  bg-white rounded-3xl lg:h-screen">
+            <table className=" border-slate-400 min-w-[375px] w-full  md:w-full xl:max-w-[1440px] xl:w-full rounded-3xl overflow-hidden ">
+              <thead className="text-white bg-black text-[13px] md:text-[14px]">
+                <tr>
+                  <th className="text-center w-[200px] py-4 md:py-6">Name</th>
+                  <th className="text-center w-[50px] py-4 md:py-6 hidden md:table-cell ">
+                    Pet(s)
+                  </th>
+                  <th className="text-center w-[150px] py-4 md:py-6 hidden md:table-cell">
+                    Duration
+                  </th>
+                  <th className="text-center w-[200px] py-4 md:py-6">
+                    Booked Date
+                  </th>
+                  <th className="text-center w-[200px] py-4 md:py-6">Status</th>
+                </tr>
+              </thead>
+              <tbody className="text-[13px] md:text-[16px]">
+                {filteredData.map((item) => {
+                  return (
+                    <tr
+                      key={item.id}
+                      onClick={() => handleClick(item.id)}
+                      className="cursor-pointer hover:bg-sixthGray"
                     >
-                      • {item.process_status}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                      <td className="text-center py-2 md:py-6 ">
+                        {item.full_name}
+                      </td>
+                      <td className="text-center py-2 md:py-6 hidden md:table-cell">
+                        {petCount[item.id] || 1}
+                      </td>
+                      <td className="text-center py-2 md:py-6 hidden md:table-cell">
+                        {calculator(item.start_time, item.end_time)} hours
+                      </td>
+                      <td className="text-center py-2 md:py-6">
+                        {item.formatted_booking_date}
+                      </td>
+                      <td
+                        className={`${
+                          item.process_status === "Waiting for confirm"
+                            ? "text-pink-500"
+                            : item.process_status === "Waiting for service"
+                            ? "text-orange-300"
+                            : item.process_status === "In service"
+                            ? "text-blue-500"
+                            : item.process_status === "Success"
+                            ? "text-green-400"
+                            : item.process_status === "Canceled"
+                            ? "text-red-400"
+                            : null
+                        } text-center py-2 md:py-6`}
+                      >
+                        • {item.process_status}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
