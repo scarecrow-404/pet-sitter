@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Navbar from "@/components/common/Navbar";
 import { AccountBar } from "@/components/AccountBar";
 import CreatePet from "@/components/CreatePet";
-
+import withAuth from "@/lib/utils/withAuth";
 const Pet = () => {
   return (
     <div className="max-w-[1440px] mx-auto bg-sixthGray gap-9">
@@ -20,4 +20,4 @@ const Pet = () => {
   );
 };
 
-export default Pet;
+export default withAuth(Pet)

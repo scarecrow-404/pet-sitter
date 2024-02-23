@@ -133,9 +133,9 @@ const SitterManagement = () => {
       if (petSitterData) {
         await fetchDataPetTypesPrefer(petSitterData.id); // Pass petSitterID to fetchDataPetTypesPrefer
       }
-      fetchImageUrlData();
-      fetchPetTypes();
-      fetchMarkersFromSupabase();
+      await fetchImageUrlData();
+      await fetchPetTypes();
+      await fetchMarkersFromSupabase();
       setLoading(false);
     };
     fetchData();
@@ -259,10 +259,9 @@ const SitterManagement = () => {
       const existingExperienceOption = options.find(
         (option) => option.value == data[0].experience
       );
-      console.log(data[0].experience);
+
       setExperience(existingExperienceOption);
       console.log("exp", existingExperienceOption);
-    } else {
     }
     const petSitterData = data[0];
     setPetSitterID(petSitterData.id);
