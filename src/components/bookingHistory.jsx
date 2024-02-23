@@ -182,6 +182,7 @@ function BookingHistoryList(props) {
   };
 
   console.log("status1", checkStatus, description);
+  console.log(props, "666");
 
   const submitReview = (event) => {
     console.log("status2", checkStatus, description);
@@ -480,7 +481,7 @@ function BookingHistoryList(props) {
                               className="cursor-pointer"
                               size={40}
                               color={
-                                currentRating <= (hoverStar || rating)
+                                currentRating <= (hoverStar || writeRating)
                                   ? "#1CCD83"
                                   : "#e4e5e9"
                               }

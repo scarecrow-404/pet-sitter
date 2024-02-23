@@ -75,7 +75,7 @@ const BookingHistory = () => {
               start_time={item.start_time}
               end_time={item.end_time}
               total_amount={item.total_amount}
-              img_url={item.img_url}
+              image_url={item.image_url}
               transaction_no={item.transaction_no}
               booking_id={item.booking_id}
               id={item.id}
