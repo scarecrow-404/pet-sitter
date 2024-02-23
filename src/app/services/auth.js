@@ -18,17 +18,6 @@ export async function signUp(email, password, values) {
   console.log("Check your email to complete sign up.");
 }
 
-export async function signIn(email, password) {
- 
-
-  if (error) {
-    console.error("Error signing in:", error);
-    return error;
-  }
-
-  return data;
-}
-
 export async function signOut() {
   console.log("sign out function called");
   const { error } = await supabase.auth.signOut();

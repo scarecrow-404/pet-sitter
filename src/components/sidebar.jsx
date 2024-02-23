@@ -10,11 +10,12 @@ import bookingListHover from "@/asset/images/bookingListHover.svg";
 import payoutOptionHover from "@/asset/images/payoutOptionHover.svg";
 import logOut from "@/asset/images/logOut.svg";
 import logOutHover from "@/asset/images/logOutHover.svg";
-import profile from "@/asset/images/Frame427321006.svg";
 import { useUser } from "@/hooks/hooks";
 import { signOut } from "@/app/services/auth";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
+import mockPhoto from "@/asset/images/profileFrame.svg";
+import LoadingImage from "@/asset/images/paw-1.1s-200px.svg";
 import {
   Menu,
   MenuButton,
@@ -26,9 +27,9 @@ import {
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import supabase from "@/lib/utils/db";
-import { error } from "jquery";
 
 export function Sidebar({ active }) {
+  console.log("sideBar");
   const [imageSrcPetSittetProfile, setImageSrcPetSittetProfile] =
     useState(petSittetProfile);
   const [imageSrcBookingList, setImageSrcBookingList] = useState(bookingList);
@@ -159,22 +160,73 @@ export function Sidebar({ active }) {
 }
 
 export function TopBar() {
+  const [count, setCount] = useState(0);
+  console.log("Topbar", count);
   const router = useRouter();
-  const { user, setUser, userId, sitterId } = useUser();
-  // const [sitterId, setSitterId] = useState();
-  // async function getSitterId() {
-  //   let { data, error } = await supabase
-  //     .from("pet_sitter")
-  //     .select("id")
-  //     .eq("user_id", userId);
-  //   setSitterId(data[0].id);
-  //   if (error) {
-  //     console.error(error);
-  //   }
-  // }
-  // useEffect(() => {
-  //   getSitterId();
-  // }, []);
+  const { user, setUser, userId, sitterId, setUserId } = useUser();
+  const [profileImage, setProfileImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  async function getUser(session) {
+    if (!session) {
+      setIsLoading(false);
+      return null;
+    }
+    if (!session.user) {
+      setIsLoading(false);
+      return null;
+    }
+    if (user) {
+      setIsLoading(false);
+      return user;
+    }
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", session.user.id);
+    console.log(error);
+    setUser(data[0]);
+
+    setIsLoading(false);
+
+    return data[0]; // return the user data
+  }
+
+  useEffect(() => {
+    const session = supabase.auth.getSession();
+    setCount(count + 1);
+    if (session && session.user) {
+      setUserId(session.user.id);
+      getUser(session);
+      setIsLoading(false);
+    }
+
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log(`Supabase auth event: ${event}`);
+
+      if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
+        if (session) {
+          setUserId(session.user.id);
+          const user = await getUser(session);
+
+          setIsLoading(false);
+          const image = user?.image_url;
+          console.log(user?.image_url);
+          setProfileImage(image ?? mockPhoto);
+          if (user?.user_type === "sitter") {
+            console.log(user?.user_type);
+            console.log(user);
+          }
+          setIsLoading(false);
+        } else {
+          setIsLoading(false);
+        }
+      } else if (event === "SIGNED_OUT") {
+        setIsLoading(false);
+        setUser(null);
+        setProfileImage(mockPhoto);
+      }
+    });
+  }, [user]);
   const handleLogin = () => {
     user ? router.push("/") : router.push("/login");
   };
@@ -184,7 +236,17 @@ export function TopBar() {
     router.push("/");
   };
 
-  return user ? (
+  return isLoading ? (
+    <div className="flex justify-center items-center w-[40px] animate-pulse">
+      <Image
+        width={60}
+        height={60}
+        src={LoadingImage}
+        alt="paw loading"
+        className=" animate-spin"
+      />
+    </div>
+  ) : user ? (
     <div className="headBar flex items-center gap-5 p-5 bg-white justify-between">
       <div className="flex flex-col items-center md:flex-row md:gap-5">
         <Avatar src={user.image_url} width={10} height={10} alt="profile" />
