@@ -135,7 +135,7 @@ export default function withAuth(Component) {
         }
         supabase.auth.onAuthStateChange(async (event, session) => {
           console.log(`Supabase auth event: ${event}`);
-          console.log("ssssssssssss2", user.user_type);
+
           if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
             const currentSession = supabase.auth.session;
 
