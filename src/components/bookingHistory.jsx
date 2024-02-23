@@ -300,7 +300,7 @@ function BookingHistoryList(props) {
                     className="rounded-full w-[80px] h-[80px] md:w-[65px] md:h-[65px]"
                   />
                 </div>
-                <div className="w-[200px] flex flex-col justify-center gap-2 md:w-[250px] lg:w-[320px]">
+                <div className="w-[200px] flex flex-col justify-center gap-2">
                   <div className="text-base font-bold md:text-lg lg:text-xl">
                     {props.sitter_name}
                   </div>
@@ -310,8 +310,9 @@ function BookingHistoryList(props) {
                 </div>
               </div>
               <div className="flex flex-col gap-1 md:text-right md:gap-3 md:justify-center">
-                <div className="text-fourthGray text-[13px] font-medium md:text-[15px] lg:text-[17px]">
-                  Transaction date: {createDay(props.created_at)}
+                <div className="flex flex-row md:flex-col xl:flex-row  text-fourthGray text-[13px] font-medium md:text-[15px] lg:text-[17px]">
+                  <span className="mr-[5px]">Transaction date:</span>
+                  {createDay(props.created_at)}
                 </div>
                 <div
                   className={`${
@@ -333,7 +334,7 @@ function BookingHistoryList(props) {
               </div>
             </div>
 
-            <div className="two flex flex-col gap-2 justify-center items-center md:flex-row">
+            <div className="two flex flex-col gap-2 mt-2 justify-center items-center md:flex-row">
               <div className="w-full flex flex-col gap-1">
                 <div className="text-thirdGray text-[13px] font-medium lg:text-[15px]">
                   Date & Time:
