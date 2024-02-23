@@ -84,7 +84,7 @@ const Payment = () => {
       <div className="flex-1 min-w-[375px] mx-auto md:w-auto md:mx-3 bg-sixthGray max-w-[1200px] lg:ml-60">
         <TopBar />
         <div className="Title flex justify-between items-center pt-3 pl-5">
-          <div className="nameTitle hidden md:flex">Payout Option</div>
+          <div className="nameTitle font-semibold">Payout Option</div>
         </div>
         <div className="Title flex flex-col items-center py-3 gap-3  bg-sixthGray">
           <div className="flex  justify-between w-full gap-4">
@@ -105,14 +105,16 @@ const Payment = () => {
                 <p className="md:hidden">Bank</p>
               </div>
               <div className="flex items-center pl-[20px]">
-                <p className="text-secondOrange text-[12px] md:text-[16px]">
-                  *** {lastThreeDigits}
+                <p className="text-secondOrange text-[12px] md:text-[16px] hidden md:flex">
+                  *** *** **** {lastThreeDigits}
                 </p>
-                <ChevronRightIcon />
+                <p className="text-secondOrange text-[12px] md:text-[16px] md:hidden">
+                  * {lastThreeDigits}
+                </p>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl w-full flex flex-row justify-center items-center">
+          <div className="bg-white rounded-3xl w-full flex flex-row justify-center items-center">
             <table className=" border-slate-400 min-w-[375px] w-full md:max-w-[768px] md:w-full xl:max-w-[1440px] xl:w-full rounded-3xl overflow-hidden ">
               <thead className="text-white bg-black text-[13px] md:text-[14px]">
                 <tr>

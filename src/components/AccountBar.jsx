@@ -36,7 +36,7 @@ export const AccountBar = ({ active }) => {
   };
   return (
     <>
-      <div className="flex flex-col w-[250px] h-[250px] py-10">
+      <div className="flex flex-col w-[250px] h-[250px] py-5 gap-4">
         <h1 className="px-6 text-xl font-bold">Account</h1>
         <div>
           <Link href="/account">

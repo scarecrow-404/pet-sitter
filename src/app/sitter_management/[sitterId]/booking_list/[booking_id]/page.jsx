@@ -159,7 +159,7 @@ const OrderDetails = () => {
           <div className="flex pr-5 gap-4">
             {ownPet.process_status === "Waiting for confirm" && (
               <div className={`max-md:hidden flex gap-5`}>
-                <AlertButton buttonName="Reject Booking" />
+                <AlertButton buttonName="Cancel Booking" />
                 <button
                   className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange "
                   onClick={() => {
@@ -279,7 +279,7 @@ const OrderDetails = () => {
               <div className="flex pr-5 gap-4 justify-center mb-10">
                 {ownPet.process_status === "Waiting for confirm" && (
                   <div className={`md:hidden flex gap-5`}>
-                    <AlertButton buttonName="Reject Booking" />
+                    <AlertButton buttonName="Cancel Booking" />
                     <button
                       className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange"
                       onClick={() => {
@@ -368,11 +368,11 @@ function AlertButton({ buttonName }) {
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Reject Confirmation
+              Cancel Booking
             </AlertDialogHeader>
 
             <AlertDialogBody>
-              Are you sure to reject this booking?
+              Are you sure to cancel this booking?
             </AlertDialogBody>
 
             <AlertDialogFooter>
@@ -391,7 +391,7 @@ function AlertButton({ buttonName }) {
                     rejectBookingStatus();
                   }}
                 >
-                  Reject Booking
+                  Yes
                 </button>
               </div>
             </AlertDialogFooter>
