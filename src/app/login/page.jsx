@@ -53,15 +53,11 @@ const LoginPage = () => {
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if (event === "SIGNED_IN") {
+        if (session?.user) {
           router.push("/");
         }
       }
     );
-
-    return () => {
-      authListener.remove();
-    };
   }, [router]);
 
   async function handleValidation(event) {
@@ -70,7 +66,7 @@ const LoginPage = () => {
     if (Object.keys(errors).length === 0) {
       const { email, password } = values;
       try {
-        const { error } = await supabase.auth.signIn({
+        const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
