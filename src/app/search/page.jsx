@@ -6,14 +6,13 @@ import CardSitter from "@/app/search/cardsitterlist.jsx";
 import SearchBar from "@/components/common/SearchBar";
 import supabase from "@/lib/utils/db";
 import { useUser } from "@/hooks/hooks";
-import  iconNext from "@/asset/images/IconButtonNext.svg";
-import  iconPrev  from "@/asset/images/IconButtonPrev.svg";
+import iconNext from "@/asset/images/IconButtonNext.svg";
+import iconPrev from "@/asset/images/IconButtonPrev.svg";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 
-
 const Search = () => {
-  const { search, setSearch,isNewSearch,setIsNewSearch } = useUser();
+  const { search, setSearch, isNewSearch, setIsNewSearch } = useUser();
   const [sitterData, setSitterData] = useState([]);
   const [idSitter, setIdSitter] = useState("");
   const [expStart, setExpStart] = useState(0);
@@ -21,7 +20,6 @@ const Search = () => {
   const [loading, setloading] = useState();
   const [page, setPage] = useState(1);
   const [lengthReview, setLengthReview] = useState(1);
-
 
   const reviewsPerPage = 5;
 
@@ -38,7 +36,7 @@ const Search = () => {
   const expQuery = search.exp ? search.exp : "0-10";
 
   const petQuery = search.pet.length ? [...search.pet] : [1, 2, 3, 4];
-
+  console.log(expStart, expEnd, "expQ");
   const ratingStart = search.rating ? Number(search.rating) : 0;
 
   const ratingEnd = ratingStart ? ratingStart + 1 : 6;
@@ -129,12 +127,14 @@ const Search = () => {
       console.log(error);
     }
   }
-
   useEffect(() => {
     splitExpNum(expQuery);
-    if(isNewSearch){
-      setPage(1)
-      setIsNewSearch(false)
+  }, [expQuery]);
+
+  useEffect(() => {
+    if (isNewSearch) {
+      setPage(1);
+      setIsNewSearch(false);
     }
     getSitterData(
       expStart,
@@ -164,9 +164,7 @@ const Search = () => {
 
         <section className=" flex flex-col  lg:flex-row p-3">
           <div className=" w-[100%] lg:w-[30%]">
-            <SearchBar 
-       
-            />
+            <SearchBar />
           </div>
           <div className="  lg:w-[70%] w-[100%] flex flex-col gap-2  cursor-default ">
             {sitterData.map((item) => (
@@ -191,11 +189,11 @@ const Search = () => {
             disabled={page === 1} // ปิดปุ่มก่อนหน้าเมื่ออยู่ที่หน้าแรก
           >
             <Image
-                  objectFit="cover"
-                  className=" w-[15px] h-[15px] rounded-xl"
-                  src={iconPrev}
-                  alt="Prev icon"
-                />
+              objectFit="cover"
+              className=" w-[15px] h-[15px] rounded-xl"
+              src={iconPrev}
+              alt="Prev icon"
+            />
           </button>
           <div className="pages flex gap-2 ">
             {/* {page}/{lengthReview} */}
@@ -206,7 +204,11 @@ const Search = () => {
                   key={index}
                   onClick={(event) => setPage(event.target.value)}
                   value={item}
-                  className={`pl-4 pt-2 pr-4 pb-2  hover:bg-sixthOrange  rounded-full   font-medium hover:text-firstOrange ${page==item? "bg-sixthOrange text-firstOrange": "text-fourthGray"}`} 
+                  className={`pl-4 pt-2 pr-4 pb-2  hover:bg-sixthOrange  rounded-full   font-medium hover:text-firstOrange ${
+                    page == item
+                      ? "bg-sixthOrange text-firstOrange"
+                      : "text-fourthGray"
+                  }`}
                 >
                   {item}
                 </button>
@@ -218,13 +220,12 @@ const Search = () => {
             onClick={nextPage}
             disabled={page === lengthReview} // ปิดปุ่มถัดไปเมื่ออยู่ที่หน้าสุดท้าย
           >
-          <Image
-                  objectFit="cover"
-                  className=" w-[15px] h-[15px] rounded-xl"
-                  src={iconNext}
-                  alt="next icon"
-                />
-            
+            <Image
+              objectFit="cover"
+              className=" w-[15px] h-[15px] rounded-xl"
+              src={iconNext}
+              alt="next icon"
+            />
           </button>
         </div>
       </section>
