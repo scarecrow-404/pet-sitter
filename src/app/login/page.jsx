@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 
 import Image from "next/image";
+import supabase from "@/lib/utils/db";
 import { useRouter } from "next/navigation";
 import starpic from "@/asset/images/Star1.svg";
 import squarepic from "@/asset/images/Ellipse15(butblue).svg";
@@ -9,12 +10,10 @@ import cathand from "@/asset/images/Vector(butorange).svg";
 import Facebookicon from "@/asset/images/Facebookicon.svg";
 import Googleicon from "@/asset/images/Googleicon.svg";
 import { useUser } from "@/hooks/hooks";
-import { signIn, signInWithProvider } from "@/app/services/auth";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { signInWithProvider } from "@/app/services/auth";
 import Link from "next/link";
 import xIcon from "@/asset/images/icons8-twitter.svg";
-import { el } from "date-fns/locale";
-import { error } from "jquery";
+
 import { useToast } from "@chakra-ui/react";
 const LoginPage = () => {
   const toast = useToast();
@@ -24,7 +23,7 @@ const LoginPage = () => {
     phone: "",
     password: "",
   });
-  const supabase = createClientComponentClient();
+
   const [errors, setErrors] = useState({});
   const { user, setUser, userId } = useUser();
   const router = useRouter();
@@ -52,33 +51,31 @@ const LoginPage = () => {
   }
   //   }
   useEffect(() => {
-    if (user) {
-      router.push("/");
-    }
-  }, [user, router]);
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === "SIGNED_IN") {
+          router.push("/");
+        }
+      }
+    );
+
+    return () => {
+      authListener.remove();
+    };
+  }, [router]);
+
   async function handleValidation(event) {
     event.preventDefault();
     setErrors(validation(values));
     if (Object.keys(errors).length === 0) {
-      const email = values.email;
-      const password = values.password;
+      const { email, password } = values;
       try {
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const { error } = await supabase.auth.signIn({
           email,
           password,
         });
 
-        // let { data: users, error } = await supabase
-        //   .from("users")
-        //   .select("*")
-        //   .eq("id", result.user.id);
-
-        // console.log(user);
-        // setUser(users[0]);
-
-        if (data) {
-          router.push("/");
-        } else {
+        if (error) {
           toast({
             title: "Error",
             position: "top",
@@ -87,8 +84,8 @@ const LoginPage = () => {
             duration: 9000,
             isClosable: true,
           });
+          console.log("error", error);
         }
-        console.log("error", error);
       } catch (error) {
         console.error(error.message);
       }

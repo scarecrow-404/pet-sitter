@@ -101,7 +101,7 @@ const Navbar = () => {
         setProfileImage(mockPhoto);
       }
     });
-  }, []);
+  }, [user]);
   const router = useRouter();
   const handleLogin = () => {
     user ? router.push("/") : router.push("/login");
