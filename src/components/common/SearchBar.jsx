@@ -16,7 +16,7 @@ import { useUser } from "@/hooks/hooks";
 import supabase from "@/lib/utils/db";
 const SearchBar = () => {
   const { search, setSearch, setIsNewSearch } = useUser();
-  const [experianceQuery, setExperianceQuery] = useState("0-10");
+  const [experianceQuery, setExperianceQuery] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchRating, setSearchRating] = useState(0);
   const [inputType, setInputType] = useState([]);

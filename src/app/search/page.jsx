@@ -36,7 +36,7 @@ const Search = () => {
   const expQuery = search.exp ? search.exp : "0-10";
 
   const petQuery = search.pet.length ? [...search.pet] : [1, 2, 3, 4];
-  console.log(petQuery, "petQuery");
+  console.log(expStart, expEnd, "expQ");
   const ratingStart = search.rating ? Number(search.rating) : 0;
 
   const ratingEnd = ratingStart ? ratingStart + 1 : 6;
@@ -127,9 +127,11 @@ const Search = () => {
       console.log(error);
     }
   }
-
   useEffect(() => {
     splitExpNum(expQuery);
+  }, [expQuery]);
+
+  useEffect(() => {
     if (isNewSearch) {
       setPage(1);
       setIsNewSearch(false);

@@ -13,7 +13,7 @@ export function UserProvider({ children }) {
   const [sitterId, setSitterId] = useState(null);
   const [isNewSearch, setIsNewSearch] = useState(true);
   const [search, setSearch] = useState({
-    exp: "0-10",
+    exp: "",
     rating: 0,
     pet: [],
     keyword: "",
