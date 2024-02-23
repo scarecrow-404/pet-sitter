@@ -89,12 +89,19 @@ const SearchBar = () => {
     }
   }, [search]);
   useEffect(() => {
+    window.onbeforeunload = () => {
+      localStorage.removeItem("check");
+    };
+
     getPet();
     handlePathname();
     const storedCheck = localStorage.getItem("check");
     if (storedCheck) {
       setCheck(JSON.parse(storedCheck));
     }
+    return () => {
+      window.onbeforeunload = null;
+    };
   }, []);
   useEffect(() => {
     console.log(inputType);

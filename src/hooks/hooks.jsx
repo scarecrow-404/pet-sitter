@@ -15,7 +15,7 @@ export function UserProvider({ children }) {
   const [search, setSearch] = useState({
     exp: "0-10",
     rating: 0,
-    pet: [1, 2, 3, 4],
+    pet: [],
     keyword: "",
   });
 
