@@ -29,11 +29,17 @@ export default function withAuth(Component) {
     }
     useEffect(() => {
       const fetchSession = async () => {
-        const {
+        let {
           data: { session },
           error,
         } = await supabase.auth.getSession();
-
+        if (!session) {
+          const storedSession = localStorage.getItem("supabase.auth.token");
+          if (storedSession) {
+            session = JSON.parse(storedSession);
+            supabase.auth.setSession(session);
+          }
+        }
         setUserSession(session);
 
         setUserId(session?.user?.id);
@@ -41,24 +47,25 @@ export default function withAuth(Component) {
         setUser(user);
         supabase.auth.onAuthStateChange(async (event, session) => {
           console.log(`Supabase auth event: ${event}`);
-          // console.log(session);
+
           if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
             const currentSession = supabase.auth.session;
-            // use supabase.auth.session,
+
             if (currentSession) {
+              localStorage.setItem(
+                "supabase.auth.token",
+                JSON.stringify(currentSession)
+              );
               setUserId(currentSession.user.id);
-              console.log(currentSession);
               const user = await getUser(currentSession);
 
               setUser(user);
             }
           } else if (event === "SIGNED_OUT") {
             setUser(null);
+            localStorage.removeItem("supabase.auth.token");
           }
         });
-
-        // console.log(userSession);
-        // console.log(error);
 
         if (!session) {
           router.push("/login");

@@ -27,7 +27,7 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <main className="flex min-h-4/6 flex-col items-center justify-between gap-10 my-3 max-w-[1440px] mx-auto lg:gap-20 lg:my-6">
+      <main className="flex min-h-4/6 flex-col items-center justify-between gap-10 my-3 max-w-[1440px] mx-auto lg:gap-20 lg:my-6 ">
         <div className="w-full flex flex-row justify-center items-center lg:w-11/12">
           <div className="w-[23%] relative top-7 md:top-0 md:w-[25%] lg:w-[25%]">
             <Image

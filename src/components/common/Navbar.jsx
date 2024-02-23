@@ -66,19 +66,36 @@ const Navbar = () => {
   }
 
   useEffect(() => {
-    const session = supabase.auth.getSession();
+    const fetchSession = async () => {
+      const session = supabase.auth.getSession();
 
-    if (session && session.user) {
-      setUserId(session.user.id);
-      getUser(session);
-      setIsLoading(false);
-    }
+      if (session && session.user) {
+        setUserId(session.user.id);
+        console.log("Session:", session);
+        console.log("User ID:", session.user.id);
+        await getUser(session);
+        setIsLoading(false);
+      } else {
+        const storedSession = localStorage.getItem("session");
+        if (storedSession) {
+          const session = JSON.parse(storedSession);
+          setUserId(session.user.id);
+          console.log("Stored session:", session);
+          console.log("User ID:", session.user.id);
+          await getUser(session);
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchSession();
 
     supabase.auth.onAuthStateChange(async (event, session) => {
       console.log(`Supabase auth event: ${event}`);
 
       if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
         if (session) {
+          localStorage.setItem("session", JSON.stringify(session));
           setUserId(session.user.id);
           const user = await getUser(session);
 
@@ -99,9 +116,10 @@ const Navbar = () => {
         setIsLoading(false);
         setUser(null);
         setProfileImage(mockPhoto);
+        localStorage.removeItem("session");
       }
     });
-  }, [user]);
+  }, []);
   const router = useRouter();
   const handleLogin = () => {
     user ? router.push("/") : router.push("/login");
