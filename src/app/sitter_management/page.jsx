@@ -1202,9 +1202,9 @@ const SitterManagement = () => {
             />
           </Box>
         ) : (
-          <div className="bank account mt-5 p-5 bg-white rounded-xl mb-5">
+          <div className="bank account mt-5 p-5 bg-white rounded-xl mb-5  md:px-[60px] md:py-[40px]">
             <div className="bg-white rounded-xl p-5 mb-5 flex flex-col gap-4">
-              <p className="pb-6 font-bold">Bank</p>
+              <p className="pb-2 font-bold">Bank</p>
               <div>
                 <FormControl isRequired>
                   <FormLabel>Account Number</FormLabel>
