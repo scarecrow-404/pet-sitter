@@ -123,15 +123,8 @@ const OrderDetails = () => {
     return removeTAndAfterT;
   }
 
-  // console.log(
-  //   "current",
-  //   currentDateString,
-  //   "ownpet1111",
-  //   formattedBookingDate
-  // );
-
   return (
-    <div className="flex  bg-sixthGray justify-center">
+    <div className="flex  bg-sixthGray justify-center overflow-hidden">
       <div className="hidden bg-sixthGray lg:block relative">
         <Sidebar active={2} />
       </div>
@@ -165,11 +158,13 @@ const OrderDetails = () => {
           </div>
           <div className="flex pr-5 gap-4">
             {ownPet.process_status === "Waiting for confirm" && (
-              <div className={`max-lg:hidden flex gap-5`}>
+              <div className={`max-md:hidden flex gap-5`}>
                 <AlertButton buttonName="Reject Booking" />
                 <button
                   className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange "
-                  onClick={updateBookingStatus}
+                  onClick={() => {
+                    updateBookingStatus();
+                  }}
                 >
                   Confirm Booking
                 </button>
@@ -177,10 +172,12 @@ const OrderDetails = () => {
             )}
 
             {ownPet.process_status === "Waiting for service" && (
-              <div className={`max-lg:hidden`}>
+              <div className={`max-md:hidden`}>
                 <button
                   className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange "
-                  onClick={updateBookingStatus}
+                  onClick={() => {
+                    updateBookingStatus();
+                  }}
                 >
                   In Service
                 </button>
@@ -188,10 +185,12 @@ const OrderDetails = () => {
             )}
 
             {ownPet.process_status === "In service" && (
-              <div className={`max-lg:hidden`}>
+              <div className={`max-md:hidden`}>
                 <button
-                  className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange disabled:bg-fifthGray"
-                  onClick={updateBookingStatus}
+                  className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange disabled:bg-fifthGray disabled:text-fifthGray"
+                  onClick={() => {
+                    updateBookingStatus();
+                  }}
                   disabled={
                     currentDateString < formattedBookingDate || // ถ้าวันที่ปัจจุบันน้อยกว่าวันที่จอง
                     (currentDateString === formattedBookingDate &&
@@ -279,26 +278,39 @@ const OrderDetails = () => {
               </div>
               <div className="flex pr-5 gap-4 justify-center mb-10">
                 {ownPet.process_status === "Waiting for confirm" && (
-                  <div className={`lg:hidden flex gap-5`}>
+                  <div className={`md:hidden flex gap-5`}>
                     <AlertButton buttonName="Reject Booking" />
-                    <button className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange">
+                    <button
+                      className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange"
+                      onClick={() => {
+                        updateBookingStatus();
+                      }}
+                    >
                       Confirm Booking
                     </button>
                   </div>
                 )}
 
                 {ownPet.process_status === "Waiting for service" && (
-                  <div className={`lg:hidden`}>
-                    <button className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange">
+                  <div className={`md:hidden`}>
+                    <button
+                      className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange"
+                      onClick={() => {
+                        updateBookingStatus();
+                      }}
+                    >
                       In Service
                     </button>
                   </div>
                 )}
 
                 {ownPet.process_status === "In service" && (
-                  <div className={`lg:hidden`}>
+                  <div className={`md:hidden`}>
                     <button
-                      className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange disabled:bg-fifthGray"
+                      onClick={() => {
+                        updateBookingStatus();
+                      }}
+                      className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange disabled:bg-fifthGray disabled:text-fifthGray"
                       disabled={
                         currentDateString < formattedBookingDate ||
                         (currentDateString === formattedBookingDate &&
