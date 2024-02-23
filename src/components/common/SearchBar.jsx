@@ -28,10 +28,15 @@ const SearchBar = () => {
   const router = useRouter();
 
   const HandleCheck = (index) => {
-    setCheck((prevState) =>
-      prevState.map((item, idx) => (idx === index ? !item : item))
-    );
+    setCheck((prevState) => {
+      const newCheck = prevState.map((item, idx) =>
+        idx === index ? !item : item
+      );
+      localStorage.setItem("check", JSON.stringify(newCheck));
+      return newCheck;
+    });
   };
+
   const handlePathname = () => {
     if (pathname === "/search") {
       return setIsLandingPage(false);
@@ -53,12 +58,6 @@ const SearchBar = () => {
     event.preventDefault();
     const currentPath = pathname;
     await setIsNewSearch(true);
-    console.log("handleSearch");
-    console.log(inputType);
-    console.log(searchRating);
-    console.log(searchQuery);
-    console.log(experianceQuery);
-
     await setSearch({
       exp: experianceQuery,
       rating: searchRating,
@@ -66,23 +65,37 @@ const SearchBar = () => {
       keyword: searchQuery,
     });
 
-    if (pathname.startsWith("/search")) {
-      console.log("Already on search Page");
-    } else {
+    if (!pathname.startsWith("/search")) {
       router.push("/search");
     }
   };
 
   console.log("frombrigth", search);
-  useEffect(
-    () => {
-      handlePathname();
-      getPet();
-    },
-    [search],
-    searchQuery
-  );
-
+  useEffect(() => {
+    if (search.exp) {
+      setExperianceQuery(search.exp);
+    }
+    if (search.rating) {
+      setSearchRating(search.rating);
+    }
+    if (search.pet) {
+      setInputType(search.pet);
+    }
+    if (search.keyword) {
+      setSearchQuery(search.keyword);
+    }
+    if (search.check) {
+      setCheck(search.check);
+    }
+  }, [search]);
+  useEffect(() => {
+    getPet();
+    handlePathname();
+    const storedCheck = localStorage.getItem("check");
+    if (storedCheck) {
+      setCheck(JSON.parse(storedCheck));
+    }
+  }, []);
   useEffect(() => {
     console.log(inputType);
     console.log(searchRating);
@@ -101,7 +114,7 @@ const SearchBar = () => {
     setSearchRating(0);
     setInputType([]);
     setCheck([false, false, false, false]);
-    console.log("clearSearch");
+    localStorage.setItem("check", JSON.stringify([false, false, false, false]));
   };
   return (
     <form onSubmit={handleSearch}>
@@ -194,7 +207,7 @@ const SearchBar = () => {
                 </div>
               </div>
               {/* <div className="flex flex-col md:flex-row md:justify-around md:gap-5 p-2 w-[100%]"> */}
-              <lebel className="flex items-center text-sm p-2 ">
+              <lebel className="flex items-center text-sm p-4 ">
                 Experience :
                 <select
                   id="experiance"
@@ -210,22 +223,26 @@ const SearchBar = () => {
                 </select>
               </lebel>
               <div
-                className={`flex text-sm  m-2  ${
+                className={`flex text-sm  m-2 pb-3 ${
                   isLandingPage
                     ? "justify-end md:m-[2px] lg:items-center px-2"
-                    : "justify-center gap-2"
+                    : "justify-center  gap-2 w-[100%]"
                 } `}
               >
                 <button
-                  className={`bg-fifthOrange rounded-full p-4 max-h-12 text-secondOrange mr-3 text-center ${
-                    isLandingPage ? "hidden" : ""
+                  className={`bg-fifthOrange rounded-full p-3 max-h-12 text-secondOrange mr-3 text-center font-medium ${
+                    isLandingPage ? "hidden" : "w-[40%] md:w-[30%]"
                   }`}
                   onClick={clearSearch}
                 >
                   Clear
                 </button>
                 <button
-                  className="bg-secondOrange rounded-full p-3 max-h-12 text-white mr-3 md:mr-0 md:py-0 md:px-2 lg:p-3"
+                  className={`bg-secondOrange rounded-full p-2 max-h-12 text-white font-medium ${
+                    isLandingPage
+                      ? " mr-3 md:mr-0 md:py-0 md:px-2 lg:p-3"
+                      : "w-[40%] md:w-[30%]"
+                  }`}
                   onClick={handleSearch}
                 >
                   Search

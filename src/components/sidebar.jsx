@@ -226,7 +226,7 @@ export function TopBar() {
         setProfileImage(mockPhoto);
       }
     });
-  }, [user]);
+  }, []);
   const handleLogin = () => {
     user ? router.push("/") : router.push("/login");
   };

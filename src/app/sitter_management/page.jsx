@@ -34,8 +34,9 @@ import { set } from "date-fns";
 import MapPage from "@/components/MapPage";
 import iconX from "@/asset/images/iconXwhite.svg";
 import sitterStore from "@/asset/images/dog-house.svg";
-
+import { useRouter } from "next/navigation";
 const SitterManagement = () => {
+  const router = useRouter();
   const [optionPetType, setOptionPetType] = useState([]);
   const { userId, user, setSitterId } = useUser();
   //profile
@@ -635,6 +636,7 @@ const SitterManagement = () => {
       });
     } finally {
       setLoading(false); // Hide spinner
+      router.refresh();
     }
   };
 
