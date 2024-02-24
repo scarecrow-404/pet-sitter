@@ -33,10 +33,11 @@ function Pet({
   useEffect(() => {
     if (userId) {
       fetchPets();
-    }if(id){
-      fetchPetPerfer(id)}
+    }
+    if (id) {
+      fetchPetPerfer(id);
+    }
   }, [userId, isOpen]);
-
 
   const fetchPets = async () => {
     const { data: pets, error } = await supabase
@@ -51,13 +52,11 @@ function Pet({
     }
   };
 
-const addPetTypeToArr = (arr)=>{
-  let newArr=[];
-arr.map((item)=>newArr.push(item.pet_type_master.name))
-setPetPrefer(newArr)
-}
-
-
+  const addPetTypeToArr = (arr) => {
+    let newArr = [];
+    arr.map((item) => newArr.push(item.pet_type_master.name));
+    setPetPrefer(newArr);
+  };
 
   const fetchPetPerfer = async (id) => {
     const { data: pets, error } = await supabase
@@ -68,12 +67,11 @@ setPetPrefer(newArr)
     if (error) {
       console.error("Error fetching pets data:", error);
     } else {
-      addPetTypeToArr(pets)
- 
+      addPetTypeToArr(pets);
     }
   };
-  console.log(petData,"petData");
-  console.log(petPrefer,"petPrefer");
+  console.log(petData, "petData");
+  console.log(petPrefer, "petPrefer");
   // const [selectedPets, setSelectedPets] = useState([]);
   const handleClick = (item) => {
     const index = selectedPets.findIndex((pet) => pet.id === item.id);
@@ -101,16 +99,14 @@ setPetPrefer(newArr)
           {/* map here */}
           {petData.length > 0 ? (
             petData.map((item) => (
-             
               <button
-              disabled={petPrefer.includes(item.petType)?false:true}
+                disabled={petPrefer.includes(item.petType) ? false : true}
                 onClick={() => handleClick(item)}
                 key={item.id}
                 className={`mb-5 border rounded-lg w-[210px] h-[240px] flex flex-col justify-center items-center gap-6 cursor-pointer  disabled:bg-fifthGray  disabled:opacity-50 ${
                   selectedPets.find((pet) => pet.id === item.id)
-                   ? " border-thirdOrange border-[3px]"
+                    ? " border-thirdOrange border-[3px]"
                     : ""
-                  
                 }`}
               >
                 <Avatar
@@ -123,7 +119,7 @@ setPetPrefer(newArr)
                   <p className="mx-auto">{item.name}</p>
                   <p
                     className={` border rounded-xl w-fit px-3 ${
-                      item.petType === "Dog" 
+                      item.petType === "Dog"
                         ? "border-firstGreen text-firstGreen bg-secondGreen"
                         : item.petType === "Cat"
                         ? "bg-secondPink text-firstPink border-firstPink"

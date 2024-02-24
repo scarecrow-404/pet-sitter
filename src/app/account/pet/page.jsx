@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Navbar from "@/components/common/Navbar";
 import { AccountBar } from "@/components/AccountBar";
-
+import withAuth from "@/lib/utils/withAuth";
 import PetList from "@/components/PetList";
 
 const Pet = () => {
@@ -21,4 +21,4 @@ const Pet = () => {
   );
 };
 
-export default Pet;
+export default withAuth(Pet)

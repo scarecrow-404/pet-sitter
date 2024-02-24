@@ -40,7 +40,7 @@ function CreatePetModal({ onClose, fetchPets }) {
     setPhoto({ [fileName]: file });
     imageUrlRef.current = url;
   };
-  const handleSubmit = async (event) => {
+  const handleSubmit = async () => {
     if (!petName || !petType || !breed || !sex || !age || !color || !weight) {
       toast({
         title: "Error",
@@ -55,13 +55,22 @@ function CreatePetModal({ onClose, fetchPets }) {
 
     try {
       await createNewPet(imageUrlRef.current);
-      router.push("/account/pet/");
+      toast({
+        title: "Success",
+        position: "top",
+        description: `Pet created successfully`,
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
+      fetchPets();
+      onClose(); // ปิด Modal เมื่อสร้างสัตว์เลี้ยงสำเร็จ
     } catch (error) {
       toast({
         title: "Error",
         position: "top",
-        description: `Error creating pet: + ${error.message}`,
-        status: "warning",
+        description: `Error creating pet: ${error.message}`,
+        status: "error",
         duration: 9000,
         isClosable: true,
       });

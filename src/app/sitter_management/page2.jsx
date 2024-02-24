@@ -21,6 +21,9 @@ import {
 } from "@chakra-ui/react";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import supabase from "@/lib/utils/db";
+import deleteButton from "@/asset/images/delete.svg";
+import deleteButtonHover from "@/asset/images/deleteHover.svg";
+import frameFray from "@/asset/images/photoFrameOutlineRounded.svg";
 import upload from "@/asset/images/uploadMin10.svg";
 import uploadDisable from "@/asset/images/uploadMin10disable.svg";
 import withAuth from "@/lib/utils/withAuth";
@@ -29,7 +32,8 @@ import { useUser } from "@/hooks/hooks";
 import previewImg from "@/asset/images/Frame427321094.svg";
 import MapPage from "@/components/MapPage";
 import iconX from "@/asset/images/iconXwhite.svg";
-import { set } from "date-fns";
+import sitterStore from "@/asset/images/dog-house.svg";
+
 const SitterManagement = () => {
   const [optionPetType, setOptionPetType] = useState([]);
   const { userId, user, setSitterId } = useUser();
@@ -93,7 +97,7 @@ const SitterManagement = () => {
       setFullName(enteredFullName);
     }
   };
-
+  console.log(userId);
   //validate full name end
 
   //ระบบกรอกที่อยู่
@@ -120,6 +124,7 @@ const SitterManagement = () => {
 
   //fetch data
   useEffect(() => {
+    
     fetchData();
   }, [userId]);
   const fetchData = async () => {
@@ -134,7 +139,8 @@ const SitterManagement = () => {
     await fetchMarkersFromSupabase();
     setLoading(false);
   };
-
+  console.log("getMarkers typeof", typeof petSitterID);
+  console.log("getMarkers 152", getMarkers);
   const fetchMarkersFromSupabase = async () => {
     try {
       console.log("getMarkers typeof 156", typeof petSitterID);
@@ -162,7 +168,7 @@ const SitterManagement = () => {
     }
     const { data, error } = await supabase
       .from("users")
-      .select(`*`)
+      .select(`*,pet_sitter(image_url)`)
       .eq("id", userId);
 
     if (error) {
@@ -175,6 +181,7 @@ const SitterManagement = () => {
         isClosable: true,
       });
     } else {
+      setImageUrlSitter(data[0].pet_sitter[0].image_url);
       setFullName(data[0].full_name);
       setEmail(data[0].email);
       setPhoneNumber(data[0].phone_number);
@@ -247,15 +254,15 @@ const SitterManagement = () => {
         duration: 9000,
         isClosable: true,
       });
+    } else if (data[0].experience !== null) {
+      const existingExperienceOption = options.find(
+        (option) => option.value == data[0].experience
+      );
+      console.log(data[0].experience);
+      setExperience(existingExperienceOption);
+      console.log("exp", existingExperienceOption);
+    } else {
     }
-    // if (data[0].experience !== null) {
-    //   const existingExperienceOption = options.find(
-    //     (option) => option.label == data[0].experience
-    //   );
-
-    //   setExperience(existingExperienceOption);
-    //   console.log("exp", existingExperienceOption);
-    // }
     const petSitterData = data[0];
     setPetSitterID(petSitterData.id);
     setSitterId(petSitterData.id);
@@ -272,8 +279,7 @@ const SitterManagement = () => {
     setAccountName(petSitterData.account_name);
     setAccountType(petSitterData.account_type);
     setEtcs(petSitterData.etcs);
-    setImageUrlSitter(petSitterData.image_url);
-    setExperience(petSitterData.experience);
+
     setAddress({
       district: petSitterData.district,
       amphoe: petSitterData.sub_district,
@@ -323,6 +329,7 @@ const SitterManagement = () => {
 
   //upload Avatar
   const handleUploadPhoto = (event) => {
+    console.log("hereeeeeeeeeeeeee1");
     const file = event.target.files[0];
     if (file) {
       const url = URL.createObjectURL(file);
@@ -336,6 +343,7 @@ const SitterManagement = () => {
   };
 
   const handleUploadSitterPhoto = (event) => {
+    console.log("hereeeeeeeeeeeeee");
     const file = event.target.files[0];
     if (file) {
       const url = URL.createObjectURL(file);
@@ -357,7 +365,7 @@ const SitterManagement = () => {
   };
 
   const updatesAvatarSitter = async () => {
-    let updatedImageUrl = imageUrlSitter ?? "";
+    let updatedImageUrl = imageUrl ?? "";
     if (Object.keys(photoSitter).length > 0) {
       const file = Object.values(photoSitter)[0];
       const filePath = `public/${userId}/petsitterprofile/${file.name}`;
@@ -399,7 +407,6 @@ const SitterManagement = () => {
       image_url: updatedImageUrl,
       updated_at: new Date(),
     };
-    console.log("updatesData 401 ", updatesData);
     const { error } = await supabase
       .from("pet_sitter")
       .update(updatesData)
@@ -473,7 +480,6 @@ const SitterManagement = () => {
   const updatesPetSitter = async () => {
     try {
       console.log("inside function");
-
       const updataPetSitterData = {
         introduction: introduction,
         address_detail: addressDetail,
@@ -485,11 +491,9 @@ const SitterManagement = () => {
         post_code: postCode,
         sitter_name: tradeName,
         service: services,
-
         experience: experience,
         account_name: accountName,
         account_type: accountType,
-        user_id: userId,
         etcs: etcs,
         updated_at: new Date(),
       };
@@ -497,8 +501,8 @@ const SitterManagement = () => {
       console.log("userId 425", userId);
       const { data, error } = await supabase
         .from("pet_sitter")
-        .upsert(updataPetSitterData, { onConflict: "user_id" });
-
+        .update(updataPetSitterData)
+        .eq("user_id", userId);
       if (error) {
         console.error("Error updating user:", error);
       }
@@ -880,7 +884,7 @@ const SitterManagement = () => {
                   <select
                     name="experience"
                     id="experience"
-                    value={experience}
+                    value={experience ? experience.value : ""}
                     onChange={(e) => handleExperience(e.target.value)}
                     className="w-full h-10 px-3 py-2 border border-gray-300 rounded-lg "
                   >
@@ -1182,7 +1186,7 @@ const SitterManagement = () => {
             />
           </Box>
         ) : (
-          <div className="bank account mt-5 p-5 bg-white rounded-xl mb-5  md:px-[60px] md:py-[40px]">
+          <div className="bank account mt-5 p-5 bg-white rounded-xl mb-5">
             <div className="bg-white rounded-xl p-5 mb-5 flex flex-col gap-4">
               <p className="pb-6 font-bold">Bank</p>
               <div>

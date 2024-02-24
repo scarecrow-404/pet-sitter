@@ -27,6 +27,7 @@ import {
 } from "@chakra-ui/react";
 import { HamburgerIcon } from "@chakra-ui/icons";
 import supabase from "@/lib/utils/db";
+import { ro } from "date-fns/locale";
 
 export function Sidebar({ active }) {
   console.log("sideBar");
@@ -215,6 +216,8 @@ export function TopBar() {
           if (user?.user_type === "sitter") {
             console.log(user?.user_type);
             console.log(user);
+          } else {
+            router.push("/");
           }
           setIsLoading(false);
         } else {

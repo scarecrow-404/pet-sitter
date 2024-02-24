@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import Navbar from "@/components/common/Navbar";
 import { AccountBar } from "@/components/AccountBar";
+import withAuth from "@/lib/utils/withAuth";
 import UserProfile from "@/components/UserProfileManagement";
 const Account = () => {
   return (
@@ -19,4 +20,4 @@ const Account = () => {
   );
 };
 
-export default Account;
+export default withAuth(Account)
