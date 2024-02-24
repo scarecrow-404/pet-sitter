@@ -41,8 +41,6 @@ const OrderDetails = () => {
   const [isUpdated, setIsUpdated] = useState(false);
   async function getOwnPetData() {
     setloading(true);
-    console.log("sdsds");
-    console.log("paramm");
     let { data, error } = await supabase
       .from("booking_list_render")
       .select(
@@ -58,13 +56,10 @@ const OrderDetails = () => {
         return data.find((item) => item.id === id);
       }
     );
-    console.log("own", data);
     setOwnPet(uniqueData[0]);
     setloading(false);
   }
-  console.log("ownpet", ownPet);
-  console.log("param1", params);
-  console.log("setPetData", setPetData);
+
   async function getPetDataBooking() {
     setloading(true);
     let { data, error } = await supabase
@@ -97,6 +92,10 @@ const OrderDetails = () => {
   useEffect(() => {
     getPetDataBooking();
     getOwnPetData();
+    if (isUpdated) {
+      getPetDataBooking();
+      getOwnPetData();
+    }
   }, [isUpdated]);
 
   async function updateBookingStatus() {
