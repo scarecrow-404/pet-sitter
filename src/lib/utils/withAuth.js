@@ -130,7 +130,13 @@ export default function withAuth(Component) {
         setUserId(session?.user?.id);
         const user = await getUser(session);
         setUser(user);
-        if (pathname === "/sitter_management" && user.user_type !== "sitter") {
+        if (
+          (pathname === "/sitter_management" && user?.user_type !== "sitter") 
+        ) {
+          router.push("/");
+        } else if (
+          (pathname === "/sitter_management" && !session)
+        ) {
           router.push("/");
         }
         supabase.auth.onAuthStateChange(async (event, session) => {
