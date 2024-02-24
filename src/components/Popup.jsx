@@ -51,6 +51,11 @@ function PopupBooking() {
           isOpen={bookingData.isModalOpen}
           onRequestClose={closeModal}
           className="flex top-1/2 left-1/2 items-center bg-white rounded-lg "
+          style={{
+            overlay: {
+              zIndex: 30, // กำหนด z-index ของ overlay ให้มีค่าสูงกว่า Navbar
+            },
+          }}
           overlayClassName="fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center"
         >
           <div className=" h-fit  rounded-lg bg-white max-sm:w-[350px]">
