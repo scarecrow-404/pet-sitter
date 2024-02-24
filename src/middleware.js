@@ -31,6 +31,5 @@ export async function middleware(req) {
 // เช็คว่าเป็น path ที่อนุญาตให้เข้าถึงโดยไม่ต้องล็อกอินหรือไม่
 function isAllowedPath(url) {
   const allowedPaths = ["/", "/search"]; // รายการ path ที่อนุญาต
-  const currentPath = url.split("?")[0]; // แยก query string ถ้ามี
-  return allowedPaths.includes(currentPath);
+  return allowedPaths.includes(allowedPaths);
 }
