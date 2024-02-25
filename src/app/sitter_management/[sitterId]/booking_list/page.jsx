@@ -2,8 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Sidebar, TopBar } from "@/components/Sidebar";
 import { Input, Select } from "@chakra-ui/react";
-import { useParams } from "next/navigation";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import supabase from "@/lib/utils/db";
 import { useUser } from "@/hooks/hooks";
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
@@ -21,11 +20,6 @@ const BookingList = () => {
   //คลิกแล้วไปหน้า bookingของคนฝากเลี้ยง
   const handleClick = (item) => {
     const path = `/sitter_management/${sitterId}/booking_list/${item}`;
-
-    // const queryString = new URLSearchParams(item).toString();
-
-    // const url = String(path);
-
     router.push(path);
   };
 
@@ -162,7 +156,7 @@ const BookingList = () => {
           </div>
           <div className="flex pr-5 gap-4">
             <SingleDatepicker
-            width={60}
+              width={60}
               name="date-input"
               date={date}
               onDateChange={setDate}
