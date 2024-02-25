@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { FaStar } from "react-icons/fa";
 import Image from "next/image";
+import Link from "next/link";
 import moment from "moment";
 import {
   Modal,
@@ -30,6 +31,7 @@ function BookingHistoryList(props) {
   const [pet, setPet] = useState([]);
   const [petSitterFullname, setPetSitterFullname] = useState([]);
   const [petSitterImage, setPetSitterImage] = useState([]);
+  const [petSitterPhoneNumber, setPetSitterPhoneNumber] = useState([]);
   const [description, setDescription] = useState();
   const [rating, setRating] = useState();
   //input value
@@ -182,7 +184,6 @@ function BookingHistoryList(props) {
   };
 
   console.log("status1", checkStatus, description);
-  console.log(props, "666");
 
   const submitReview = (event) => {
     console.log("status2", checkStatus, description);
@@ -248,12 +249,16 @@ function BookingHistoryList(props) {
     console.log("iddddddd", sitterId, bookingId);
     let { data: sitter, error: sitterError } = await supabase
       .from("pet_sitter")
-      .select(`users(full_name, image_url)`)
+      .select(`users(full_name, image_url, phone_number)`)
       .eq("id", sitterId);
     if (sitter) {
       console.log(sitter[0].users.full_name, "aaaaaaaaaaaaaaa");
       setPetSitterFullname([...petSitterFullname, sitter[0].users.full_name]);
       setPetSitterImage([...petSitterFullname, sitter[0].users.image_url]);
+      setPetSitterPhoneNumber([
+        ...petSitterPhoneNumber,
+        sitter[0].users.phone_number,
+      ]);
 
       let { data: bookPet, error: petError } = await supabase
         .from("booking_pet")
@@ -310,7 +315,7 @@ function BookingHistoryList(props) {
                 </div>
               </div>
               <div className="flex flex-col gap-1 md:text-right md:gap-3 md:justify-center">
-                <div className="flex flex-row md:flex-col xl:flex-row  text-fourthGray text-[13px] font-medium md:text-[15px] lg:text-[17px]">
+                <div className="sm:flex flex-row md:flex-col xl:flex-row  text-fourthGray text-[13px] font-medium md:text-[15px] lg:text-[17px]">
                   <span className="mr-[5px]">Transaction date:</span>
                   {createDay(props.created_at)}
                 </div>
@@ -334,17 +339,17 @@ function BookingHistoryList(props) {
               </div>
             </div>
 
-            <div className="two flex flex-col gap-2 mt-2 justify-center items-center md:flex-row">
+            <div className="two flex flex-col gap-2 mt-2 justify-center md:flex-row">
               <div className="w-full flex flex-col gap-1">
                 <div className="text-thirdGray text-[13px] font-medium lg:text-[15px]">
                   Date & Time:
                 </div>
-                <div className="flex gap-[5px] text-sm font-medium lg:text-base">
+                <div className="flex w-[220px] gap-[5px] text-sm font-medium lg:text-base">
                   {bookDay(props.booking_date)} | {changeTime(props.start_time)}{" "}
                   -{changeTime(props.end_time)}
                 </div>
               </div>
-              <hr className="w-[80%] md:hidden" />
+              <hr className="w-full md:hidden" />
               <Image
                 width="auto"
                 height="auto"
@@ -352,7 +357,7 @@ function BookingHistoryList(props) {
                 alt="vertical-line"
                 className="hidden md:block"
               />
-              <div className="w-full flex flex-col gap-1">
+              <div className="w-[200px] flex flex-col gap-1">
                 <div className="text-thirdGray text-[13px] font-medium lg:text-[15px]">
                   Duration:
                 </div>
@@ -361,7 +366,7 @@ function BookingHistoryList(props) {
                   {duration(props.start_time, props.end_time)}
                 </div>
               </div>
-              <hr className="w-[80%] md:hidden" />
+              <hr className="w-full md:hidden" />
               <Image
                 width="auto"
                 height="auto"
@@ -394,16 +399,21 @@ function BookingHistoryList(props) {
           ) : checkStatus === "In service" ? (
             <div className="three flex justify-evenly items-center bg-sixthGray rounded-lg py-3 gap-3 md:py-4 md:justify-between md:px-6 lg:py-6">
               <div className="text-thirdGray text-[13px] font-medium md:text-[15px] lg:text-[17px]">
-                Your pet is already in Pet Sitter care!
+                <div className="flex flex-col sm:flex-row">
+                  <span>Your pet is already</span>
+                  <span>in Pet Sitter care!</span>
+                </div>
               </div>
               <button className="bg-sixthOrange p-2 rounded-full md:p-3">
-                <Image
-                  width="auto"
-                  height="auto"
-                  src={callIcon}
-                  alt="call-icon"
-                  className="w-[10px] md:w-[15px]"
-                />
+                <a href={`tel:${petSitterPhoneNumber}`}>
+                  <Image
+                    width="auto"
+                    height="auto"
+                    src={callIcon}
+                    alt="call-icon"
+                    className="w-[10px] md:w-[15px]"
+                  />
+                </a>
               </button>
             </div>
           ) : checkStatus === "Success" && description ? (
@@ -573,9 +583,12 @@ function BookingHistoryList(props) {
                   </div>
 
                   <div className="flex justify-center">
-                    <button className="bg-sixthOrange p-2 px-4 rounded-full text-xs font-medium text-secondOrange md:text-sm md:px-5 md:py-3">
+                    <Link
+                      href={`/search/${props.pet_sitter_id}`}
+                      className="bg-sixthOrange p-2 px-4 rounded-full text-xs font-medium text-secondOrange md:text-sm md:px-5 md:py-3"
+                    >
                       View Pet Sitter
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </>
