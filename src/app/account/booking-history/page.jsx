@@ -60,14 +60,15 @@ const BookingHistory = () => {
         <div className="mx-5 hidden lg:block bg-white max-w-[250px] h-fit rounded-xl">
           <AccountBar active={3} />
         </div>
-        <div className="min-w-[375px] w-full bg-white rounded-xl md:ml-5 md:mr-5 md:mb-5 lg:ml-0">
-          <div className=" mt-[40px] ml-[40px] w-[90%] flex flex-row justify-between md:w-[85%] lg:w-[83%]">
+        <div className="min-w-[320px] w-full bg-white rounded-xl md:ml-5 md:mr-5 md:mb-5 lg:ml-0">
+          <div className=" mt-[40px] ml-[40px] flex flex-row justify-between md:w-[85%] lg:w-[83%]">
             <div className="font-bold text-lg pb-5">Booking History</div>
           </div>
           {bookingDetail.map((item) => (
             <BookingHistoryList
               key={item.booking_id}
               sitter_name={item.sitter_name}
+              pet_sitter_id={item.pet_sitter_id}
               full_name={item.full_name}
               created_at={item.created_at}
               process_status={item.process_status}
