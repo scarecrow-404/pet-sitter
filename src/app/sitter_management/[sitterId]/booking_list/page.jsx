@@ -4,9 +4,9 @@ import { Sidebar, TopBar } from "@/components/Sidebar";
 import { Input, Select } from "@chakra-ui/react";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { event } from "jquery";
 import supabase from "@/lib/utils/db";
 import { useUser } from "@/hooks/hooks";
+import { SingleDatepicker } from "chakra-dayzed-datepicker";
 import { Skeleton, Box, SkeletonCircle, SkeletonText } from "@chakra-ui/react";
 const BookingList = () => {
   const params = useParams();
@@ -17,7 +17,7 @@ const BookingList = () => {
   const [keywords, setKeywords] = useState("");
   const [keywordsStatus, setKeywordsStatus] = useState("");
   const [petCount, setPetCount] = useState({});
-
+  const [date, setDate] = useState(new Date());
   //คลิกแล้วไปหน้า bookingของคนฝากเลี้ยง
   const handleClick = (item) => {
     const path = `/sitter_management/${sitterId}/booking_list/${item}`;
@@ -38,7 +38,7 @@ const BookingList = () => {
     if (error || !data) {
       console.log(error);
     }
-
+    console.log("data 41", data);
     // สร้างเซตเพื่อเก็บ id ที่เป็น unique
     let idSet = new Set();
     let uniqueData = [];
@@ -161,9 +161,14 @@ const BookingList = () => {
             Booking List
           </div>
           <div className="flex pr-5 gap-4">
+            <SingleDatepicker
+            width={60}
+              name="date-input"
+              date={date}
+              onDateChange={setDate}
+            />
             <Input
               size="md"
-              htmlSize={20}
               width="auto"
               placeholder="Search name..."
               value={keywords}
@@ -172,8 +177,9 @@ const BookingList = () => {
               }}
             />
             <Select
+              width={60}
               size="md"
-              htmlSize={4}
+              htmlSize={2}
               placeholder="All status"
               value={keywordsStatus}
               onChange={(event) => {
