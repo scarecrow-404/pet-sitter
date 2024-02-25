@@ -30,7 +30,10 @@ import previewImg from "@/asset/images/Frame427321094.svg";
 import MapPage from "@/components/MapPage";
 import iconX from "@/asset/images/iconXwhite.svg";
 import { set } from "date-fns";
+import { ro } from "date-fns/locale";
+import { useRouter, usePathname } from "next/navigation";
 const SitterManagement = () => {
+  const router = useRouter();
   const [optionPetType, setOptionPetType] = useState([]);
   const { userId, user, setSitterId } = useUser();
   //profile
@@ -117,10 +120,23 @@ const SitterManagement = () => {
     setSubDistrict(address.amphoe);
     setPostCode(address.zipcode);
   };
-
+  console.log("userId", user);
   //fetch data
   useEffect(() => {
-    fetchData();
+    if (user?.user_type !== "sitter") {
+      toast({
+        title: "Error",
+        position: "top",
+        description: `You are not a pet sitter`,
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
+      console.error("User ID is null or user object is missing");
+      router.push("/");
+    } else {
+      fetchData();
+    }
   }, [userId]);
   const fetchData = async () => {
     setLoading(true);
