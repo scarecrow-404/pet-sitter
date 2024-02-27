@@ -15,14 +15,12 @@ const Search = () => {
   const { search, setSearch, isNewSearch, setIsNewSearch } = useUser();
   const [sitterData, setSitterData] = useState([]);
   const [idSitter, setIdSitter] = useState("");
-  const [expStart, setExpStart] = useState(0);
-  const [expEnd, setExpEnd] = useState(10);
   const [loading, setloading] = useState();
   const [page, setPage] = useState(1);
   const [lengthReview, setLengthReview] = useState(1);
 
   const reviewsPerPage = 5;
-
+  console.log("pageeeeeeee", lengthReview);
   const nextPage = () => {
     setPage(page + 1);
   };
@@ -33,30 +31,18 @@ const Search = () => {
     setPage(page - 1);
   };
 
-  const expQuery = search.exp ? search.exp : "0-10";
+ 
+
+  const expQuery = search.exp;
 
   const petQuery = search.pet.length ? [...search.pet] : [1, 2, 3, 4];
-  console.log(expStart, expEnd, "expQ");
+  console.log(search.exp, "expQ");
+
   const ratingStart = search.rating ? Number(search.rating) : 0;
 
   const ratingEnd = ratingStart ? ratingStart + 1 : 6;
 
   const keyword = search.keyword ? search.keyword : "";
-
-  const splitExpNum = (num) => {
-    if (num.length >= 3) {
-      const split = num.split("-");
-      console.log("split1", split[0], split[1]);
-      setExpStart(split[0]);
-      setExpEnd(split[1]);
-    }
-    if (num.length == 2) {
-      const split = num.split("+");
-      console.log("split2", split[0], split[1]);
-      setExpStart(split[0]);
-      setExpEnd(100);
-    }
-  };
 
   function splitPage(numpage) {
     const pageArr = [];
@@ -68,8 +54,7 @@ const Search = () => {
   }
 
   async function getSitterData(
-    expStart,
-    expEnd,
+    expQuery,
     petQuery,
     ratingStart,
     ratingEnd,
@@ -77,10 +62,8 @@ const Search = () => {
     reviewsPerPage,
     page
   ) {
-    console.log(
-      "1eap",
-      expStart,
-      expEnd,
+    console.log("ccccccccccccccc",
+    expQuery,
       petQuery,
       ratingStart,
       ratingEnd,
@@ -88,7 +71,24 @@ const Search = () => {
       reviewsPerPage,
       page
     );
-
+    let expStart ;
+    let expEnd;
+    if (expQuery.length >= 3) {
+      const split = expQuery.split("-");
+      console.log("split1", split[0], split[1]);
+      expStart =split[0]
+      expEnd =split[1]
+    }
+    if (expQuery.length == 2) {
+      const split = expQuery.split("+");
+      console.log("split2", split[0], split[1]);
+      expStart =split[0]
+      expEnd =100
+    }
+    if (expQuery.length == 0) {
+      expStart =0
+      expEnd =10
+    }
     try {
       let { data: pageData, error: errorPage } = await supabase.rpc(
         "fetch_page",
@@ -127,18 +127,16 @@ const Search = () => {
       console.log(error);
     }
   }
-  useEffect(() => {
-    splitExpNum(expQuery);
-  }, [expQuery]);
 
   useEffect(() => {
+   
     if (isNewSearch) {
       setPage(1);
       setIsNewSearch(false);
     }
+
     getSitterData(
-      expStart,
-      expEnd,
+     expQuery,
       petQuery,
       ratingStart,
       ratingEnd,
@@ -173,6 +171,7 @@ const Search = () => {
                 sittername={item.sitter_name}
                 district={item.district}
                 province={item.province}
+                experience={item.experience}
                 fullname={item.full_name}
                 id={item.id}
                 image={item.image_url ? item.image_url : ""}
@@ -184,9 +183,9 @@ const Search = () => {
 
         <div className="pagination flex gap-4  text-center justify-center">
           <button
-            className="previous-button pl-4 pt-2 pr-4 pb-2 hover:bg-sixthOrange  rounded-full  text-fourthGray  font-medium hover:text-firstOrange"
+            className="previous-button pl-4 pt-2 pr-4 pb-2 hover:bg-sixthOrange  rounded-full  text-fourthGray  font-medium hover:text-firstOrange  disabled:hover:bg-white disabled:opacity-30"
             onClick={previousPage}
-            disabled={page === 1} // ปิดปุ่มก่อนหน้าเมื่ออยู่ที่หน้าแรก
+            disabled={page === 1 ? true : false} // ปิดปุ่มก่อนหน้าเมื่ออยู่ที่หน้าแรก
           >
             <Image
               objectFit="cover"
@@ -216,9 +215,9 @@ const Search = () => {
             })}
           </div>
           <button
-            className="next-button pl-4 pt-2 pr-4 pb-2 hover:bg-sixthOrange  rounded-full  text-fourthGray  font-medium hover:text-firstOrange"
+            className="next-button pl-4 pt-2 pr-4 pb-2 hover:bg-sixthOrange  rounded-full  text-fourthGray  font-medium hover:text-firstOrange disabled:hover:bg-white disabled:opacity-30 "
             onClick={nextPage}
-            disabled={page === lengthReview} // ปิดปุ่มถัดไปเมื่ออยู่ที่หน้าสุดท้าย
+            disabled={page === lengthReview ? true : false} // ปิดปุ่มถัดไปเมื่ออยู่ที่หน้าสุดท้าย
           >
             <Image
               objectFit="cover"

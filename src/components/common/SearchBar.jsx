@@ -53,7 +53,7 @@ const SearchBar = () => {
       console.log(error);
     }
   };
-
+console.log("")
   const handleSearch = async (event) => {
     event.preventDefault();
     const currentPath = pathname;
@@ -150,7 +150,7 @@ const SearchBar = () => {
               isLandingPage ? "bg-fifthGray" : "bg-white"
             } `}
           >
-            Pet Type :
+            Pet Type:
             {petType.map((type, index) => {
               return (
                 <div key={type.id} className="flex items-center gap-1 z-10">
@@ -215,7 +215,7 @@ const SearchBar = () => {
               </div>
               {/* <div className="flex flex-col md:flex-row md:justify-around md:gap-5 p-2 w-[100%]"> */}
               <lebel className="flex items-center text-sm p-4 ">
-                Experience :
+                Experience:
                 <select
                   id="experiance"
                   className="border-[1px] p-1 rounded-md ml-2 text-sm"
@@ -224,6 +224,7 @@ const SearchBar = () => {
                     setExperianceQuery(event.target.value);
                   }}
                 >
+                <option disabled value="">Select Experience</option>
                   <option value="0-2">0-2 Years</option>
                   <option value="3-5">3-5 Years</option>
                   <option value="5+">5+ years</option>
