@@ -58,6 +58,7 @@ const Navbar = () => {
       .select("*")
       .eq("id", session.user.id);
     console.log(error);
+
     setUser(data[0]);
 
     setIsLoading(false);

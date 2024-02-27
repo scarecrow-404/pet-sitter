@@ -1,3 +1,4 @@
+"use client";
 import Footer from "@/components/common/Footer";
 import Navbar from "@/components/common/Navbar";
 
@@ -22,8 +23,8 @@ import dogAllElement from "@/asset/images/dogAllElement.svg";
 import { useUser } from "@/hooks/hooks";
 
 export default function Home() {
-  // const { user, setUser } = useUser();
-  // console.log(user);
+  const { user, setUser } = useUser();
+  console.log(user);
   return (
     <>
       <Navbar />
