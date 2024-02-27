@@ -84,8 +84,8 @@ function page() {
     const [hours, minutes, seconds] = timeString.split(":");
 
     // Return the time string with seconds removed
-
-    return `${hours}:${minutes}`;
+if(hours < 12){return `${hours}:${minutes} AM`}
+else if(hours > 12){return `${hours}:${minutes} PM`}
   }
 
   function petName(arr) {

@@ -15,6 +15,8 @@ function Information({
   setPhoneNumber,
   setMessage,
 }) {
+
+
   const { userId } = useUser();
   useEffect(() => {
     const fetchUserData = async () => {
@@ -40,8 +42,8 @@ function Information({
 
   return (
     <div className="mx-[20px] lg:mx-[40px]">
-      <div className="h-[24px] mt-[12px] text-[12px] md:text-[16px] font-[500] leading-[24px] ">
-        Your Name*
+      <div className=" flex h-[24px] mt-[12px] text-[12px] md:text-[16px] font-[500] leading-[24px] ">
+        <p>Your Name</p> <p className=" text-red-500">*</p>
       </div>
       <div
         className={
@@ -51,7 +53,8 @@ function Information({
         }
       >
         <input
-          onChange={(event) => handleInput(event)}
+        required
+          onChange={(event) => setfullnameInput(event)}
           value={fullName}
           id="name"
           name="name"
@@ -69,8 +72,8 @@ function Information({
 
       <div className="xl:flex w-full mt-[40px] gap-[8px]">
         <div className="w-full">
-          <div className="h-[24px] text-[12px] md:text-[16px] font-[500] leading-[24px]">
-            Email*
+          <div className=" flex h-[24px] text-[12px] md:text-[16px] font-[500] leading-[24px]">
+            <p>Email</p> <p className=" text-red-500">*</p>
           </div>
           <div
             className={
@@ -80,6 +83,7 @@ function Information({
             }
           >
             <input
+            required
               onChange={(event) => handleInput(event)}
               value={email}
               id="email"
@@ -100,8 +104,8 @@ function Information({
         </div>
 
         <div className="w-full">
-          <div className="h-[24px] mt-[40px] my-[12px] xl:my-auto text-[12px] md:text-[16px] font-[500] leading-[24px] ">
-            Phone*
+          <div className=" flex h-[24px] mt-[40px] my-[12px] xl:my-auto text-[12px] md:text-[16px] font-[500] leading-[24px] ">
+            <p>Phone</p> <p className=" text-red-500">*</p>
           </div>
           <div
             className={
@@ -111,6 +115,7 @@ function Information({
             }
           >
             <input
+            required
               onChange={(event) => handleInput(event)}
               value={phoneNumber}
               id="phoneNumber"
