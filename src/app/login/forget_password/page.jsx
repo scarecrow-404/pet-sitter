@@ -7,15 +7,13 @@ import { useRouter } from "next/navigation";
 import starpic from "@/asset/images/Star1.svg";
 import squarepic from "@/asset/images/Ellipse15(butblue).svg";
 import cathand from "@/asset/images/Vector(butorange).svg";
-
-import Googleicon from "@/asset/images/Googleicon.svg";
-import { useUser } from "@/hooks/hooks";
-
+import { useToast } from "@chakra-ui/react";
 import Link from "next/link";
-import xIcon from "@/asset/images/icons8-twitter.svg";
+
 function ForgetPassword() {
   const [errors, setErrors] = useState({});
   const router = useRouter();
+  const toast = useToast();
   const [values, setValues] = useState({
     email: "",
   });
