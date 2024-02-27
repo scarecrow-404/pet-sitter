@@ -6,11 +6,12 @@ import { useParams, useRouter } from "next/navigation";
 import supabase from "@/lib/utils/db";
 import { useUser } from "@/hooks/hooks";
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
+import withAuth from "@/lib/utils/withAuth";
 import { Skeleton, Box, SkeletonCircle, SkeletonText } from "@chakra-ui/react";
 const BookingList = () => {
   const params = useParams();
   const router = useRouter();
-  const { sitterId } = useUser();
+  const { sitterId, user } = useUser();
   const [petData, setPetData] = useState([]);
   const [loading, setloading] = useState(false);
   const [keywords, setKeywords] = useState("");
@@ -90,9 +91,15 @@ const BookingList = () => {
   }
 
   useEffect(() => {
-    getBookingList();
-    const filteredData = getKeywords();
-    setPetData(filteredData);
+    if (user?.user_type === "sitter") {
+      getBookingList();
+      const filteredData = getKeywords();
+      setPetData(filteredData);
+    } else if (user?.user_type === "customer") {
+      router.push("/");
+    } else if (!user) {
+      router.push("/login");
+    }
   }, [keywords, keywordsStatus, dateString]);
 
   //แปลงข้อมูลวันที่ ที่แสดงออกมาเป็น dd/mm, time-time
@@ -299,4 +306,4 @@ const BookingList = () => {
   );
 };
 
-export default BookingList;
+export default withAuth(BookingList);

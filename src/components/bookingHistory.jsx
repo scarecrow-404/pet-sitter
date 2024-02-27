@@ -344,13 +344,13 @@ function BookingHistoryList(props) {
             </div>
 
             <div className="two flex flex-col gap-2 mt-2 justify-center md:flex-row">
-              <div className="w-full md:w-[500px] lg:w-[600px] flex flex-col gap-1">
+              <div className="w-full md:w-[500px] lg:w-[620px] flex flex-col gap-1">
                 <div className="text-thirdGray text-[13px] font-medium lg:text-[15px]">
                   Date & Time:
                 </div>
-                <div className="flex w-[220px] gap-[5px] text-sm font-medium lg:text-base">
-                  {bookDay(props.booking_date)} | {changeTime(props.start_time)}{" "}
-                  -{changeTime(props.end_time)}
+                <div className="flex w-[220px] gap-[5px] text-sm font-medium lg:text-sm">
+                  {bookDay(props.booking_date)}|{changeTime(props.start_time)}-
+                  {changeTime(props.end_time)}
                 </div>
               </div>
               <hr className="w-full md:hidden" />

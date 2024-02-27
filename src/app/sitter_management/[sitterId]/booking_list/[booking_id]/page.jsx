@@ -26,13 +26,13 @@ import {
   SkeletonCircle,
   SkeletonText,
 } from "@chakra-ui/react";
+import withAuth from "@/lib/utils/withAuth";
 import { ChevronLeftIcon, ViewIcon, CloseIcon } from "@chakra-ui/icons";
 // import { useRouter } from "next/router";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import supabase from "@/lib/utils/db";
 // import { tr } from "date-fns/locale";
-
 
 const OrderDetails = () => {
   const params = useParams();
@@ -62,7 +62,6 @@ const OrderDetails = () => {
     setStatus(uniqueData[0].process_status);
     setloading(false);
   }
-
 
   async function getPetDataBooking() {
     setloading(true);
@@ -105,7 +104,6 @@ const OrderDetails = () => {
   ];
   async function updateBookingStatus() {
     try {
-
       if (status !== "") {
         let index = processStatus.indexOf(status);
         await supabase
@@ -359,7 +357,7 @@ const OrderDetails = () => {
   );
 };
 
-export default OrderDetails;
+export default withAuth(OrderDetails);
 
 function AlertButton({ buttonName }) {
   const params = useParams();
