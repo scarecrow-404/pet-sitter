@@ -958,17 +958,16 @@ const SitterManagement = () => {
             <div className="flex flex-col gap-2 mt-2 ">
               <p className=" pb-5">Pet Sitter Profile</p>
               <label htmlFor="profilesitter">
-                {imageUrlSitter && (
-                  <div className="photo   lg:flex lg:justify-center">
-                    <Image
-                      className="cursor-pointer rounded-xl  w-[150px] h-[100px]   md:w-[250px] md:h-[180px]  lg:w-[300px]"
-                      src={imageUrlSitter}
-                      width={300}
-                      height={120}
-                      alt="Preview"
-                    />
-                  </div>
-                )}
+                <div className="photo   lg:flex lg:justify-center">
+                  <Image
+                    className="cursor-pointer rounded-xl  w-[150px] h-[100px]   md:w-[250px] md:h-[180px]  lg:w-[300px]"
+                    src={imageUrlSitter ?? upload}
+                    width={300}
+                    height={120}
+                    alt="Preview"
+                  />
+                </div>
+
                 <input
                   type="file"
                   id="profilesitter"
