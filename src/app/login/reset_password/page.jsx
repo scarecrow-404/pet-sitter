@@ -7,7 +7,7 @@ import starpic from "@/asset/images/Star1.svg";
 import squarepic from "@/asset/images/Ellipse15(butblue).svg";
 import cathand from "@/asset/images/Vector(butorange).svg";
 import Link from "next/link";
-
+import { useToast } from "@chakra-ui/react";
 function ResetPasswordPage() {
   const [password, setPassword] = useState("");
   const [access_token, setAccess_token] = useState(null);
