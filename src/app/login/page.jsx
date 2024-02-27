@@ -46,9 +46,13 @@ const LoginPage = () => {
 
     return errors;
   }
-  function handleOauthSignIn(provider) {
-    const user = signInWithProvider(provider);
-    console.log(user);
+  async function handleOauthSignIn(provider) {
+    try {
+      const user = await signInWithProvider(provider);
+      console.log(user);
+    } catch (error) {
+      console.error("Error signing in with provider:", error);
+    }
   }
   //   }
   useEffect(() => {
