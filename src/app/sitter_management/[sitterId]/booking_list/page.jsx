@@ -91,11 +91,13 @@ const BookingList = () => {
   }
 
   useEffect(() => {
-    if (user) {
+    if (user?.user_type === "sitter") {
       getBookingList();
       const filteredData = getKeywords();
       setPetData(filteredData);
-    } else {
+    } else if (user?.user_type === "customer") {
+      router.push("/");
+    } else if (!user) {
       router.push("/login");
     }
   }, [keywords, keywordsStatus, dateString]);
