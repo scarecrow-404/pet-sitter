@@ -25,6 +25,7 @@ const LoginPage = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [rememberMe, setRememberMe] = useState(false);
   const { user, setUser, userId } = useUser();
   const router = useRouter();
   function handleInput(event) {
@@ -81,13 +82,17 @@ const LoginPage = () => {
             isClosable: true,
           });
           console.log("error", error);
+        } else if (rememberMe) {
+          localStorage.setItem("session_token", session.access_token);
+        } else {
+          sessionStorage.setItem("session_token", session.access_token);
         }
       } catch (error) {
         console.error(error.message);
       }
     }
   }
-
+  console.log(rememberMe, "rememberMe");
   return (
     <div className="flex items-center justify-center">
       <div className="h-screen xl:w-[1440px] flex items-center justify-center relative">
@@ -162,6 +167,10 @@ const LoginPage = () => {
                 <div>
                   <input
                     type="checkbox"
+                    id="rememberMe"
+                    name="rememberMe"
+                    value={rememberMe}
+                    onChange={() => setRememberMe(!rememberMe)}
                     className="text-[#FF7037] rounded-[6px] mr-[5px] focus:ring-0 "
                   />
                   <span className="text-[16px] font-[500] leading-[24px]">
