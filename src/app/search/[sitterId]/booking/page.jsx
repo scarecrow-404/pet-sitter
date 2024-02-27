@@ -213,6 +213,7 @@ const Booking = () => {
     let newStep = currentStep;
 
     if (newStep === 1) {
+      
       console.log("amout", totalAmount);
       setBookingData({
         ...bookingData,
@@ -312,29 +313,31 @@ const Booking = () => {
                     <p className="text-[14px] font-[500] lg:text-[#7B7E8F] leading-[24px]">
                       Pet Sitter:
                     </p>
-                    <div className="flex">
+                    
                       <p className="text-[16px] font-[500] leading-[28px]">
                         {bookingData.sittername}
                       </p>
-                      &nbsp;
+                     
                       <p className="text-[16px] font-[500] leading-[28px]">
                         By {bookingData.fullname}
                       </p>
-                    </div>
+                    
                   </div>
 
                   <div className="lg:h-[52px] lg:block flex justify-between">
-                    <p className="text-[14px] lg:text-[#7B7E8F] font-[500] leading-[24px]">
+                    <p className="pt-3 text-[14px] lg:text-[#7B7E8F] font-[500] leading-[24px]">
                       Date & Time:
                     </p>
                     <p className="text-[16px] font-[500] leading-[28px]">
-                      {formattedDate} | {dataForSearch.startTime} -{" "}
-                      {dataForSearch.endTime}
+                      {formattedDate} 
+                       
                     </p>
+                    <p>{dataForSearch.startTime} -{" "}
+                      {dataForSearch.endTime}</p>
                   </div>
 
                   <div className="lg:h-[52px] lg:block flex justify-between">
-                    <p className="text-[14px] lg:text-[#7B7E8F] font-[500] leading-[24px]">
+                    <p className=" pt-3 text-[14px] lg:text-[#7B7E8F] font-[500] leading-[24px]">
                       Duration:
                     </p>
                     <p className="text-[16px] font-[500] leading-[28px]">

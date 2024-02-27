@@ -9,12 +9,13 @@ import { useState, useEffect } from "react";
 function PopupBooking(props) {
   const router = useRouter();
   const params = useParams();
+  const [disable,setDisable]=useState(false)
 
   const { bookingData, setBookingData, user, setUser } = useUser();
   const sitterId = params.sitterId;
   const values = props.values;
   let bookingId = "";
-
+let countConfirm = 0
   console.log("valueeee", values);
 
   function generateTransactionNo(paytype) {
@@ -86,6 +87,8 @@ function PopupBooking(props) {
   }
 
   async function handlesubmit() {
+    setDisable(true)
+   
     try {
       const { error, data: resultinsert } = await supabase
         .from("booking")
@@ -107,6 +110,7 @@ function PopupBooking(props) {
       bookingData.petselect.map((eachPet) => {
         insertpet(bookingId, eachPet);
       });
+     
     } catch (error) {
       console.log(error);
     }
@@ -146,7 +150,8 @@ function PopupBooking(props) {
                 close
               </button>
               <button
-                className="text-[16px] font-[700] leading-[24px] py-[12px] px-[24px] rounded-[99px] gap-[8px] text-white bg-[#FF7037]"
+              disabled = {disable}
+                className="text-[16px] font-[700] leading-[24px] py-[12px] px-[24px] rounded-[99px] gap-[8px] text-white bg-[#FF7037] disabled:bg-gray-400 "
                 onClick={handlesubmit}
               >
                 Yes, I&apos;m sure
