@@ -16,7 +16,6 @@ import calling from "@/asset/images/calling-all-pet.svg";
 import greenStar from "@/asset/images/greenStar.svg";
 import blueEllipse from "@/asset/images/Ellipse17.svg";
 import halfYellowEllipse from "@/asset/images/half-yellow-ellipse.svg";
-import LoadingImage from "@/asset/images/4k-wallpaper-adult-beautiful-1085733.jpg";
 import catAllElement from "@/asset/images/catAllElement.svg";
 import dogAllElement from "@/asset/images/dogAllElement.svg";
 import { Player, Controls } from "@lottiefiles/react-lottie-player";
