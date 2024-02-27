@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import { Sidebar, TopBar } from "@/components/Sidebar";
 import {
   Input,
@@ -23,20 +23,26 @@ import {
   Lorem,
   Box,
 } from "@chakra-ui/react";
+import withAuth from "@/lib/utils/withAuth";
 import { ChevronRightIcon } from "@chakra-ui/icons";
 import Thb from "@/asset/images/thb.svg";
 import wallet from "@/asset/images/wallet.svg";
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import supabase from "@/lib/utils/db";
+import { useUser } from "@/hooks/hooks";
+import { el, ro } from "date-fns/locale";
 const Payment = () => {
   const params = useParams();
+  const router = useRouter();
+  const { sitterId, user } = useUser();
   const [ownPet, setOwnPet] = useState([]);
   const [bankNumber, setBankNumber] = useState([]);
   let totalAmout1 = ownPet.reduce(
     (acc, item) => acc + parseFloat(item.total_amout),
     0
   );
+  console.log(user, "user");
   async function getOwnPetData() {
     let { data, error } = await supabase
       .from("booking_list_render")
@@ -73,9 +79,15 @@ const Payment = () => {
   const lastThreeDigits = bankNumber.slice(-3);
 
   useEffect(() => {
-    getOwnPetData();
-    getBankNumber();
-  }, []);
+    if (user?.user_type === "sitter") {
+      getOwnPetData();
+      getBankNumber();
+    } else if (user?.user_type === "customer") {
+      router.push("/");
+    } else if (!user) {
+      router.push("/login");
+    }
+  }, [user]);
   return (
     <div className="flex bg-sixthGray justify-center h-screen">
       <div className="hidden bg-sixthGray lg:block relative">
@@ -177,4 +189,4 @@ const Payment = () => {
   );
 };
 
-export default Payment;
+export default withAuth(Payment);
