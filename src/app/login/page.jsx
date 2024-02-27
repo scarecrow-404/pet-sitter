@@ -168,9 +168,11 @@ const LoginPage = () => {
                     Remember?
                   </span>
                 </div>
-                <div className="text-[16px] text-[#FF7037] font-[700] leading-[24px]">
-                  Forget Password?
-                </div>
+                <Link href="/login/forget_password">
+                  <div className="text-[16px] text-[#FF7037] font-[700] leading-[24px]">
+                    Forget Password?
+                  </div>
+                </Link>
               </div>
 
               <div className="text-center my-[10px]">

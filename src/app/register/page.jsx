@@ -73,9 +73,10 @@ const RegisterPage = () => {
 
   function handleValidation(event) {
     event.preventDefault();
-    setErrors(validation(values));
-    if (Object.keys(errors).length === 0) {
-      console.log(Object.keys(errors).length);
+    const validationErrors = validation(values);
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length === 0) {
+      console.log(Object.keys(validationErrors).length);
       const user = signUp(values.email, values.password, values);
       console.log(values);
       router.push("/login");
