@@ -27,18 +27,20 @@ import {
   SkeletonText,
 } from "@chakra-ui/react";
 import { ChevronLeftIcon, ViewIcon, CloseIcon } from "@chakra-ui/icons";
-import { useRouter } from "next/router";
+// import { useRouter } from "next/router";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import supabase from "@/lib/utils/db";
-import { tr } from "date-fns/locale";
+// import { tr } from "date-fns/locale";
+
 
 const OrderDetails = () => {
   const params = useParams();
   const [ownPet, setOwnPet] = useState([]);
   const [petData, setPetData] = useState([]);
   const [loading, setloading] = useState(false);
-  const [isUpdated, setIsUpdated] = useState(false);
+
+  const [status, setStatus] = useState("");
   async function getOwnPetData() {
     setloading(true);
     let { data, error } = await supabase
@@ -57,8 +59,10 @@ const OrderDetails = () => {
       }
     );
     setOwnPet(uniqueData[0]);
+    setStatus(uniqueData[0].process_status);
     setloading(false);
   }
+
 
   async function getPetDataBooking() {
     setloading(true);
@@ -92,30 +96,25 @@ const OrderDetails = () => {
   useEffect(() => {
     getPetDataBooking();
     getOwnPetData();
-    if (isUpdated) {
-      getPetDataBooking();
-      getOwnPetData();
-    }
-  }, [isUpdated]);
-
+  }, [status]);
+  let processStatus = [
+    "Waiting for confirm",
+    "Waiting for service",
+    "In service",
+    "Success",
+  ];
   async function updateBookingStatus() {
     try {
-      let updatedStatus = "";
-      if (ownPet.process_status === "Waiting for confirm") {
-        updatedStatus = "Waiting for service";
-      } else if (ownPet.process_status === "Waiting for service") {
-        updatedStatus = "In service";
-      } else if (ownPet.process_status === "In service") {
-        updatedStatus = "Success";
-      }
-      if (updatedStatus !== "") {
+
+      if (status !== "") {
+        let index = processStatus.indexOf(status);
         await supabase
           .from("booking")
-          .update({ process_status: updatedStatus })
+          .update({ process_status: processStatus[index + 1] })
           .eq("id", params.booking_id);
 
         console.log("Booking status updated successfully");
-        setIsUpdated(true);
+        setStatus(processStatus[index + 1]);
       } else {
         console.log("No status update needed");
       }
@@ -162,7 +161,7 @@ const OrderDetails = () => {
                     : null
                 } items-center flex`}
               >
-                {ownPet.process_status}
+                {status}
               </div>
             </div>
             <div className="flex pr-5 gap-4">
@@ -196,7 +195,7 @@ const OrderDetails = () => {
               {ownPet.process_status === "In service" && (
                 <div className={`max-md:hidden`}>
                   <button
-                    className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange disabled:bg-fifthGray disabled:text-fifthGray"
+                    className="bg-secondOrange text-white rounded-3xl min-w-36 h-10 hover:text-secondOrange hover:bg-fifthOrange disabled:bg-fifthGray disabled:text-white"
                     onClick={() => {
                       updateBookingStatus();
                     }}
