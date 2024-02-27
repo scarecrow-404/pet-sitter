@@ -7,6 +7,7 @@ import {
   Input,
   Avatar,
   useToast,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 import supabase from "@/lib/utils/db";
 import { useUser } from "@/hooks/hooks";
@@ -18,6 +19,10 @@ function UserManagementProfile() {
   const [phone, setPhone] = useState("");
   const [IdNumber, setIdNumber] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
+  const [errorName, setErrorName] = useState("");
+  const [errorEmail, setErrorEmail] = useState("");
+  const [errorPhone, setErrorPhone] = useState("");
+  const [errorIdNumber, setErrorIdNumber] = useState("");
   const [photo, setPhoto] = useState({});
   const imageUrlRef = useRef(previewImg);
   const { user, userId } = useUser();
@@ -162,7 +167,7 @@ function UserManagementProfile() {
       {/* all input */}
       <div className="w-full flex flex-col justify-between mx-auto items-center gap-4 py-4 md:w-full lg:gap-8  xl:items-start xl:justify-start">
         <div className="w-11/12">
-          <FormControl isRequired>
+          <FormControl isRequired isInvalid={errorName !== ""}>
             <FormLabel>Your name</FormLabel>
             <Input
               type="text"
@@ -173,12 +178,22 @@ function UserManagementProfile() {
               onChange={(event) => {
                 setName(event.target.value);
               }}
+              onBlur={() => {
+                if (name.trim() === "") {
+                  setErrorName("Please enter your name");
+                } else {
+                  setErrorName("");
+                }
+              }}
+              errorBorderColor="red.400"
+              required
             />
+            <FormErrorMessage>{errorName}</FormErrorMessage>
           </FormControl>
         </div>
         <div className="w-11/12 flex flex-col gap-4 lg:flex-row lg:gap-0 lg:justify-between">
           <div className="w-full lg:w-[48%]">
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={errorEmail !== ""}>
               <FormLabel>Email</FormLabel>
               <Input
                 type="email"
@@ -187,11 +202,21 @@ function UserManagementProfile() {
                 onChange={(event) => {
                   setEmail(event.target.value);
                 }}
+                onBlur={() => {
+                  if (email.trim() === "") {
+                    setErrorEmail("Please enter your email");
+                  } else {
+                    setErrorEmail("");
+                  }
+                }}
+                errorBorderColor="red.400"
+                required
               />
+              <FormErrorMessage>{errorEmail}</FormErrorMessage>
             </FormControl>
           </div>
           <div className="w-full lg:w-[48%]">
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={errorPhone !== ""}>
               <FormLabel>Phone</FormLabel>
               <Input
                 type="tel"
@@ -207,13 +232,23 @@ function UserManagementProfile() {
                 onChange={(event) => {
                   setPhone(event.target.value);
                 }}
+                onBlur={() => {
+                  if (phone.trim() === "") {
+                    setErrorPhone("Please enter your phone");
+                  } else {
+                    setErrorPhone("");
+                  }
+                }}
+                errorBorderColor="red.400"
+                required
               />
+              <FormErrorMessage>{errorPhone}</FormErrorMessage>
             </FormControl>
           </div>
         </div>
         <div className="w-11/12 flex flex-col gap-4 lg:flex-row lg:gap-0 lg:justify-between">
           <div className="w-full lg:w-[48%]">
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={errorIdNumber !== ""}>
               <FormLabel>ID Number</FormLabel>
               <Input
                 type="text"
@@ -231,7 +266,17 @@ function UserManagementProfile() {
                 onChange={(event) => {
                   setIdNumber(event.target.value);
                 }}
+                onBlur={() => {
+                  if (IdNumber.trim() === "") {
+                    setErrorIdNumber("Please enter your ID number");
+                  } else {
+                    setErrorIdNumber("");
+                  }
+                }}
+                errorBorderColor="red.400"
+                required
               />
+              <FormErrorMessage>{errorIdNumber}</FormErrorMessage>
             </FormControl>
           </div>
           <div className="w-full lg:w-[48%]">

@@ -10,6 +10,7 @@ import {
   Alert,
   AlertIcon,
   useToast,
+  FormErrorMessage,
 } from "@chakra-ui/react";
 import supabase from "@/lib/utils/db";
 import previewImg from "@/asset/images/Frame427321094.svg";
@@ -30,6 +31,13 @@ function CreatePet() {
   const [color, setColor] = useState("");
   const [weight, setWeight] = useState("");
   const [about, setAbout] = useState("");
+  const [errorPetName, setErrorPetName] = useState("");
+  const [errorPetType, setErrorPetType] = useState("");
+  const [errorBreed, setErrorBreed] = useState("");
+  const [errorSex, setErrorSex] = useState("");
+  const [errorAge, setErrorAge] = useState("");
+  const [errorColor, setErrorColor] = useState("");
+  const [errorWeight, setErrorWeight] = useState("");
   const imageUrlRef = useRef(previewImg);
   const toast = useToast();
   const handleUploadPhoto = (event) => {
@@ -164,7 +172,7 @@ function CreatePet() {
       </div>
       <div className="w-[90%] flex flex-col justify-between items-center gap-4 py-4 md:w-[85%] lg:gap-8 lg:w-[83%]">
         <div className="w-11/12 lg:w-full">
-          <FormControl isRequired>
+          <FormControl isRequired isInvalid={errorPetName !== ""}>
             <FormLabel>Pet name</FormLabel>
             <Input
               type="text"
@@ -176,13 +184,22 @@ function CreatePet() {
               onChange={(event) => {
                 setPetName(event.target.value);
               }}
+              onBlur={() => {
+                if (petName.trim() === "") {
+                  setErrorPetName("Please enter your pet name");
+                } else {
+                  setErrorPetName("");
+                }
+              }}
+              errorBorderColor="red.400"
               required
             />
+            <FormErrorMessage>{errorPetName}</FormErrorMessage>
           </FormControl>
         </div>
         <div className="w-11/12 flex flex-col gap-4 lg:flex-row lg:gap-0 lg:justify-between lg:w-full">
           <div className="w-full lg:w-[48%]">
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={errorPetType !== ""}>
               <FormLabel>Pet type</FormLabel>
               <Select
                 placeholder="Select your pet type"
@@ -190,6 +207,14 @@ function CreatePet() {
                 onChange={(event) => {
                   setPetType(event.target.value);
                 }}
+                onBlur={() => {
+                  if (petType.trim() === "") {
+                    setErrorPetType("Please select your pet type");
+                  } else {
+                    setErrorPetName("");
+                  }
+                }}
+                errorBorderColor="red.400"
                 required
               >
                 <option>Dog</option>
@@ -197,10 +222,11 @@ function CreatePet() {
                 <option>Bird</option>
                 <option>Rabbit</option>
               </Select>
+              <FormErrorMessage>{errorPetType}</FormErrorMessage>
             </FormControl>
           </div>
           <div className="w-full lg:w-[48%]">
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={errorBreed !== ""}>
               <FormLabel>Breed</FormLabel>
               <Input
                 type="text"
@@ -210,14 +236,23 @@ function CreatePet() {
                 onChange={(event) => {
                   setBreed(event.target.value);
                 }}
+                onBlur={() => {
+                  if (breed.trim() === "") {
+                    setErrorBreed("Please enter breed of your pet");
+                  } else {
+                    setErrorBreed("");
+                  }
+                }}
+                errorBorderColor="red.400"
                 required
               />
+              <FormErrorMessage>{errorBreed}</FormErrorMessage>
             </FormControl>
           </div>
         </div>
         <div className="w-11/12 flex flex-col gap-4 lg:flex-row lg:gap-0 lg:justify-between lg:w-full">
           <div className="w-full lg:w-[48%]">
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={errorSex !== ""}>
               <FormLabel>Sex</FormLabel>
               <Select
                 placeholder="Select sex of your pet"
@@ -225,32 +260,51 @@ function CreatePet() {
                 onChange={(event) => {
                   setSex(event.target.value);
                 }}
+                onBlur={() => {
+                  if (sex.trim() === "") {
+                    setErrorSex("Please select sex of your pet");
+                  } else {
+                    setErrorSex("");
+                  }
+                }}
+                errorBorderColor="red.400"
                 required
               >
                 <option>Male</option>
                 <option>Female</option>
               </Select>
+              <FormErrorMessage>{errorSex}</FormErrorMessage>
             </FormControl>
           </div>
           <div className="w-full lg:w-[48%]">
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={errorAge !== ""}>
               <FormLabel>Age (Month)</FormLabel>
               <Input
                 placeholder="Age of your pet"
                 size="md"
                 type="number"
-                value={age}
+                value={age.replace(/\D/g, "")}
+                min={0}
                 onChange={(event) => {
                   setAge(event.target.value);
                 }}
+                onBlur={() => {
+                  if (age.trim() === "") {
+                    setErrorAge("Please enter age of your pet");
+                  } else {
+                    setErrorAge("");
+                  }
+                }}
+                errorBorderColor="red.400"
                 required
               />
+              <FormErrorMessage>{errorAge}</FormErrorMessage>
             </FormControl>
           </div>
         </div>
         <div className="w-11/12 flex flex-col gap-4 lg:flex-row lg:gap-0 lg:justify-between lg:w-full">
           <div className="w-full lg:w-[48%]">
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={errorColor !== ""}>
               <FormLabel>Color</FormLabel>
               <Input
                 type="text"
@@ -260,22 +314,41 @@ function CreatePet() {
                 onChange={(event) => {
                   setColor(event.target.value);
                 }}
+                onBlur={() => {
+                  if (color.trim() === "") {
+                    setErrorColor("Please enter color of your pet");
+                  } else {
+                    setErrorColor("");
+                  }
+                }}
+                errorBorderColor="red.400"
                 required
               />
+              <FormErrorMessage>{errorColor}</FormErrorMessage>
             </FormControl>
           </div>
           <div className="w-full lg:w-[48%]">
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={errorWeight !== ""}>
               <FormLabel>Weight (Kilogram)</FormLabel>
               <Input
                 type="number"
                 placeholder="Weight of your pet"
-                value={weight}
+                value={weight.replace(/\D/g, "")}
+                min={0}
                 onChange={(event) => {
                   setWeight(event.target.value);
                 }}
+                onBlur={() => {
+                  if (weight.trim() === "") {
+                    setErrorWeight("Please enter weight of your pet");
+                  } else {
+                    setErrorWeight("");
+                  }
+                }}
+                errorBorderColor="red.400"
                 required
               />
+              <FormErrorMessage>{errorWeight}</FormErrorMessage>
             </FormControl>
           </div>
         </div>
