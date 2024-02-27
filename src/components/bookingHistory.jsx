@@ -49,6 +49,9 @@ function BookingHistoryList(props) {
     setPet(allPetName);
   }
 
+  const cleanedPetArray = pet.map((item) => item.trim());
+  console.log(cleanedPetArray, "AKJ");
+
   function duration(start, end) {
     const startTime = start ? moment(start, "HH:mm:ss") : null;
     const endTime = end ? moment(end, "HH:mm:ss") : null;
@@ -287,6 +290,7 @@ function BookingHistoryList(props) {
     }
   }
   console.log("petttt", pet);
+
   return (
     <div className="flex flex-col justify-center items-center gap-5 max-w-[1440px] mx-auto lg:gap-10">
       <div className="flex flex-col justify-center items-center w-[95%] py-5 gap-5">
@@ -340,7 +344,7 @@ function BookingHistoryList(props) {
             </div>
 
             <div className="two flex flex-col gap-2 mt-2 justify-center md:flex-row">
-              <div className="w-full flex flex-col gap-1">
+              <div className="w-full md:w-[500px] lg:w-[600px] flex flex-col gap-1">
                 <div className="text-thirdGray text-[13px] font-medium lg:text-[15px]">
                   Date & Time:
                 </div>
@@ -357,7 +361,7 @@ function BookingHistoryList(props) {
                 alt="vertical-line"
                 className="hidden md:block"
               />
-              <div className="w-[200px] flex flex-col gap-1">
+              <div className="w-[200px] lg:w-[400px] flex flex-col gap-1">
                 <div className="text-thirdGray text-[13px] font-medium lg:text-[15px]">
                   Duration:
                 </div>
@@ -379,8 +383,8 @@ function BookingHistoryList(props) {
                   Pet:
                 </div>
                 <div className="text-sm font-medium lg:text-base">
-                  {pet.length > 0
-                    ? pet.map(
+                  {cleanedPetArray.length > 0
+                    ? cleanedPetArray.map(
                         (eachPet, index) =>
                           `${eachPet}${index !== pet.length - 1 ? ", " : ""}`
                       )
@@ -404,20 +408,22 @@ function BookingHistoryList(props) {
                   <span>in Pet Sitter care!</span>
                 </div>
               </div>
-              <button className="bg-sixthOrange p-2 rounded-full md:p-3">
-                <a href={`tel:${petSitterPhoneNumber}`}>
-                  <Image
-                    width="auto"
-                    height="auto"
-                    src={callIcon}
-                    alt="call-icon"
-                    className="w-[10px] md:w-[15px]"
-                  />
-                </a>
-              </button>
+              <div className="sm:w-[150px] flex justify-end">
+                <button className="bg-sixthOrange p-2 rounded-full md:p-3">
+                  <a href={`tel:${petSitterPhoneNumber}`}>
+                    <Image
+                      width="auto"
+                      height="auto"
+                      src={callIcon}
+                      alt="call-icon"
+                      className="w-[10px] md:w-[15px]"
+                    />
+                  </a>
+                </button>
+              </div>
             </div>
           ) : checkStatus === "Success" && description ? (
-            <div className="three flex justify-evenly items-center gap-2 bg-secondGreen rounded-lg py-3 md:py-4 md:justify-between md:px-6 lg:py-6">
+            <div className="three flex justify-evenly items-center gap-2 bg-secondGreen rounded-lg py-3 md:py-4 md:justify-between md:px-6 lg:py-6 ">
               <div className="text-firstGreen text-[13px] font-medium flex flex-col md:text-[15px] lg:text-[17px] lg:gap-2">
                 <div>Success date:</div>
                 <div>{createDay(props.booking_date)}</div>
@@ -675,8 +681,8 @@ function BookingHistoryList(props) {
                       Pet:
                     </div>
                     <div className="text-sm font-medium md:text-[15px]">
-                      {pet.length > 0
-                        ? pet.map(
+                      {cleanedPetArray.length > 0
+                        ? cleanedPetArray.map(
                             (eachPet, index) =>
                               `${eachPet}${
                                 index !== pet.length - 1 ? ", " : ""

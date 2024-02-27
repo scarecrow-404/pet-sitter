@@ -17,6 +17,8 @@ const BookingList = () => {
   const [keywordsStatus, setKeywordsStatus] = useState("");
   const [petCount, setPetCount] = useState({});
   const [date, setDate] = useState(new Date());
+  const [dateString, setDateString] = useState("");
+
   //คลิกแล้วไปหน้า bookingของคนฝากเลี้ยง
   const handleClick = (item) => {
     const path = `/sitter_management/${sitterId}/booking_list/${item}`;
@@ -91,7 +93,7 @@ const BookingList = () => {
     getBookingList();
     const filteredData = getKeywords();
     setPetData(filteredData);
-  }, [keywords, keywordsStatus]);
+  }, [keywords, keywordsStatus, dateString]);
 
   //แปลงข้อมูลวันที่ ที่แสดงออกมาเป็น dd/mm, time-time
   petData.forEach((item) => {
@@ -104,6 +106,7 @@ const BookingList = () => {
     });
 
     item.formatted_booking_date = `${formattedDate}, ${startTime} - ${endTime}`;
+    item.formatted_formattedDate = `${formattedDate}`;
   });
 
   //search หาแค่ชื่อของเจ้าของสัตว์เลี้ยง
@@ -128,6 +131,15 @@ const BookingList = () => {
     return count;
   };
 
+  function formatDate(inputDate) {
+    const dateObject = new Date(inputDate);
+    const formattedDate = dateObject.toLocaleDateString("en-UK", {
+      day: "numeric",
+      month: "short",
+    });
+    return formattedDate;
+  }
+
   const filteredData = petData
     .filter((item) => {
       return (
@@ -141,61 +153,72 @@ const BookingList = () => {
         keywordsStatus === "" ||
         item.process_status.toLowerCase().includes(keywordsStatus.toLowerCase())
       );
+    })
+    .filter((item) => {
+      return item.formatted_formattedDate
+        .toLowerCase()
+        .includes(dateString.toLowerCase());
     });
+
+  console.log(date, "ab");
 
   return (
     <div className="flex bg-sixthGray justify-center">
       <div className="hidden bg-sixthGray lg:block relative">
         <Sidebar active={2} />
       </div>
-      <div className="flex-1 min-w-[375px] mx-auto md:w-auto md:mx-3 bg-sixthGray max-w-[1200px] lg:ml-60">
+      <div className="flex-1 min-w-[320px] md:w-auto md:mx-3 bg-sixthGray max-w-[1200px] lg:ml-60">
         <TopBar />
-        <div className="Title flex  ml-3 flex-col md:flex-row justify-between items-center py-3">
-          <div className="nameTitle pl-5 text-[16px]  hidden md:flex lg:text-[22px] font-semibold">
+        <div className="Title flex flex-col xl:flex-row justify-between items-center py-3">
+          <div className="nameTitle pl-5 text-[16px] md:flex lg:text-[22px] font-semibold">
             Booking List
           </div>
-          <div className="flex pr-5 gap-4">
-            <SingleDatepicker
-              width={60}
-              name="date-input"
-              date={date}
-              onDateChange={setDate}
-            />
-            <Input
-              size="md"
-              width="auto"
-              placeholder="Search name..."
-              value={keywords}
-              onChange={(event) => {
-                setKeywords(event.target.value);
-              }}
-            />
-            <Select
-              width={60}
-              size="md"
-              htmlSize={2}
-              placeholder="All status"
-              value={keywordsStatus}
-              onChange={(event) => {
-                setKeywordsStatus(event.target.value);
-              }}
-            >
-              <option value="Waiting for confirm">
-                Waiting for confirm ({getStatusCount("Waiting for confirm")})
-              </option>
-              <option value="Waiting for service">
-                Waiting for service ({getStatusCount("Waiting for service")})
-              </option>
-              <option value="In service">
-                In service ({getStatusCount("In service")})
-              </option>
-              <option value="Success">
-                Success ({getStatusCount("Success")})
-              </option>
-              <option value="Canceled">
-                Canceled ({getStatusCount("Canceled")})
-              </option>
-            </Select>
+          <div className="grid grid-cols-2 md:flex gap-[12px] mt-[12px] xl:mt-0 md:max-w-[800px] mx-[10px]">
+            <div className="">
+              <Input
+                placeholder="Search name..."
+                value={keywords}
+                onChange={(event) => {
+                  setKeywords(event.target.value);
+                }}
+              />
+            </div>
+            <div>
+              <SingleDatepicker
+                name="date-input"
+                date={date}
+                onDateChange={(newDate) => {
+                  setDate(newDate);
+                  setDateString(formatDate(newDate));
+                }}
+              />
+            </div>
+            <div className="col-span-2">
+              <Select
+                htmlSize={2}
+                placeholder="All status"
+                value={keywordsStatus}
+                onChange={(event) => {
+                  setKeywordsStatus(event.target.value);
+                }}
+              >
+                <option value="Waiting for confirm">
+                  Waiting for confirm ({getStatusCount("Waiting for confirm")})
+                </option>
+                <option value="Waiting for service">
+                  Waiting for service ({getStatusCount("Waiting for service")})
+                </option>
+                <option value="In service">
+                  In service ({getStatusCount("In service")})
+                </option>
+                <option value="Success">
+                  Success ({getStatusCount("Success")})
+                </option>
+                <option value="Canceled">
+                  Canceled ({getStatusCount("Canceled")})
+                </option>
+              </Select>
+            </div>
           </div>
         </div>
         {loading ? (
@@ -210,7 +233,7 @@ const BookingList = () => {
           </Box>
         ) : (
           <div className="Title flex justify-center items-start  bg-white rounded-3xl lg:h-screen">
-            <table className=" border-slate-400 min-w-[375px] w-full  md:w-full xl:max-w-[1440px] xl:w-full rounded-3xl overflow-hidden ">
+            <table className=" border-slate-400 min-w-[320px] w-full  md:w-full xl:max-w-[1440px] xl:w-full rounded-3xl overflow-hidden ">
               <thead className="text-white bg-black text-[13px] md:text-[14px]">
                 <tr>
                   <th className="text-center w-[200px] py-4 md:py-6">Name</th>
@@ -228,6 +251,7 @@ const BookingList = () => {
               </thead>
               <tbody className="text-[13px] md:text-[16px]">
                 {filteredData.map((item) => {
+                  console.log(item.booking_date, "abc");
                   return (
                     <tr
                       key={item.id}
