@@ -123,20 +123,7 @@ const SitterManagement = () => {
   console.log("userId", user);
   //fetch data
   useEffect(() => {
-    if (user?.user_type !== "sitter") {
-      toast({
-        title: "Error",
-        position: "top",
-        description: `You are not a pet sitter`,
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-      console.error("User ID is null or user object is missing");
-      router.push("/");
-    } else {
-      fetchData();
-    }
+    fetchData();
   }, [userId]);
   const fetchData = async () => {
     setLoading(true);
