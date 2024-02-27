@@ -28,6 +28,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useUser } from "@/hooks/hooks";
 import supabase from "@/lib/utils/db";
+import prev from "@/asset/images/IconButtonPrev.svg";
+import next from "@/asset/images/IconButtonNext.svg";
 export default function PetList() {
   const router = useRouter();
   const [dataPets, setDataPets] = useState([]);
@@ -110,7 +112,7 @@ export default function PetList() {
                 className=""
               />
               <div className="flex flex-col justify-center items-center">
-                <p className="mx-auto">{item.name}</p>
+                <p className="mx-auto pb-2">{item.name}</p>
                 <p
                   className={` border rounded-xl w-fit px-3 ${
                     item.petType === "Dog"
@@ -120,7 +122,7 @@ export default function PetList() {
                       : item.petType === "Bird"
                       ? "bg-secondLigthBlue text-firstLigthBlue border-firstLigthBlue"
                       : item.petType === "Rabbit"
-                      ? " bg-fifthOrange text-thirdOrange border-thirdOrange"
+                      ? " bg-secondYellow text-thirdOrange border-thirdOrange"
                       : null
                   } `}
                 >
@@ -135,17 +137,26 @@ export default function PetList() {
       </div>
       {/* Pagination */}
       {dataPets.length > petsPerPage && (
-        <div className="flex justify-center items-center gap-2 bg-fifthOrange px-2 py-1 rounded-xl ">
-          <button className="hover:text-firstOrange" onClick={prevPage}>
-            Previous
+        <div className="flex justify-center items-center gap-2  px-2 py-1 rounded-xl ">
+          <button
+            className="hover:text-firstOrange disabled:hover:bg-white disabled:opacity-30"
+            disabled={currentPage === 1}
+            onClick={prevPage}
+          >
+            <Image
+              objectFit="cover"
+              className=" w-[15px] h-[15px] rounded-xl"
+              src={prev}
+              alt="Prev-icon"
+            />
           </button>
           {Array.from({ length: Math.ceil(dataPets.length / petsPerPage) }).map(
             (_, index) => (
               <div
                 key={index}
-                className={`cursor-pointer bg-fifthOrange hover:text-thirdOrange ${
+                className={` cursor-pointer pl-4 pt-2 pr-4 pb-2  hover:bg-sixthOrange  rounded-full  text-fourthGray  font-medium hover:text-firstOrange ${
                   index + 1 === currentPage
-                    ? " text-thirdOrange border p-2 rounded-lg bg-sixthOrange "
+                    ? "bg-sixthOrange text-firstOrange"
                     : ""
                 }`}
                 onClick={() => paginate(index + 1)}
@@ -155,7 +166,12 @@ export default function PetList() {
             )
           )}
           <button className="hover:text-firstOrange" onClick={nextPage}>
-            Next
+            <Image
+              objectFit="cover"
+              className=" w-[15px] h-[15px] rounded-xl"
+              src={next}
+              alt="Next-icon"
+            />
           </button>
         </div>
       )}
