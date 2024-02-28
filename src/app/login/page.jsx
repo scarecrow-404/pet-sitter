@@ -48,7 +48,8 @@ const LoginPage = () => {
   }
   async function handleOauthSignIn(provider) {
     try {
-      const user = await signInWithProvider(provider);
+      const redirect_to = "http://localhost:3000/auth/callback";
+      const user = await signInWithProvider(provider, redirect_to);
       console.log(user);
     } catch (error) {
       console.error("Error signing in with provider:", error);

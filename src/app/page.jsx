@@ -16,15 +16,52 @@ import calling from "@/asset/images/calling-all-pet.svg";
 import greenStar from "@/asset/images/greenStar.svg";
 import blueEllipse from "@/asset/images/Ellipse17.svg";
 import halfYellowEllipse from "@/asset/images/half-yellow-ellipse.svg";
-
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import catAllElement from "@/asset/images/catAllElement.svg";
 import dogAllElement from "@/asset/images/dogAllElement.svg";
-
-import { useUser } from "@/hooks/hooks";
-
+import { useEffect } from "react";
+import {
+  redirect,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
+import { useCookies } from "next-client-cookies";
 export default function Home() {
-  const { user, setUser } = useUser();
-  console.log(user);
+  const searchParams = useSearchParams();
+
+  const code = searchParams.get("code");
+  const router = useRouter();
+
+  useEffect(() => {
+    if (code) {
+      redirect("/");
+    }
+  }, []);
+  // const exchangeCode = async () => {
+  //   if (code) {
+  //     console.log(cookies);
+  //     const supabase = createRouteHandlerClient({
+  //       cookies: () => ({ cookies }),
+  //     });
+  //     console.log("created supabase");
+  //     const { session, error } = await supabase.auth.exchangeCodeForSession(
+  //       code
+  //     );
+  //     console.log(error, "supabase session for exchange code");
+  //     if (session) {
+  //       console.log("have session", session);
+  //       supabase.auth.setAuth(session.access_token);
+  //     } else {
+  //       console.error(error);
+  //     }
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   exchangeCode();
+  // }, []);
+
   return (
     <>
       <Navbar />
