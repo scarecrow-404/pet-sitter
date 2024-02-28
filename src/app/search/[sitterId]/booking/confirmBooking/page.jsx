@@ -112,7 +112,7 @@ else if(hours > 12){return `${hours}:${minutes} PM`}
     return `${formattedBookingDate}`;}
   
 
-  console.log("totalllllllll",total)
+
   return (
     <>
     <div className=" max-w-[1440px] mx-auto">
