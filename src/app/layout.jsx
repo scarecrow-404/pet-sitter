@@ -3,7 +3,7 @@ import "./globals.css";
 import Footer from "@/components/common/Footer";
 import Navbar from "@/components/common/Navbar";
 import { Providers } from "./Provider";
-import { CookiesProvider } from "next-cookies";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
