@@ -233,6 +233,8 @@ const Booking = () => {
       } else if (values.payment_type === "creditcard") {
         if (values.cardNumber === "") {
           checkStep3.cardNumber = "*Please Enter Your Credit Card Number";
+        } else if (!/^\d{16,19}$/.test(values.cardNumber.replace(/\s/g, ""))) {
+          checkStep3.cardNumber = "*Please Enter a Valid Credit Card Number";
         }
         if (values.cardOwner === "") {
           checkStep3.cardOwner = "*Please Enter Card Owner Name";
@@ -242,7 +244,10 @@ const Booking = () => {
         }
         if (values.cvccvv === "") {
           checkStep3.cvccvv = "*Please Enter Card CVC/CVV";
+        } else if (!/^\d{3,4}$/.test(values.cvccvv)) {
+          checkStep3.cvccvv = "*Please Enter a Valid CVC/CVV";
         }
+
         if (Object.keys(checkStep3).length) {
           setErrors({ ...checkStep3 });
         } else {
