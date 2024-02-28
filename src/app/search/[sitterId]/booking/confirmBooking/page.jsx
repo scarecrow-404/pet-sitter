@@ -8,7 +8,7 @@ import left from "@/asset/images/left_cat_meow_meow.svg";
 import right from "@/asset/images/right_cat_meow_meow.svg";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-function page() {
+function Page() {
   const { bookingData, setBookingData } = useUser();
   const [tranDate, setTranDate] = useState("");
   const [tranNo, setTranNo] = useState("");
@@ -216,4 +216,4 @@ else if(hours > 12){return `${hours}:${minutes} PM`}
   );
 }
 
-export default page;
+export default Page;

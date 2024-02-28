@@ -206,7 +206,7 @@ const Navbar = () => {
                     height={16}
                     width={16}
                   />
-                  <p className="ml-2">History</p>
+                  <p className="ml-2">Booking History</p>
                 </MenuItem>
                 <MenuDivider />
                 {isPetSitter ? (
