@@ -122,8 +122,15 @@ const SitterManagement = () => {
   };
   console.log("userId", user);
   //fetch data
+
   useEffect(() => {
-    fetchData();
+    if (user?.user_type === "sitter") {
+      fetchData();
+    } else if (user?.user_type === "customer") {
+      router.push("/");
+    } else if (!user) {
+      router.push("/login");
+    }
   }, [userId]);
   const fetchData = async () => {
     setLoading(true);

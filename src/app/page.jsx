@@ -30,7 +30,6 @@ import {
   useRouter,
   useSearchParams,
 } from "next/navigation";
-
 export default function Home() {
   const searchParams = useSearchParams();
 

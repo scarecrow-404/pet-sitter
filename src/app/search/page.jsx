@@ -10,9 +10,9 @@ import iconNext from "@/asset/images/IconButtonNext.svg";
 import iconPrev from "@/asset/images/IconButtonPrev.svg";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
-
 const Search = () => {
-  const { search, setSearch, isNewSearch, setIsNewSearch } = useUser();
+  const { search, setSearch, isNewSearch, setIsNewSearch, isLoading } =
+    useUser();
   const [sitterData, setSitterData] = useState([]);
   const [idSitter, setIdSitter] = useState("");
   const [loading, setloading] = useState();
@@ -30,8 +30,6 @@ const Search = () => {
     }
     setPage(page - 1);
   };
-
- 
 
   const expQuery = search.exp;
 
@@ -62,8 +60,9 @@ const Search = () => {
     reviewsPerPage,
     page
   ) {
-    console.log("ccccccccccccccc",
-    expQuery,
+    console.log(
+      "ccccccccccccccc",
+      expQuery,
       petQuery,
       ratingStart,
       ratingEnd,
@@ -71,23 +70,23 @@ const Search = () => {
       reviewsPerPage,
       page
     );
-    let expStart ;
+    let expStart;
     let expEnd;
     if (expQuery.length >= 3) {
       const split = expQuery.split("-");
       console.log("split1", split[0], split[1]);
-      expStart =split[0]
-      expEnd =split[1]
+      expStart = split[0];
+      expEnd = split[1];
     }
     if (expQuery.length == 2) {
       const split = expQuery.split("+");
       console.log("split2", split[0], split[1]);
-      expStart =split[0]
-      expEnd =100
+      expStart = split[0];
+      expEnd = 100;
     }
     if (expQuery.length == 0) {
-      expStart =0
-      expEnd =10
+      expStart = 0;
+      expEnd = 10;
     }
     try {
       let { data: pageData, error: errorPage } = await supabase.rpc(
@@ -129,14 +128,13 @@ const Search = () => {
   }
 
   useEffect(() => {
-   
     if (isNewSearch) {
       setPage(1);
       setIsNewSearch(false);
     }
 
     getSitterData(
-     expQuery,
+      expQuery,
       petQuery,
       ratingStart,
       ratingEnd,
@@ -159,12 +157,12 @@ const Search = () => {
     <>
       <section className=" max-w-[1440px]  mx-auto">
         <Navbar />
-
-        <section className=" flex flex-col  lg:flex-row p-3">
+        <section className=" flex flex-col  lg:flex-row p-3 ">
           <div className=" w-[100%] lg:w-[30%]">
             <SearchBar />
           </div>
-          <div className="  lg:w-[70%] w-[100%] flex flex-col gap-2  cursor-default ">
+
+          <div className="  lg:w-[70%] w-full flex flex-col gap-2 cursor-default ">
             {sitterData.map((item) => (
               <CardSitter
                 key={item.id}
