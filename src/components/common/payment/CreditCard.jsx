@@ -1,6 +1,20 @@
 import React from "react";
 
 function CreditCard({ values, handleInput, errors }) {
+  const formatCreditCardNumber = (input) => {
+    const numericValue = input.replace(/\D/g, "");
+
+    return numericValue.replace(/(\d{4})/g, "$1 ").trim();
+  };
+
+  const formatExpiryDate = (input) => {
+    return input.replace(/\D/g, "").replace(/(\d{2})(\d{2})/, "$1/$2");
+  };
+
+  const formatCvcCvv = (input) => {
+    return input.replace(/\D/g, "").substring(0, 3);
+  };
+
   return (
     <div>
       <div>
@@ -18,11 +32,12 @@ function CreditCard({ values, handleInput, errors }) {
             >
               <input
                 onChange={handleInput}
-                value={values.cardNumber}
+                value={formatCreditCardNumber(values.cardNumber)}
                 id="cardNumber"
                 name="cardNumber"
-                type="number"
-                placeholder="xxx-xxxx-x-xx-xx"
+                type="text"
+                placeholder="xxxx-xxxx-xxxx-xxxx"
+                maxLength="19"
                 className="p-[4px] px-[8px] w-full text-[12px] md:text-[16px] font-[500] leading-[24px] border-none focus:ring-0"
               />
               {errors.cardNumber && (
@@ -82,11 +97,12 @@ function CreditCard({ values, handleInput, errors }) {
             >
               <input
                 onChange={handleInput}
-                value={values.expiryDate}
+                value={formatExpiryDate(values.expiryDate)}
                 id="expiryDate"
                 name="expiryDate"
-                type="number"
-                placeholder="xxx-xxx-xxxx"
+                type="text"
+                placeholder="MM/YY"
+                maxLength="5"
                 className="p-[4px] px-[8px] w-full text-[12px] md:text-[16px] font-[500] leading-[24px] border-none focus:ring-0"
               />
               {errors.cardNumber && (
@@ -113,10 +129,10 @@ function CreditCard({ values, handleInput, errors }) {
             >
               <input
                 onChange={handleInput}
-                value={values.cvccvv}
+                value={formatCvcCvv(values.cvccvv)}
                 id="cvccvv"
                 name="cvccvv"
-                type="number"
+                type="text"
                 placeholder="xxx"
                 className="p-[4px] px-[8px] w-full text-[12px] md:text-[16px] font-[500] leading-[24px] border-none focus:ring-0"
               />

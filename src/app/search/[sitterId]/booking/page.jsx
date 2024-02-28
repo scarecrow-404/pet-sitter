@@ -213,7 +213,6 @@ const Booking = () => {
     let newStep = currentStep;
 
     if (newStep === 1) {
-      
       console.log("amout", totalAmount);
       setBookingData({
         ...bookingData,
@@ -226,14 +225,15 @@ const Booking = () => {
       setBookingData({ ...bookingData, additionMessage: message });
       setCurrentStep(newStep + 1);
     } else if (newStep === 3) {
-      const checkStep3 = {}
-      if (values.payment_type === "" ) {
+      const checkStep3 = {};
+      if (values.payment_type === "") {
         setErrors({});
         setPopupButton("Payment Type is required");
-      }
-      else if (values.payment_type === "creditcard") {
+      } else if (values.payment_type === "creditcard") {
         if (values.cardNumber === "") {
           checkStep3.cardNumber = "*Please Enter Your Credit Card Number";
+        } else if (!/^\d{16,19}$/.test(values.cardNumber.replace(/\s/g, ""))) {
+          checkStep3.cardNumber = "*Please Enter a Valid Credit Card Number";
         }
         if (values.cardOwner === "") {
           checkStep3.cardOwner = "*Please Enter Card Owner Name";
@@ -243,7 +243,10 @@ const Booking = () => {
         }
         if (values.cvccvv === "") {
           checkStep3.cvccvv = "*Please Enter Card CVC/CVV";
+        } else if (!/^\d{3,4}$/.test(values.cvccvv)) {
+          checkStep3.cvccvv = "*Please Enter a Valid CVC/CVV";
         }
+
         if (Object.keys(checkStep3).length) {
           setErrors({ ...checkStep3 });
         } else {
@@ -313,15 +316,14 @@ const Booking = () => {
                     <p className="text-[14px] font-[500] lg:text-[#7B7E8F] leading-[24px]">
                       Pet Sitter:
                     </p>
-                    
-                      <p className="text-[16px] font-[500] leading-[28px]">
-                        {bookingData.sittername}
-                      </p>
-                     
-                      <p className="text-[16px] font-[500] leading-[28px]">
-                        By {bookingData.fullname}
-                      </p>
-                    
+
+                    <p className="text-[16px] font-[500] leading-[28px]">
+                      {bookingData.sittername}
+                    </p>
+
+                    <p className="text-[16px] font-[500] leading-[28px]">
+                      By {bookingData.fullname}
+                    </p>
                   </div>
 
                   <div className="lg:h-[52px] lg:block flex justify-between">
@@ -329,11 +331,11 @@ const Booking = () => {
                       Date & Time:
                     </p>
                     <p className="text-[16px] font-[500] leading-[28px]">
-                      {formattedDate} 
-                       
+                      {formattedDate}
                     </p>
-                    <p>{dataForSearch.startTime} -{" "}
-                      {dataForSearch.endTime}</p>
+                    <p>
+                      {dataForSearch.startTime} - {dataForSearch.endTime}
+                    </p>
                   </div>
 
                   <div className="lg:h-[52px] lg:block flex justify-between">
