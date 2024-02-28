@@ -39,7 +39,8 @@ const OrderDetails = () => {
   const [ownPet, setOwnPet] = useState([]);
   const [petData, setPetData] = useState([]);
   const [loading, setloading] = useState(false);
-
+  const [startTime, setStartTime] = useState();
+  const [endTime, setEndTime] = useState();
   const [status, setStatus] = useState("");
   async function getOwnPetData() {
     setloading(true);
@@ -58,6 +59,10 @@ const OrderDetails = () => {
         return data.find((item) => item.id === id);
       }
     );
+    const start = cutSeconds(uniqueData[0].start_time);
+    setStartTime(start);
+    const end = cutSeconds(uniqueData[0].end_time);
+    setEndTime(end);
     setOwnPet(uniqueData[0]);
     setStatus(uniqueData[0].process_status);
     setloading(false);
@@ -90,7 +95,18 @@ const OrderDetails = () => {
     month: "short",
     year: "numeric",
   });
-  const formattedDateTimeRange = `${formattedBookingDate} | ${ownPet.start_time} - ${ownPet.end_time}`;
+  const formattedDateTimeRange = `${formattedBookingDate} | ${startTime} - ${endTime}`;
+  function cutSeconds(time) {
+    // Split the time string into hours, minutes, and seconds
+    const [hours, minutes, seconds] = time.split(":");
+
+    // Return the time string with seconds removed
+    if (hours < 12) {
+      return `${hours}:${minutes} AM`;
+    } else if (hours > 12) {
+      return `${hours}:${minutes} PM`;
+    }
+  }
 
   useEffect(() => {
     getPetDataBooking();
@@ -461,7 +477,7 @@ function PopUpPetData({
                 : petType === "Bird"
                 ? "bg-secondLigthBlue text-firstLigthBlue border-firstLigthBlue"
                 : petType === "Rabbit"
-                ? " bg-fifthOrange text-thirdOrange border-thirdOrange"
+                ? " bg-secondYellow text-thirdOrange border-thirdOrange"
                 : null
             } `}
           >
