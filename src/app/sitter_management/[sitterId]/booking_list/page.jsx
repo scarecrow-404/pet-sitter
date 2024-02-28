@@ -19,7 +19,8 @@ const BookingList = () => {
   const [petCount, setPetCount] = useState({});
   const [date, setDate] = useState(new Date());
   const [dateString, setDateString] = useState("");
-
+  const [startTime, setStartTime] = useState();
+  const [endTime, setEndTime] = useState();
   //คลิกแล้วไปหน้า bookingของคนฝากเลี้ยง
   const handleClick = (item) => {
     const path = `/sitter_management/${sitterId}/booking_list/${item}`;
@@ -62,15 +63,16 @@ const BookingList = () => {
       totalCount += idCount[id];
     }
 
-    console.log("Total number of unique IDs:", idSet.size);
-    console.log("ID count map:", idCount);
-    console.log("Total count of data with duplicate IDs:", totalCount);
-    console.log("dataa", data);
+    // const start = cutSeconds(uniqueData.start_time);
+    // setStartTime(start);
+    // const end = cutSeconds(uniqueData.end_time);
+    // setEndTime(end);
+
     setPetData(uniqueData);
     setPetCount(idCount);
     setloading(false);
   }
-
+  console.log(petData, "am");
   //เอาไว้คำนวนความต่างของเวลา
   function calculator(start_time, end_time) {
     const [startHour, startMinute] = start_time
@@ -104,8 +106,8 @@ const BookingList = () => {
 
   //แปลงข้อมูลวันที่ ที่แสดงออกมาเป็น dd/mm, time-time
   petData.forEach((item) => {
-    const startTime = item.start_time.slice(0, 5);
-    const endTime = item.end_time.slice(0, 5);
+    const startTime = item.start_time.split(":");
+    const endTime = item.end_time.split(":");
     const bookingDate = new Date(item.booking_date);
     const formattedDate = bookingDate.toLocaleDateString("en-Uk", {
       day: "numeric",
@@ -115,6 +117,50 @@ const BookingList = () => {
     item.formatted_booking_date = `${formattedDate}, ${startTime} - ${endTime}`;
     item.formatted_formattedDate = `${formattedDate}`;
   });
+  function formatTime(startTime, endTime) {
+    const startTimeWithoutSeconds = startTime.slice(0, -3);
+    const endTimeWithoutSeconds = endTime.slice(0, -3);
+
+    const startTimeHours = parseInt(startTimeWithoutSeconds.split(":")[0]);
+    const endTimeHours = parseInt(endTimeWithoutSeconds.split(":")[0]);
+    if (startTimeHours < 12 && endTimeHours < 12) {
+      return `${startTimeWithoutSeconds} AM - ${endTimeWithoutSeconds} AM`;
+    } else if (startTimeHours >= 12 && endTimeHours >= 12) {
+      return `${startTimeWithoutSeconds} PM - ${endTimeWithoutSeconds} PM`;
+    } else if (startTimeHours >= 12 && endTimeHours < 12) {
+      return `${startTimeWithoutSeconds} PM - ${endTimeWithoutSeconds} AM`;
+    } else if (startTimeHours < 12 && endTimeHours >= 12) {
+      return `${startTimeWithoutSeconds} AM - ${endTimeWithoutSeconds} PM`;
+    }
+  }
+  // petData.forEach((item) => {
+  //   const startTime = item.start_time.slice(0, -3);
+  //   const endTime = item.end_time.slice(0, -3);
+  //   const formattedTime = formatTime(startTime, endTime);
+  //   console.log(formattedTime);
+  // });
+  // petData.forEach((item) => {
+  //   const startTime = item.start_time.slice(0, -3);
+  //   const endTime = item.end_time.slice(0, -3);
+  //   const startTimeHours = startTime.slice(0, -3);
+  //   const endTimeHours = endTime.slice(0, -3);
+  //   if (startTimeHours < 12 && endTimeHours < 12) {
+  //     return `${startTime} AM - ${endTime} AM`;
+  //   } else if (startTimeHours > 12 && endTimeHours > 12) {
+  //     return `${startTime} PM - ${endTime} PM`;
+  //   }else if (startTimeHours >12 && endTimeHours<12){
+  //     return `${startTime} PM - ${endTime} AM`
+  //   }else if (startTimeHours <12 && endTimeHours>12){
+  //     return `${startTime} AM - ${endTime} PM`}
+
+  // if (endTimeHours < 12) {
+  //   return `${endTime} AM`;
+  // } else if (endTimeHours > 12) {
+  //   return `${endTime} PM`;
+  // }
+
+  //   console.log(startTime, endTime, "omm");
+  // });
 
   //search หาแค่ชื่อของเจ้าของสัตว์เลี้ยง
   const getKeywords = () => {
@@ -192,6 +238,18 @@ const BookingList = () => {
             </div>
             <div>
               <SingleDatepicker
+                propsConfigs={{
+                  dayOfMonthBtnProps: {
+                    defaultBtnProps: { _hover: { bg: "#FF7037" } },
+                    selectedBtnProps: {
+                      bg: "#FF7037",
+                      color: "black",
+                      _hover: {
+                        bg: "#FF7037.100",
+                      },
+                    },
+                  },
+                }}
                 name="date-input"
                 date={date}
                 onDateChange={(newDate) => {
@@ -275,7 +333,8 @@ const BookingList = () => {
                         {calculator(item.start_time, item.end_time)} hours
                       </td>
                       <td className="text-center py-2 md:py-6">
-                        {item.formatted_booking_date}
+                        {item.formatted_formattedDate} ,{" "}
+                        {formatTime(item.start_time, item.end_time)}
                       </td>
                       <td
                         className={`${
