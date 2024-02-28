@@ -4,7 +4,7 @@ import Navbar from "@/components/common/Navbar";
 import { AccountBar } from "@/components/AccountBar";
 import supabase from "@/lib/utils/db";
 import { useUser } from "@/hooks/hooks";
-import BookingHistoryList from "@/components/bookingHistory";
+import BookingHistoryList from "@/components/BookingHistory";
 
 const BookingHistory = () => {
   const [bookingDetail, setBookingDetail] = useState([]);

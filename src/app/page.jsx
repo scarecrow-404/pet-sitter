@@ -3,7 +3,7 @@ import Footer from "@/components/common/Footer";
 import Navbar from "@/components/common/Navbar";
 
 import SearchBar from "@/components/common/SearchBar";
-
+import Link from "next/link";
 import Image from "next/image";
 import catPortrait from "@/asset/images/cat-portrait.svg";
 import topicStar1 from "@/asset/images/topic-star-1.svg";
@@ -190,12 +190,19 @@ export default function Home() {
               <h1 className="text-center font-bold text-lg z-10 md:text-2xl lg:text-3xl">
                 Perfect Pet Sitter <br /> For Your Pet
               </h1>
-              <button className="border bg-secondOrange p-2 text-xs rounded-3xl text-white z-10 lg:text-base lg:p-3">
-                Find A Pet Sitter
-              </button>
-              {/* <button className="border bg-secondOrange p-2 text-xs rounded-3xl text-white z-10 lg:text-base lg:p-3">
-              Register
-            </button> */}
+              {!user ? (
+                <Link href="/register">
+                  <button className="border bg-secondOrange p-2 text-xs rounded-3xl text-white z-10 lg:text-base lg:p-3">
+                    Register
+                  </button>
+                </Link>
+              ) : (
+                <Link href="/search">
+                  <button className="border bg-secondOrange p-2 text-xs rounded-3xl text-white z-10 lg:text-base lg:p-3">
+                    Find A Pet Sitter
+                  </button>
+                </Link>
+              )}
               <Image
                 src={halfYellowEllipse}
                 alt="connect-with-sitters"
