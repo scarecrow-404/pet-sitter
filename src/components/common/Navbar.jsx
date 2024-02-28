@@ -65,7 +65,7 @@ const Navbar = () => {
 
     setIsLoading(false);
 
-    return data[0]; // return the user data
+    return data[0];
   }
 
   useEffect(() => {

@@ -50,6 +50,7 @@ import { NextResponse } from "next/server";
 export async function GET(request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
+  console.log(requestUrl.searchParams);
   const cookieStore = cookies();
   const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
 
@@ -66,3 +67,26 @@ export async function GET(request) {
 
   return NextResponse.redirect(requestUrl.origin);
 }
+// import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+// import { parseCookies } from "nookies";
+
+// export async function GET(request) {
+//   const requestUrl = new URL(request.url);
+//   const code = requestUrl.searchParams.get("code");
+//   const cookies = parseCookies({ req: request });
+
+//   const supabase = createRouteHandlerClient({ cookies });
+
+//   if (code) {
+//     const { session, error } = await supabase.auth.exchangeCodeForSession(code);
+//     if (session) {
+//       supabase.auth.setAuth(session.access_token);
+//     } else {
+//       console.error(error);
+//     }
+//   } else {
+//     console.log("No code provided");
+//   }
+
+//   return { redirect: { destination: "/", permanent: false } };
+// }
