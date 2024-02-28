@@ -26,6 +26,7 @@ const Booking = () => {
   const steps = ["Your Pet", "Information", "Payment"];
   const [errors, setErrors] = useState({});
   const [popupButton, setPopupButton] = useState(false);
+  const [disable, setDisable] = useState(true);
 
   const [paymentMethod, setPaymentMethod] = useState({
     creditCard: true,
@@ -214,13 +215,15 @@ const Booking = () => {
     let newStep = currentStep;
 
     if (newStep === 1) {
-      console.log("amout", totalAmount);
+      console.log("amouttttttttt", totalAmount, disable);
+
       setBookingData({
         ...bookingData,
         petselect: selectedPets,
         price: totalAmount,
         duration: hoursWtMin,
       });
+
       setCurrentStep(newStep + 1);
     } else if (newStep === 2) {
       setBookingData({ ...bookingData, additionMessage: message });
@@ -297,8 +300,11 @@ const Booking = () => {
               <StepperControl
                 handlePrev={handlePrev}
                 handleNext={handleNext}
+                selectedPets={selectedPets}
                 currentStep={currentStep}
                 steps={steps}
+                disable={disable}
+                setDisable={setDisable}
               />
             </div>
             <div className="bg-[#FFFFFF] w-full min-w-[320px] sm:max-w-[600px] lg:w-[300px] mx-auto">
