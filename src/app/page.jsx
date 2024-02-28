@@ -16,7 +16,7 @@ import calling from "@/asset/images/calling-all-pet.svg";
 import greenStar from "@/asset/images/greenStar.svg";
 import blueEllipse from "@/asset/images/Ellipse17.svg";
 import halfYellowEllipse from "@/asset/images/half-yellow-ellipse.svg";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+
 import catAllElement from "@/asset/images/catAllElement.svg";
 import dogAllElement from "@/asset/images/dogAllElement.svg";
 import { useEffect } from "react";
@@ -26,7 +26,7 @@ import {
   useRouter,
   useSearchParams,
 } from "next/navigation";
-import { useCookies } from "next-client-cookies";
+
 export default function Home() {
   const searchParams = useSearchParams();
 
