@@ -34,9 +34,11 @@ import ReactModal from "react-modal";
 import PopUpSitterConfirm from "../PopupSitterConfirm";
 import { set } from "date-fns";
 import { is } from "date-fns/locale";
+import { Player, Controls } from "@lottiefiles/react-lottie-player";
 const Navbar = () => {
-  const { user, setUser, userId, setUserId } = useUser();
-  const [isLoading, setIsLoading] = useState(true);
+  const { user, setUser, userId, setUserId, isLoading, setIsLoading } =
+    useUser();
+  const router = useRouter();
   const [profileImage, setProfileImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPetSitter, setIsPetSitter] = useState(false);
@@ -84,6 +86,7 @@ const Navbar = () => {
           console.log("Stored session:", session);
           console.log("User ID:", session.user.id);
           await getUser(session);
+
           setIsLoading(false);
         }
       }
@@ -121,7 +124,7 @@ const Navbar = () => {
       }
     });
   }, []);
-  const router = useRouter();
+
   const handleLogin = () => {
     user ? router.push("/") : router.push("/login");
   };

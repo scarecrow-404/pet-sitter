@@ -327,7 +327,7 @@ function SitterDetail(props) {
 
             <div className="pagination flex gap-4  text-center justify-center p-[10px]">
               <button
-                className="previous-button pl-4 pt-2 pr-4 pb-2 hover:bg-sixthOrange  rounded-full  text-fourthGray  font-medium hover:text-firstOrange"
+                className="previous-button pl-4 pt-2 pr-4 pb-2 hover:bg-sixthOrange  rounded-full  text-fourthGray  font-medium hover:text-firstOrange disabled:hover:bg-white disabled:opacity-30"
                 onClick={previousPage}
                 disabled={page === 1} // ปิดปุ่มก่อนหน้าเมื่ออยู่ที่หน้าแรก
               >

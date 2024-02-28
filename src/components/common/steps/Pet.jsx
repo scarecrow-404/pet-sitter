@@ -126,7 +126,7 @@ function Pet({
                         : item.petType === "Bird"
                         ? "bg-secondLigthBlue text-firstLigthBlue border-firstLigthBlue"
                         : item.petType === "Rabbit"
-                        ? " bg-fifthOrange text-thirdOrange border-thirdOrange"
+                        ? " bg-secondYellow  border-firstYellow  text-firstYellow"
                         : null
                     } `}
                   >

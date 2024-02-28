@@ -253,6 +253,7 @@ function UserManagementProfile() {
               <Input
                 type="text"
                 placeholder="Your ID number"
+                minLength={13}
                 maxLength={13}
                 value={
                   IdNumber &&
@@ -269,6 +270,10 @@ function UserManagementProfile() {
                 onBlur={() => {
                   if (IdNumber.trim() === "") {
                     setErrorIdNumber("Please enter your ID number");
+                  } else if (IdNumber.length < 13) {
+                    setErrorIdNumber(
+                      "Please enter a valid 13-digit ID card number"
+                    );
                   } else {
                     setErrorIdNumber("");
                   }
