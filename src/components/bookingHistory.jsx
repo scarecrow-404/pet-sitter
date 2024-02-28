@@ -50,7 +50,6 @@ function BookingHistoryList(props) {
   }
 
   const cleanedPetArray = pet.map((item) => item.trim());
-  console.log(cleanedPetArray, "AKJ");
 
   function duration(start, end) {
     const startTime = start ? moment(start, "HH:mm:ss") : null;
@@ -186,8 +185,6 @@ function BookingHistoryList(props) {
     setIsOpenHistory(event);
   };
 
-  console.log("status1", checkStatus, description);
-
   const submitReview = (event) => {
     console.log("status2", checkStatus, description);
     event.preventDefault();
@@ -202,10 +199,6 @@ function BookingHistoryList(props) {
 
     setIsOpenReview(null);
   };
-
-  console.log(writeRating, "AABB");
-  console.log(writeDescription, "AABBC");
-  // console.log(reviewData, "AABBCC")
 
   async function insertReview(
     writeRating,
@@ -289,7 +282,6 @@ function BookingHistoryList(props) {
       console.log(reviewError);
     }
   }
-  console.log("petttt", pet);
 
   return (
     <div className="flex flex-col justify-center items-center gap-5 max-w-[1440px] mx-auto lg:gap-10">
@@ -424,7 +416,7 @@ function BookingHistoryList(props) {
             </div>
           ) : checkStatus === "Success" && description ? (
             <div className="three flex justify-evenly items-center gap-2 bg-secondGreen rounded-lg py-3 md:py-4 md:justify-between md:px-6 lg:py-6 ">
-              <div className="text-firstGreen text-[13px] font-medium flex flex-col md:text-[15px] lg:text-[17px] lg:gap-2">
+              <div className="text-firstGreen text-[13px] font-medium md:text-[15px] lg:text-[17px] lg:gap-2">
                 <div>Success date:</div>
                 <div>{createDay(props.booking_date)}</div>
               </div>
@@ -439,7 +431,7 @@ function BookingHistoryList(props) {
             <div className="three flex justify-evenly items-center gap-2 bg-secondGreen rounded-lg py-3 md:py-4 md:justify-between md:px-6 lg:py-6">
               <div className="text-firstGreen text-[13px] font-medium md:text-[15px] lg:text-[17px] lg:gap-2">
                 <div>Success date:</div>
-                <div>{props.Date}</div>
+                <div>{createDay(props.booking_date)}</div>
               </div>
               <button
                 onClick={() => openReview(event)}
