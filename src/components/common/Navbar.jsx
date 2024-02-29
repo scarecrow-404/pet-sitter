@@ -76,6 +76,7 @@ const Navbar = () => {
         setUserId(session.user.id);
         console.log("Session:", session);
         console.log("User ID:", session.user.id);
+
         await getUser(session);
         setIsLoading(false);
       } else {
