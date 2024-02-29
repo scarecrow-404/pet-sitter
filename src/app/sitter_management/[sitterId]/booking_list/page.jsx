@@ -26,7 +26,8 @@ const BookingList = () => {
     const path = `/sitter_management/${sitterId}/booking_list/${item}`;
     router.push(path);
   };
-
+  console.log(sitterId, "sitterId");
+  console.log(params.sitterId, "params.sitterId");
   async function getBookingList() {
     setloading(true);
     let { data, error } = await supabase
@@ -97,13 +98,43 @@ const BookingList = () => {
       getBookingList();
       const filteredData = getKeywords();
       setPetData(filteredData);
-    } else if (user?.user_type === "customer") {
-      router.push("/");
-    } else if (!user) {
-      router.push("/login");
     }
   }, [keywords, keywordsStatus, dateString]);
+  useEffect(() => {
+    let isMounted = true;
+    const fetchDataAsync = async () => {
+      try {
+        if (!user) {
+          throw new Error("User data not available");
+        }
+        console.log(params.sitterId, "params.sitterId");
+        console.log(sitterId, "sitterId");
+        if (
+          params.sitterId !== undefined &&
+          sitterId !== undefined &&
+          params.sitterId !== null &&
+          sitterId !== null &&
+          params.sitterId != sitterId
+        ) {
+          router.push("/");
+        } else if (user.user_type === "sitter") {
+          await Promise.all([getBookingList(), getKeywords()]);
+          if (isMounted) {
+            const filteredData = getKeywords();
+            setPetData(filteredData);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
 
+    fetchDataAsync();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user]);
   //แปลงข้อมูลวันที่ ที่แสดงออกมาเป็น dd/mm, time-time
   petData.forEach((item) => {
     const startTime = item.start_time.split(":");
