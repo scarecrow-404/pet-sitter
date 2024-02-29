@@ -52,7 +52,6 @@ const OrderDetails = () => {
       .eq("pet_sitter_id", params.sitterId)
       .eq("id", params.booking_id);
     if (error) {
-      console.error(error);
     }
     let uniqueData = Array.from(new Set(data.map((item) => item.id))).map(
       (id) => {
@@ -76,9 +75,7 @@ const OrderDetails = () => {
       .eq("pet_sitter_id", params.sitterId)
       .eq("id", params.booking_id);
     if (error) {
-      console.error(error);
     }
-    console.log("pettt", data);
     setPetData(data);
     setloading(false);
   }
@@ -126,15 +123,10 @@ const OrderDetails = () => {
           .from("booking")
           .update({ process_status: processStatus[index + 1] })
           .eq("id", params.booking_id);
-
-        console.log("Booking status updated successfully");
         setStatus(processStatus[index + 1]);
       } else {
-        console.log("No status update needed");
       }
-    } catch (error) {
-      console.error("Error updating booking status:", error.message);
-    }
+    } catch (error) {}
   }
 
   function changeTransactionDate(transaction) {
@@ -387,12 +379,8 @@ function AlertButton({ buttonName }) {
         .from("booking")
         .update({ process_status: "Canceled" })
         .eq("id", params.booking_id);
-
-      console.log("Booking reject already");
       setIsUpdated(true);
-    } catch (error) {
-      console.error("Error updating booking status:", error.message);
-    }
+    } catch (error) {}
   }
 
   return (

@@ -42,7 +42,6 @@ export default function Home() {
     }
   }, []);
   const { user, setUser, isLoading, setIsLoading } = useUser();
-  console.log(isLoading);
   const options = {
     loop: true,
     autoplay: true,

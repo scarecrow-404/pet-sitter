@@ -50,10 +50,8 @@ function ForgetPassword() {
             status: "error",
             duration: 9000,
             isClosable: true,
-          });
-          console.log("error", error);
-        } else {
-          console.log("Password reset email sent");
+          });         
+        } else {         
           toast({
             title: "Password reset email sent",
             position: "top",
@@ -63,8 +61,7 @@ function ForgetPassword() {
             isClosable: true,
           });
         }
-      } catch (error) {
-        console.error(error.message);
+      } catch (error) {      
       }
     }
   }

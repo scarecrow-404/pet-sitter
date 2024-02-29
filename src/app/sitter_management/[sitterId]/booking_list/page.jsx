@@ -26,8 +26,6 @@ const BookingList = () => {
     const path = `/sitter_management/${sitterId}/booking_list/${item}`;
     router.push(path);
   };
-  console.log(sitterId, "sitterId");
-  console.log(params.sitterId, "params.sitterId");
   async function getBookingList() {
     setloading(true);
     let { data, error } = await supabase
@@ -35,9 +33,7 @@ const BookingList = () => {
       .select("*")
       .eq("pet_sitter_id", params.sitterId);
     if (error || !data) {
-      console.log(error);
     }
-    console.log("data 41", data);
     // สร้างเซตเพื่อเก็บ id ที่เป็น unique
     let idSet = new Set();
     let uniqueData = [];
@@ -73,7 +69,6 @@ const BookingList = () => {
     setPetCount(idCount);
     setloading(false);
   }
-  console.log(petData, "am");
   //เอาไว้คำนวนความต่างของเวลา
   function calculator(start_time, end_time) {
     const [startHour, startMinute] = start_time
@@ -107,8 +102,6 @@ const BookingList = () => {
         if (!user) {
           throw new Error("User data not available");
         }
-        console.log(params.sitterId, "params.sitterId");
-        console.log(sitterId, "sitterId");
         if (
           params.sitterId !== undefined &&
           sitterId !== undefined &&
@@ -117,16 +110,14 @@ const BookingList = () => {
           params.sitterId != sitterId
         ) {
           router.push("/");
-        } else if (user.user_type === "sitter") {
+        } else if (user.user_type === "sitter" && params.sitterId == sitterId) {
           await Promise.all([getBookingList(), getKeywords()]);
           if (isMounted) {
             const filteredData = getKeywords();
             setPetData(filteredData);
           }
         }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
+      } catch (error) {}
     };
 
     fetchDataAsync();
@@ -164,35 +155,6 @@ const BookingList = () => {
       return `${startTimeWithoutSeconds} AM - ${endTimeWithoutSeconds} PM`;
     }
   }
-  // petData.forEach((item) => {
-  //   const startTime = item.start_time.slice(0, -3);
-  //   const endTime = item.end_time.slice(0, -3);
-  //   const formattedTime = formatTime(startTime, endTime);
-  //   console.log(formattedTime);
-  // });
-  // petData.forEach((item) => {
-  //   const startTime = item.start_time.slice(0, -3);
-  //   const endTime = item.end_time.slice(0, -3);
-  //   const startTimeHours = startTime.slice(0, -3);
-  //   const endTimeHours = endTime.slice(0, -3);
-  //   if (startTimeHours < 12 && endTimeHours < 12) {
-  //     return `${startTime} AM - ${endTime} AM`;
-  //   } else if (startTimeHours > 12 && endTimeHours > 12) {
-  //     return `${startTime} PM - ${endTime} PM`;
-  //   }else if (startTimeHours >12 && endTimeHours<12){
-  //     return `${startTime} PM - ${endTime} AM`
-  //   }else if (startTimeHours <12 && endTimeHours>12){
-  //     return `${startTime} AM - ${endTime} PM`}
-
-  // if (endTimeHours < 12) {
-  //   return `${endTime} AM`;
-  // } else if (endTimeHours > 12) {
-  //   return `${endTime} PM`;
-  // }
-
-  //   console.log(startTime, endTime, "omm");
-  // });
-
   //search หาแค่ชื่อของเจ้าของสัตว์เลี้ยง
   const getKeywords = () => {
     const regexKeywords = keywords.split(" ").join("|");
@@ -243,9 +205,6 @@ const BookingList = () => {
         .toLowerCase()
         .includes(dateString.toLowerCase());
     });
-
-  console.log(date, "ab");
-
   return (
     <div className="flex bg-sixthGray justify-center">
       <div className="hidden bg-sixthGray lg:block relative">
@@ -347,7 +306,6 @@ const BookingList = () => {
               </thead>
               <tbody className="text-[13px] md:text-[16px]">
                 {filteredData.map((item) => {
-                  console.log(item.booking_date, "abc");
                   return (
                     <tr
                       key={item.id}

@@ -9,14 +9,13 @@ import { useState, useEffect } from "react";
 function PopupBooking(props) {
   const router = useRouter();
   const params = useParams();
-  const [disable,setDisable]=useState(false)
+  const [disable, setDisable] = useState(false);
 
   const { bookingData, setBookingData, user, setUser } = useUser();
   const sitterId = params.sitterId;
   const values = props.values;
   let bookingId = "";
-let countConfirm = 0
-  console.log("valueeee", values);
+  let countConfirm = 0;
 
   function generateTransactionNo(paytype) {
     let prefix = "";
@@ -46,7 +45,6 @@ let countConfirm = 0
     }
     return timeformat;
   }
-  console.log("tigger", props.trigger);
 
   const timeStart = deleteAmPm(bookingData.startTime);
   const timeEnd = deleteAmPm(bookingData.endTime);
@@ -69,7 +67,6 @@ let countConfirm = 0
   useEffect(() => {}, []);
 
   async function insertpet(bookingId, eachPet) {
-    console.log("eachpet", eachPet);
     try {
       const { data: petresult, error } = await supabase
         .from("booking_pet")
@@ -77,18 +74,14 @@ let countConfirm = 0
         .select();
 
       if (petresult) {
-        console.log("insert pet success", petresult);
       } else if (!data || error) {
-        console.log("can not insert");
       }
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   }
 
   async function handlesubmit() {
-    setDisable(true)
-   
+    setDisable(true);
+
     try {
       const { error, data: resultinsert } = await supabase
         .from("booking")
@@ -96,13 +89,11 @@ let countConfirm = 0
         .select();
 
       if (!error) {
-        console.log("book success");
         const path = `/search/${sitterId}/booking/confirmBooking`;
         const url = String(path);
         router.push(url);
       }
       if (error) {
-        console.log(error);
       }
 
       setBookingData({ ...bookingData, bookid: resultinsert[0]?.id });
@@ -110,10 +101,7 @@ let countConfirm = 0
       bookingData.petselect.map((eachPet) => {
         insertpet(bookingId, eachPet);
       });
-     
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   }
 
   if (props.trigger && values.payment_type) {
@@ -150,7 +138,7 @@ let countConfirm = 0
                 close
               </button>
               <button
-              disabled = {disable}
+                disabled={disable}
                 className="text-[16px] font-[700] leading-[24px] py-[12px] px-[24px] rounded-[99px] gap-[8px] text-white bg-[#FF7037] disabled:bg-gray-400 "
                 onClick={handlesubmit}
               >

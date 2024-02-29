@@ -48,11 +48,10 @@ const LoginPage = () => {
   }
   async function handleOauthSignIn(provider) {
     try {
-      const redirect_to = "http://localhost:3000/auth/callback";
+      const redirect_to = "/auth/callback";
       const user = await signInWithProvider(provider, redirect_to);
-      console.log(user);
     } catch (error) {
-      console.error("Error signing in with provider:", error);
+
     }
   }
   //   }
@@ -86,18 +85,15 @@ const LoginPage = () => {
             duration: 9000,
             isClosable: true,
           });
-          console.log("error", error);
         } else if (rememberMe) {
           localStorage.setItem("session_token", session.access_token);
         } else {
           sessionStorage.setItem("session_token", session.access_token);
         }
       } catch (error) {
-        console.error(error.message);
       }
     }
   }
-  console.log(rememberMe, "rememberMe");
   return (
     <div className="flex items-center justify-center">
       <div className="h-screen xl:w-[1440px] flex items-center justify-center relative">

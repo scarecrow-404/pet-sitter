@@ -22,7 +22,7 @@ const MapPageOnSitterDeatail = ({ props, petsitterid }) => {
   const [markers, setMarkers] = useState([]);
   // const [petSitterId, setPetSitterId] = useState(null);
 
-  console.log("petsitterid", petsitterid);
+
   const fetchMarkersFromSupabase = async () => {
     try {
       const { data, error } = await supabase
@@ -37,7 +37,7 @@ const MapPageOnSitterDeatail = ({ props, petsitterid }) => {
         setMarkers(data);
       }
     } catch (error) {
-      console.error("Error fetching markers from Supabase:", error.message);
+     
     }
   };
   let latcenter;
@@ -58,7 +58,7 @@ const MapPageOnSitterDeatail = ({ props, petsitterid }) => {
   const onUnmount = useCallback((map) => {}, []);
 
   return isLoaded ? (
-    <div>
+    <>
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={center}
@@ -71,7 +71,7 @@ const MapPageOnSitterDeatail = ({ props, petsitterid }) => {
           <Marker key={index} position={{ lat: marker.lat, lng: marker.lng }} />
         ))}
       </GoogleMap>
-    </div>
+    </>
   ) : (
     <></>
   );

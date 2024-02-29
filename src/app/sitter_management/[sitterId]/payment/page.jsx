@@ -42,14 +42,12 @@ const Payment = () => {
     (acc, item) => acc + parseFloat(item.total_amout),
     0
   );
-  console.log(user, "user");
   async function getOwnPetData() {
     let { data, error } = await supabase
       .from("booking_list_render")
       .select("*")
       .eq("pet_sitter_id", params.sitterId);
     if (error) {
-      console.error(error);
     }
     let uniqueData;
     if (data) {
@@ -61,7 +59,6 @@ const Payment = () => {
     } else {
       uniqueData = [];
     }
-    console.log("own", uniqueData);
     setOwnPet(uniqueData);
   }
   async function getBankNumber() {
@@ -70,12 +67,9 @@ const Payment = () => {
       .select("*")
       .eq("id", params.sitterId);
     if (error) {
-      console.error(error);
     }
-    console.log(data, "bk");
     setBankNumber(data[0].bank_acc_number);
   }
-  console.log(bankNumber, "bk");
   const lastThreeDigits = bankNumber.slice(-3);
 
   useEffect(() => {
@@ -98,7 +92,6 @@ const Payment = () => {
           await Promise.all([getOwnPetData(), getBankNumber()]);
         }
       } catch (error) {
-        console.error("Error fetching user data:", error);
       }
     };
 
@@ -106,7 +99,6 @@ const Payment = () => {
       try {
         await user;
       } catch (error) {
-        console.error("Error fetching user data:", error);
       }
     };
 

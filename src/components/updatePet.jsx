@@ -59,7 +59,6 @@ function UpdatePet({ searchParams }) {
         .single();
 
       if (error) {
-        console.error("Error fetching pet data: ", error);
         return;
       }
 
@@ -85,7 +84,6 @@ function UpdatePet({ searchParams }) {
       const url = URL.createObjectURL(file);
       if (url) {
         const uniqueFileName = generateUniqueFileName(file.name);
-        console.log("Generated unique filename:", uniqueFileName); // Log the generated filename
         setPhoto({ [uniqueFileName]: file });
         setImageUrl(url);
       }
@@ -116,9 +114,7 @@ function UpdatePet({ searchParams }) {
         .eq("id", searchParams.id);
 
       if (error) {
-        console.error("Error: ", error);
       } else {
-        console.log("Deleted data: ", data);
         onClose();
         router.push("/account/pet/");
       }
@@ -134,29 +130,21 @@ function UpdatePet({ searchParams }) {
       let { data, error: uploadError } = await supabase.storage
         .from("images")
         .upload(filePath, file);
-      console.log(data);
+
       if (uploadError) {
-        console.error("Error uploading photo:", uploadError);
         return;
       }
 
       // Get URL of uploaded photo
       let url = supabase.storage.from("images").getPublicUrl(data.path);
-      console.log(url.data.publicUrl);
+
       if (!url.data.publicUrl) {
-        console.error(
-          "Error getting photo URL: File does not exist or bucket is not public",
-          url.data.publicUrl
-        );
         return;
       }
 
       updatedImageUrl = url.data.publicUrl;
     }
-    // if (!imageUrl) {
-    //   console.error("Image URL is null");
-    //   return;
-    // }
+
     const petData = {
       name: petName,
       breed: breed,
@@ -178,10 +166,8 @@ function UpdatePet({ searchParams }) {
       .eq("id", petId);
 
     if (error) {
-      console.error("Error creating pet: ", error);
       return null;
     } else {
-      console.log("Pet created successfully", data);
     }
   };
 

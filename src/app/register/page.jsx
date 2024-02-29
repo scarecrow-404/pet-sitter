@@ -76,16 +76,12 @@ const RegisterPage = () => {
     const validationErrors = validation(values);
     setErrors(validationErrors);
     if (Object.keys(validationErrors).length === 0) {
-      console.log(Object.keys(validationErrors).length);
       const user = signUp(values.email, values.password, values);
-      console.log(values);
       router.push("/login");
     }
   }
   async function handleOAuth(provider) {
-    console.log(provider);
     let result = await signUpWithProvider(provider);
-    console.log(result);
   }
 
   return (

@@ -17,26 +17,19 @@ const SitterProfile = () => {
   const [detailUser, setDetailUser] = useState([]);
   const params = useParams();
   const [petPrefer, setPrefer] = useState([]);
-
-  console.log("images", gallery);
-
   async function getSitterData() {
     let { data, error } = await supabase
       .from("sitter_detail")
       .select("*")
       .eq("id", params.sitterId);
     if (error || !data) {
-      console.log(error);
     }
     if (data) {
       const filterData = filterSitterData(data);
       setDetailUser(filterData);
       setGallery(data[0]?.carousel_image);
     }
-    console.log(data, "data");
   }
-  console.log(detailUser, "detailUser");
-
   function filterSitterData(array) {
     const petType = [];
     const arr = [];
@@ -59,7 +52,6 @@ const SitterProfile = () => {
   useEffect(() => {
     getSitterData();
   }, []);
-  console.log("detailUser", detailUser);
   return (
     <>
       <Navbar />

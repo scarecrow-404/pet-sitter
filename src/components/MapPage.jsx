@@ -14,14 +14,12 @@ const MapPage = ({ petSitterId, getMarkers, setGetMarkers, user_id }) => {
     id: "google-map-script",
     googleMapsApiKey: process.env.NEXT_PUBLIC_MAPS_API_KEY,
   });
-  console.log("petSitterId from Map", petSitterId);
-  console.log("getMarkers from Map", getMarkers);
-  console.log("user_id from Map", user_id);
+
   useEffect(() => {
     setMarkers(getMarkers);
   }, [getMarkers]);
   const [markers, setMarkers] = useState([]);
-  // const [petSitterId, setPetSitterId] = useState(null);
+
   const addMarker = useCallback(
     async (event) => {
       const newMarker = {
@@ -39,7 +37,7 @@ const MapPage = ({ petSitterId, getMarkers, setGetMarkers, user_id }) => {
         if (error) {
           throw error;
         }
-        console.log("Marker upserted to Supabase:", data);
+
         toast({
           title: "success",
           position: "top",
@@ -58,12 +56,19 @@ const MapPage = ({ petSitterId, getMarkers, setGetMarkers, user_id }) => {
           return updatedMarkers;
         });
       } catch (error) {
-        console.error("Error upserting marker to Supabase:", error.message);
+        toast({
+          title: "Error",
+          position: "top",
+          description: "Failed to update your location.",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
       }
     },
     [setMarkers, petSitterId]
   );
-  console.log("markers", markers);
+
   let latcenter;
   let lngcenter;
   if (markers.length === 0) {

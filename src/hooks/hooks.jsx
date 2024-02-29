@@ -68,7 +68,6 @@ async function getUserFromQuery(session) {
     .from("users")
     .select("*")
     .eq("id", "fed4e73e-0600-4fa7-acff-25d9bf80b66e");
-  console.log(error);
-  console.log(data);
+
   return data[0];
 }

@@ -20,7 +20,6 @@ const Search = () => {
   const [lengthReview, setLengthReview] = useState(1);
 
   const reviewsPerPage = 5;
-  console.log("pageeeeeeee", lengthReview);
   const nextPage = () => {
     setPage(page + 1);
   };
@@ -30,27 +29,18 @@ const Search = () => {
     }
     setPage(page - 1);
   };
-
   const expQuery = search.exp;
-
   const petQuery = search.pet.length ? [...search.pet] : [1, 2, 3, 4];
-  console.log(search.exp, "expQ");
-
   const ratingStart = search.rating ? Number(search.rating) : 0;
-
   const ratingEnd = ratingStart ? ratingStart + 1 : 6;
-
   const keyword = search.keyword ? search.keyword : "";
-
   function splitPage(numpage) {
     const pageArr = [];
-
     for (let i = 1; i <= numpage; i++) {
       pageArr.push(i);
     }
     return pageArr;
   }
-
   async function getSitterData(
     expQuery,
     petQuery,
@@ -60,27 +50,15 @@ const Search = () => {
     reviewsPerPage,
     page
   ) {
-    console.log(
-      "ccccccccccccccc",
-      expQuery,
-      petQuery,
-      ratingStart,
-      ratingEnd,
-      keyword,
-      reviewsPerPage,
-      page
-    );
     let expStart;
     let expEnd;
     if (expQuery.length >= 3) {
       const split = expQuery.split("-");
-      console.log("split1", split[0], split[1]);
       expStart = split[0];
       expEnd = split[1];
     }
     if (expQuery.length == 2) {
       const split = expQuery.split("+");
-      console.log("split2", split[0], split[1]);
       expStart = split[0];
       expEnd = 100;
     }
@@ -114,17 +92,11 @@ const Search = () => {
         }
       );
       if (!sitterData || errorSitter || !pageData || errorPage) {
-        console.log(errorSitter, errorPage);
       }
-
-      console.log("data", sitterData);
-      console.log("dataPage", pageData);
       const totalPage = pageData.length ? pageData.length : 5;
       setLengthReview(Math.ceil(totalPage / reviewsPerPage));
       setSitterData(sitterData);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   }
 
   useEffect(() => {

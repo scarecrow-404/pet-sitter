@@ -168,17 +168,13 @@ const SitterManagement = () => {
             router.push("/login");
           }, 0);
         }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
+      } catch (error) {}
     };
 
     const fetchUser = async () => {
       try {
         await user;
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
+      } catch (error) {}
     };
 
     fetchUser().then(() => {
@@ -207,7 +203,6 @@ const SitterManagement = () => {
 
   const fetchMarkersFromSupabase = async () => {
     try {
-      console.log("getMarkers typeof 156", typeof petSitterID);
       const { data, error } = await supabase
         .from("markers")
         .select("*")
@@ -215,19 +210,16 @@ const SitterManagement = () => {
       if (error) {
         throw error;
       }
-      console.log("dddddddd", data);
+
       if (data && data.length > 0) {
         setGetMarkers(data);
       }
-    } catch (error) {
-      console.error("Error fetching markers from Supabase:", error.message);
-    }
+    } catch (error) {}
   };
-  console.log("getMarkers 169", getMarkers);
+
   //fetch data start
   const fetchUserData = async () => {
     if (!userId) {
-      console.error("User ID is null or user object is missing");
       return;
     }
     const { data, error } = await supabase
@@ -253,21 +245,18 @@ const SitterManagement = () => {
   };
   const fetchImageUrlData = async () => {
     if (!userId) {
-      console.error("User is null or user object is missing");
       return;
     }
 
     const petSitterData = await fetchPetSitterData();
 
     if (!petSitterData || !petSitterData.id) {
-      console.error("PetSitterData is null or missing id");
       return;
     }
 
     const petSitterID = parseInt(petSitterData.id);
 
     if (isNaN(petSitterID)) {
-      console.error("Invalid PetSitterID");
       return;
     }
 
@@ -275,7 +264,7 @@ const SitterManagement = () => {
       .from("gallery_sitter")
       .select("*")
       .eq("pet_sitter_id", petSitterID);
-    console.log(data);
+
     if (error) {
       toast({
         title: "Error",
@@ -292,22 +281,19 @@ const SitterManagement = () => {
         setPetImage(ImageUrlData.image_url);
         setOldPetImage(ImageUrlData.image_url);
       } else {
-        console.error("No data found in the column");
-        // ทำอะไรก็ตามที่คุณต้องการทำเมื่อไม่พบข้อมูลในคอลัมน์
       }
     }
   };
 
   const fetchPetSitterData = async () => {
     if (!userId) {
-      console.error("userId is null");
       return;
     }
     const { data, error } = await supabase
       .from("pet_sitter")
       .select("*")
       .eq("user_id", userId);
-    console.log(data);
+
     if (error) {
       toast({
         title: "Error",
@@ -318,14 +304,7 @@ const SitterManagement = () => {
         isClosable: true,
       });
     }
-    // if (data[0].experience !== null) {
-    //   const existingExperienceOption = options.find(
-    //     (option) => option.label == data[0].experience
-    //   );
 
-    //   setExperience(existingExperienceOption);
-    //   console.log("exp", existingExperienceOption);
-    // }
     const petSitterData = data[0];
     setPetSitterID(petSitterData.id);
     setSitterId(petSitterData.id);
@@ -350,13 +329,12 @@ const SitterManagement = () => {
       province: petSitterData.province,
       zipcode: petSitterData.post_code,
     });
-    console.log("petSitterData", petSitterData);
+
     return petSitterData;
   };
-  console.log("petSitterID", petSitterID);
+
   const fetchDataPetTypesPrefer = async (petSitterID) => {
     if (!petSitterID) {
-      console.error("petSitterID is undefined");
       return;
     }
 
@@ -398,7 +376,6 @@ const SitterManagement = () => {
       const url = URL.createObjectURL(file);
       if (url) {
         const uniqueFileName = generateUniqueFileName(file.name);
-        console.log("Generated unique filename:", uniqueFileName); // Log the generated filename
         setPhoto({ [uniqueFileName]: file });
         setImageUrl(url);
       }
@@ -411,7 +388,6 @@ const SitterManagement = () => {
       const url = URL.createObjectURL(file);
       if (url) {
         const uniqueFileName = generateUniqueFileName(file.name);
-        console.log("Generated unique filename:", uniqueFileName); // Log the generated filename
         setPhotoSitter({ [uniqueFileName]: file });
         setImageUrlSitter(url);
       }
@@ -434,7 +410,6 @@ const SitterManagement = () => {
       let { data, error: uploadError } = await supabase.storage
         .from("images")
         .upload(filePath, file);
-      console.log(data);
       if (uploadError) {
         toast({
           title: "Error",
@@ -449,7 +424,6 @@ const SitterManagement = () => {
 
       // Get URL of uploaded photo
       let url = supabase.storage.from("images").getPublicUrl(data.path);
-      console.log(url.data.publicUrl);
       if (!url.data.publicUrl) {
         toast({
           title: "Error",
@@ -469,15 +443,12 @@ const SitterManagement = () => {
       image_url: updatedImageUrl,
       updated_at: new Date(),
     };
-    console.log("updatesData 401 ", updatesData);
     const { error } = await supabase
       .from("pet_sitter")
       .update(updatesData)
       .eq("user_id", userId);
     if (error) {
-      console.error("Error updating sitter:", error);
     } else {
-      console.log("Sitter updated successfully");
     }
   };
 
@@ -489,7 +460,6 @@ const SitterManagement = () => {
       let { data, error: uploadError } = await supabase.storage
         .from("images")
         .upload(filePath, file);
-      console.log(data);
       if (uploadError) {
         toast({
           title: "Error",
@@ -504,7 +474,6 @@ const SitterManagement = () => {
 
       // Get URL of uploaded photo
       let url = supabase.storage.from("images").getPublicUrl(data.path);
-      console.log(url.data.publicUrl);
       if (!url.data.publicUrl) {
         toast({
           title: "Error",
@@ -532,18 +501,13 @@ const SitterManagement = () => {
       .update(updatesData)
       .eq("id", userId);
     if (error) {
-      console.error("Error updating user:", error);
     } else {
-      console.log("User updated successfully");
     }
   };
-  console.log(experience);
-  console.log(typeof experience);
+
   //update pet sitter
   const updatesPetSitter = async () => {
     try {
-      console.log("inside function");
-
       const updataPetSitterData = {
         introduction: introduction,
         address_detail: addressDetail,
@@ -563,20 +527,13 @@ const SitterManagement = () => {
         etcs: etcs,
         updated_at: new Date(),
       };
-      console.log("updatesPets", updataPetSitterData);
-      console.log("userId 425", userId);
       const { data, error } = await supabase
         .from("pet_sitter")
         .upsert(updataPetSitterData, { onConflict: "user_id" });
 
       if (error) {
-        console.error("Error updating user:", error);
       }
-      console.log("after await");
-      console.log(`User updated successfully ${data}`);
-    } catch (error) {
-      console.error("Error updating user:", error);
-    }
+    } catch (error) {}
   };
   //update petsitter end
 
@@ -595,7 +552,6 @@ const SitterManagement = () => {
       .eq("pet_sitter_id", petSitterID);
 
     if (error) {
-      console.error("Error fetching existing pet types:", error);
       return;
     }
 
@@ -616,12 +572,8 @@ const SitterManagement = () => {
       .eq("pet_sitter_id", petSitterID);
 
     if (upsertError) {
-      console.error("Error upserting pet types:", upsertError);
       return;
     }
-
-    console.log("Pet types upserted successfully");
-
     // ลบข้อมูลที่ไม่มีในข้อมูลใหม่
     const dataToDelete = existingPetTypes.filter((item) => {
       return !newPetTypes.some(
@@ -641,37 +593,20 @@ const SitterManagement = () => {
         .eq("pet_sitter_id", petSitterID);
 
       if (deleteError) {
-        console.error("Error deleting old pet types:", deleteError);
         return;
       }
-
-      console.log("Old pet types deleted successfully");
     }
   };
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    console.log("submit push");
-
     setLoading(true); // Show spinner
-
     try {
-      console.log("start updatepetSitter");
       await updatesPetSitter();
-      console.log("end updatepetSitter");
-      console.log("start dataPetType");
       await dataPetType();
-      console.log("end dataPetType");
-      console.log("start UpdatesAvatarUser");
       await updatesAvatarSitter();
-      console.log("end UpdatesAvatarsitter");
-      console.log("start uploadAvatarUser");
       await updatesAvatarUser();
-      console.log("end UpdatesAvatarUser");
-      console.log("start uploadPetImages");
       await uploadPetImages();
-      console.log("end uploadPetImages");
-      console.log("after await");
       toast({
         title: "Success",
         position: "top",
@@ -693,7 +628,6 @@ const SitterManagement = () => {
       setLoading(false); // Hide spinner
     }
   };
-
   //upload petimage
   const fileNames = (i) => {
     const item = oldPetImage[i] + "";
@@ -711,7 +645,6 @@ const SitterManagement = () => {
 
   const uploadPetImages = async () => {
     if (!petImage || typeof petImage !== "object") {
-      console.error("Invalid petImage:", petImage);
       return;
     }
 
@@ -742,14 +675,11 @@ const SitterManagement = () => {
           const url = supabase.storage.from("images").getPublicUrl(data.path);
           uploadedImageUrls.push(url.data.publicUrl);
         } catch (error) {
-          console.error("Error uploading image:", error.message);
           // Handle error gracefully
         }
       } else {
         uploadedImageUrls.push(file);
       }
-      console.log("uploadedImageUrls", uploadedImageUrls);
-      console.log("petSitterID", petSitterID);
     }
 
     try {
@@ -765,9 +695,7 @@ const SitterManagement = () => {
       if (error) {
         throw error;
       }
-      console.log("User updated successfully");
     } catch (error) {
-      console.error("Error updating user:", error.message);
       // Handle error gracefully
     }
   };
@@ -795,8 +723,6 @@ const SitterManagement = () => {
     delete updatedPetImage[petImageKey];
     setPetImage(updatedPetImage);
   };
-  console.log("petImage", petImage);
-
   const renderPetImages = () => {
     if (!petImage) {
       return null;
@@ -831,7 +757,6 @@ const SitterManagement = () => {
   };
 
   const handlePetType = (selectedOptions) => {
-    console.log("Selected options:", selectedOptions);
     setPetType(selectedOptions);
   };
 
@@ -842,7 +767,6 @@ const SitterManagement = () => {
       .select("*");
 
     if (error) {
-      console.error("Error reading records:", error);
       return;
     }
 
@@ -865,9 +789,7 @@ const SitterManagement = () => {
   const handleExperience = (value) => {
     const selectedOption = options.find((option) => option.value === value);
     setExperience(selectedOption.value);
-    console.log(selectedOption.value);
   };
-
   return (
     <div className="flex bg-sixthGray justify-center">
       <div className="hidden bg-sixthGray lg:block relative">

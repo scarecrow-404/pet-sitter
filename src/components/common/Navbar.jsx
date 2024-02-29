@@ -66,12 +66,8 @@ const Navbar = () => {
       .from("users")
       .select("*")
       .eq("id", session.user.id);
-    console.log(error);
-
     setUser(data[0]);
-
     setIsLoading(false);
-
     return data[0];
   }
 
@@ -81,9 +77,6 @@ const Navbar = () => {
 
       if (session && session.user) {
         setUserId(session.user.id);
-        console.log("Session:", session);
-        console.log("User ID:", session.user.id);
-
         await getUser(session);
         setIsLoading(false);
       } else {
@@ -91,20 +84,13 @@ const Navbar = () => {
         if (storedSession) {
           const session = JSON.parse(storedSession);
           setUserId(session.user.id);
-          console.log("Stored session:", session);
-          console.log("User ID:", session.user.id);
           await getUser(session);
-
           setIsLoading(false);
         }
       }
     };
-
     fetchSession();
-
     supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log(`Supabase auth event: ${event}`);
-
       if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
         if (session) {
           localStorage.setItem("session", JSON.stringify(session));
@@ -113,11 +99,8 @@ const Navbar = () => {
 
           setIsLoading(false);
           const image = user?.image_url;
-          console.log(user?.image_url);
           setProfileImage(image ?? mockPhoto);
           if (user?.user_type === "sitter") {
-            console.log(user?.user_type);
-            console.log(user);
             setIsPetSitter(true);
           }
           setIsLoading(false);
@@ -147,7 +130,6 @@ const Navbar = () => {
   };
 
   const handleSignOut = () => {
-    console.log("sign out click");
     signOut();
     router.push("/");
   };

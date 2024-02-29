@@ -49,11 +49,8 @@ const SearchBar = () => {
         .from("pet_type_master")
         .select("*");
       setPettype(data);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
-console.log("")
   const handleSearch = async (event) => {
     event.preventDefault();
     const currentPath = pathname;
@@ -69,8 +66,6 @@ console.log("")
       router.push("/search");
     }
   };
-
-  console.log("frombrigth", search);
   useEffect(() => {
     if (search.exp) {
       setExperianceQuery(search.exp);
@@ -104,8 +99,6 @@ console.log("")
     };
   }, []);
   useEffect(() => {
-    console.log(inputType);
-    console.log(searchRating);
   }, [inputType, searchRating]);
 
   function renderStar(starNumber) {
@@ -224,7 +217,9 @@ console.log("")
                     setExperianceQuery(event.target.value);
                   }}
                 >
-                <option disabled value="">Select Experience</option>
+                  <option disabled value="">
+                    Select Experience
+                  </option>
                   <option value="0-2">0-2 Years</option>
                   <option value="3-5">3-5 Years</option>
                   <option value="5+">5+ years</option>
