@@ -71,6 +71,18 @@ const SitterManagement = () => {
   const [accountType, setAccountType] = useState("");
   const [bankName, setBankName] = useState("");
   const [etcs, setEtcs] = useState("");
+  // error message
+  const [errorFullName, setErrorFullName] = useState("");
+  const [errorPhoneNumber, setErrorPhoneNumber] = useState("");
+  const [errorEmail, setErrorEmail] = useState("");
+  const [errorTradeName, setErrorTradeName] = useState("");
+  const [errorIntroduction, setErrorIntroduction] = useState("");
+  const [errorServices, setErrorServices] = useState("");
+  const [errorAddressDetail, setErrorAddressDetail] = useState("");
+  const [errorAccountNumber, setErrorAccountNumber] = useState("");
+  const [errorAccountName, setErrorAccountName] = useState("");
+  const [errorAccountType, setErrorAccountType] = useState("");
+  const [errorBankName, setErrorBankName] = useState("");
   //loading and toast start
   const [loading, setLoading] = useState(false);
   const toast = useToast();
@@ -867,7 +879,7 @@ const SitterManagement = () => {
             </div>
             <div className=" md:items-end md:flex md:gap-9 md:justify-between ">
               <div className="fullname mt-5 md:w-80 lg:w-[474px] xl:w-[560px]">
-                <FormControl isRequired isInvalid={isError}>
+                <FormControl isRequired isInvalid={errorFullName !== ""}>
                   <FormLabel>Your full name</FormLabel>
                   <Input
                     type="text"
@@ -876,12 +888,20 @@ const SitterManagement = () => {
                     pattern="^[a-zA-Z\s]*$"
                     value={fullName}
                     onChange={handleFullNameChange}
+                    onBlur={() => {
+                      if (fullName.trim() === "") {
+                        setErrorFullName("Please enter your name");
+                      } else if (!isValidFullName) {
+                        setErrorFullName(
+                          "Full name cannot exceed 60 characters"
+                        );
+                      } else {
+                        setErrorFullName("");
+                      }
+                    }}
+                    errorBorderColor="red.400"
                   />
-                  {!isValidFullName && (
-                    <p className="text-red-600">
-                      Full name cannot exceed 60 characters.
-                    </p>
-                  )}
+                  <FormErrorMessage>{errorFullName}</FormErrorMessage>
                 </FormControl>
               </div>
               <div className="Experience  md:w-80 lg:w-[474px] xl:w-[560px]">
@@ -908,7 +928,7 @@ const SitterManagement = () => {
             </div>
             <div className="md:flex md:gap-9 md:justify-between">
               <div className="phoneNumber md:w-80 lg:w-[474px] xl:w-[560px]">
-                <FormControl isRequired>
+                <FormControl isRequired isInvalid={errorPhoneNumber !== ""}>
                   <FormLabel>Phone Number</FormLabel>
                   <Input
                     type="tel"
@@ -927,22 +947,37 @@ const SitterManagement = () => {
                     onChange={(event) => {
                       setPhoneNumber(event.target.value);
                     }}
+                    onBlur={() => {
+                      if (phoneNumber.trim() === "") {
+                        setErrorPhoneNumber("Please enter your phone number");
+                      } else {
+                        setErrorPhoneNumber("");
+                      }
+                    }}
+                    errorBorderColor="red.400"
                   />
+                  <FormErrorMessage>{errorPhoneNumber}</FormErrorMessage>
                 </FormControl>
               </div>
               <div className="email md:w-80 lg:w-[474px] xl:w-[560px] ">
-                <FormControl isRequired>
+                <FormControl isRequired isInvalid={errorEmail !== ""}>
                   <FormLabel>Email</FormLabel>
                   <Input
                     type="email"
                     value={email}
                     onChange={handleEmailChange}
+                    onBlur={() => {
+                      if (email.trim() === "") {
+                        setErrorEmail("Please enter your email");
+                      } else if (!isValidEmail) {
+                        setErrorEmail("The email format is incorrect.");
+                      } else {
+                        setErrorEmail("");
+                      }
+                    }}
+                    errorBorderColor="red.400"
                   />
-                  {!isValidEmail && (
-                    <p className=" text-red-600">
-                      The email format is incorrect.
-                    </p>
-                  )}
+                  <FormErrorMessage>{errorEmail}</FormErrorMessage>
                 </FormControl>
               </div>
             </div>
@@ -988,14 +1023,24 @@ const SitterManagement = () => {
 
             <div className="md:flex md:gap-9 md:justify-between pt-5  ">
               <div className="TradeName md:w-80 lg:w-[474px] xl:w-[560px]">
-                <FormControl isRequired>
+                <FormControl isRequired isInvalid={errorTradeName !== ""}>
                   <FormLabel>Pet sitter name (Trade Name)</FormLabel>
                   <Input
+                    type="text"
                     value={tradeName}
                     onChange={(event) => {
                       setTradeName(event.target.value);
                     }}
+                    onBlur={() => {
+                      if (tradeName.trim() === "") {
+                        setErrorTradeName("Please enter your pet sitter name");
+                      } else {
+                        setErrorTradeName("");
+                      }
+                    }}
+                    errorBorderColor="red.400"
                   />
+                  <FormErrorMessage>{errorTradeName}</FormErrorMessage>
                 </FormControl>
               </div>
               <div className="petType md:w-80 lg:w-[474px] xl:w-[560px]">
@@ -1018,7 +1063,7 @@ const SitterManagement = () => {
             <div className="md:flex flex-col md:gap-9 ">
               <div>
                 <div className="Introduction">
-                  <FormControl isRequired>
+                  <FormControl isRequired isInvalid={errorIntroduction !== ""}>
                     <FormLabel>
                       Introduction (Describe about yourself as pet sitter)
                     </FormLabel>
@@ -1028,12 +1073,23 @@ const SitterManagement = () => {
                       onChange={(event) => {
                         setIntroduction(event.target.value);
                       }}
+                      onBlur={() => {
+                        if (introduction.trim() === "") {
+                          setErrorIntroduction(
+                            "Please describe yourself as pet sitter"
+                          );
+                        } else {
+                          setErrorIntroduction("");
+                        }
+                      }}
+                      errorBorderColor="red.400"
                     />
+                    <FormErrorMessage>{errorIntroduction}</FormErrorMessage>
                   </FormControl>
                 </div>
               </div>
               <div className="services ">
-                <FormControl isRequired>
+                <FormControl isRequired isInvalid={errorServices !== ""}>
                   <FormLabel>
                     Services (Describe all of your service for pet sitting)
                   </FormLabel>
@@ -1043,19 +1099,39 @@ const SitterManagement = () => {
                     onChange={(event) => {
                       setServices(event.target.value);
                     }}
+                    onBlur={() => {
+                      if (services.trim() === "") {
+                        setErrorServices("Please describe your services");
+                      } else {
+                        setErrorServices("");
+                      }
+                    }}
+                    errorBorderColor="red.400"
                   />
+                  <FormErrorMessage>{errorServices}</FormErrorMessage>
                 </FormControl>
               </div>
               <div className="bg-white rounded-xl  flex flex-col gap-4">
                 <div>
-                  <FormControl isRequired>
+                  <FormControl isRequired isInvalid={errorAddressDetail !== ""}>
                     <FormLabel>Address detail</FormLabel>
                     <Input
                       value={addressDetail}
                       onChange={(event) => {
                         setAddressDetail(event.target.value);
                       }}
+                      onBlur={() => {
+                        if (addressDetail === "") {
+                          setErrorAddressDetail(
+                            "Please enter your address detail"
+                          );
+                        } else {
+                          setErrorAddressDetail("");
+                        }
+                      }}
+                      errorBorderColor="red.400"
                     />
+                    <FormErrorMessage>{errorAddressDetail}</FormErrorMessage>
                   </FormControl>
                 </div>
                 <div className="md:flex md:gap-9 md:justify-between">
@@ -1195,7 +1271,7 @@ const SitterManagement = () => {
             <div className="bg-white rounded-xl p-5 mb-5 flex flex-col gap-4">
               <p className="pb-6 font-bold">Bank</p>
               <div>
-                <FormControl isRequired>
+                <FormControl isRequired isInvalid={errorAccountNumber !== ""}>
                   <FormLabel>Account Number</FormLabel>
                   <Input
                     type="tel"
@@ -1214,39 +1290,77 @@ const SitterManagement = () => {
                     onChange={(event) => {
                       setAccountNumber(event.target.value);
                     }}
+                    onBlur={() => {
+                      if (accountNumber.trim() === "") {
+                        setErrorAccountNumber(
+                          "Please enter your account number"
+                        );
+                      } else {
+                        setErrorAccountNumber("");
+                      }
+                    }}
+                    errorBorderColor="red.400"
                   />
+                  <FormErrorMessage>{errorAccountNumber}</FormErrorMessage>
                 </FormControl>
               </div>
               <div className="md:flex md:gap-9 md:justify-between">
-                <FormControl isRequired>
+                <FormControl isRequired isInvalid={errorAccountName !== ""}>
                   <FormLabel>Account Name</FormLabel>
                   <Input
                     value={accountName}
                     onChange={(event) => {
                       setAccountName(event.target.value);
                     }}
+                    onBlur={() => {
+                      if (accountName.trim() === "") {
+                        setErrorAccountName("Please enter your account name");
+                      } else {
+                        setErrorAccountName("");
+                      }
+                    }}
+                    errorBorderColor="red.400"
                   />
+                  <FormErrorMessage>{errorAccountName}</FormErrorMessage>
                 </FormControl>
 
-                <FormControl isRequired>
+                <FormControl isRequired isInvalid={errorBankName !== ""}>
                   <FormLabel>Bank Name</FormLabel>
                   <Input
                     value={bankName}
                     onChange={(event) => {
                       setBankName(event.target.value);
                     }}
+                    onBlur={() => {
+                      if (bankName.trim() === "") {
+                        setErrorBankName("Please enter bank name");
+                      } else {
+                        setErrorBankName("");
+                      }
+                    }}
+                    errorBorderColor="red.400"
                   />
+                  <FormErrorMessage>{errorBankName}</FormErrorMessage>
                 </FormControl>
               </div>
               <div className="md:flex md:gap-9 md:justify-between">
-                <FormControl isRequired>
+                <FormControl isRequired isInvalid={errorAccountType !== ""}>
                   <FormLabel>Account Type</FormLabel>
                   <Input
                     value={accountType}
                     onChange={(event) => {
                       setAccountType(event.target.value);
                     }}
+                    onBlur={() => {
+                      if (accountType.trim() === "") {
+                        setErrorAccountType("Please enter your account type");
+                      } else {
+                        setErrorAccountType("");
+                      }
+                    }}
+                    errorBorderColor="red.400"
                   />
+                  <FormErrorMessage>{errorAccountType}</FormErrorMessage>
                 </FormControl>
 
                 <FormControl>
