@@ -63,24 +63,54 @@ export function Sidebar({ active }) {
   };
 
   const params = useParams();
-  const { user, setUser, userId, sitterId } = useUser();
+  const { user, setUser, userId, sitterId, setSitterId } = useUser();
   // const [sitterId, setSitterId] = useState();
-  // async function getSitterId() {
-  //   let { data, error } = await supabase
-  //     .from("pet_sitter")
-  //     .select("*")
-  //     .eq("user_id", userId);
-  //   console.log("data", data);
-  //   setSitterId(data[0].id);
-  //   if (error) {
-  //     console.error(error);
-  //   }
-  // }
+  async function getSitterId() {
+    let { data, error } = await supabase
+      .from("pet_sitter")
+      .select("id")
+      .eq("user_id", userId);
 
-  // useEffect(() => {
-  //   getSitterId();
-  // }, []);
+    setSitterId(data[0]?.id);
+    if (error) {
+      console.error(error);
+    }
+  }
 
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchDataAsync = async () => {
+      try {
+        if (!user) {
+          throw new Error("User data not available");
+        }
+        if (user) {
+          await Promise.all([getSitterId()]);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    const fetchUser = async () => {
+      try {
+        await user;
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUser().then(() => {
+      if (isMounted) {
+        fetchDataAsync();
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user]);
   const router = useRouter();
   const handleSignOut = () => {
     signOut();

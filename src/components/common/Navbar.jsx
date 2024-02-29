@@ -36,8 +36,15 @@ import { set } from "date-fns";
 import { is } from "date-fns/locale";
 import { Player, Controls } from "@lottiefiles/react-lottie-player";
 const Navbar = () => {
-  const { user, setUser, userId, setUserId, isLoading, setIsLoading } =
-    useUser();
+  const {
+    user,
+    setUser,
+    userId,
+    setUserId,
+    isLoading,
+    setIsLoading,
+    setSitterId,
+  } = useUser();
   const router = useRouter();
   const [profileImage, setProfileImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);

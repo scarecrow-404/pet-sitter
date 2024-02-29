@@ -18,8 +18,16 @@ import {
   Box,
   SkeletonCircle,
   SkeletonText,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  AlertDialogCloseButton,
+  Button,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import supabase from "@/lib/utils/db";
 import upload from "@/asset/images/uploadMin10.svg";
 import uploadDisable from "@/asset/images/uploadMin10disable.svg";
@@ -86,6 +94,7 @@ const SitterManagement = () => {
   //loading and toast start
   const [loading, setLoading] = useState(false);
   const toast = useToast();
+  const [userDataLoaded, setUserDataLoaded] = useState(false);
   //loading and toast end
   const [getMarkers, setGetMarkers] = useState([]);
   //validate start
@@ -132,18 +141,57 @@ const SitterManagement = () => {
     setSubDistrict(address.amphoe);
     setPostCode(address.zipcode);
   };
-  console.log("userId", user);
+  //modal check user
+
   //fetch data
 
   useEffect(() => {
-    if (user?.user_type === "sitter") {
-      fetchData();
-    } else if (user?.user_type === "customer") {
-      router.push("/");
-    } else if (!user) {
-      router.push("/login");
-    }
-  }, [userId]);
+    let isMounted = true;
+
+    const fetchDataAsync = async () => {
+      try {
+        if (!user) {
+          throw new Error("User data not available");
+        }
+        if (user?.user_type === "sitter") {
+          await Promise.all([fetchData()]);
+        } else {
+          toast({
+            title: "Error",
+            position: "top",
+            description: `Access denied: You are not a pet sitter`,
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
+          setTimeout(() => {
+            router.push("/login");
+          }, 0);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    const fetchUser = async () => {
+      try {
+        await user;
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUser().then(() => {
+      if (isMounted) {
+        fetchDataAsync();
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user]);
+
   const fetchData = async () => {
     setLoading(true);
     await fetchUserData();
@@ -1189,12 +1237,6 @@ const SitterManagement = () => {
                     user_id={userId}
                   />
                 </FormControl>
-                {/* <MapContainer
-                center={position}
-                zoom={10}
-                markers={markers}
-                onClick={handleMapClick}
-              /> */}
               </div>
             </div>
             <div className="pt-8">

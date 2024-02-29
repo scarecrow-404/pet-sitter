@@ -79,14 +79,46 @@ const Payment = () => {
   const lastThreeDigits = bankNumber.slice(-3);
 
   useEffect(() => {
-    if (user?.user_type === "sitter") {
-      getOwnPetData();
-      getBankNumber();
-    } else if (user?.user_type === "customer") {
-      router.push("/");
-    } else if (!user) {
-      router.push("/login");
-    }
+    let isMounted = true;
+
+    const fetchDataAsync = async () => {
+      try {
+        if (!user) {
+          throw new Error("User data not available");
+        }
+        if (
+          params.sitterId !== undefined &&
+          sitterId !== undefined &&
+          params.sitterId !== null &&
+          sitterId !== null &&
+          params.sitterId != sitterId
+        ) {
+          router.push("/");
+        } else if (user?.user_type === "sitter") {
+          await Promise.all([getOwnPetData(), getBankNumber()]);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    const fetchUser = async () => {
+      try {
+        await user;
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUser().then(() => {
+      if (isMounted) {
+        fetchDataAsync();
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
   }, [user]);
   return (
     <div className="flex bg-sixthGray justify-center h-screen">
