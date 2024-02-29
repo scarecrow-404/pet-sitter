@@ -208,19 +208,19 @@ const LoginPage = () => {
 
               <div className="text-center">
                 <div className="flex gap-[12px] justify-between">
-                  <button
+                  {/* <button
                     className="flex justify-center gap-[10px] bg-[#F6F6F9] text-black w-1/2 rounded-[99px] px-[24px] py-[12px] h-[34px] sm:h-[48px]"
                     onClick={() => handleOauthSignIn("twitter")}
                   >
                     <span className="flex items-center">
                       <Image src={xIcon} alt="x icon" />
                     </span>
-                    {/* <span className="sm:block hidden text-[16px] font-[700] leading-[24px]">
+                    <span className="sm:block hidden text-[16px] font-[700] leading-[24px]">
                       X
-                    </span> */}
-                  </button>
+                    </span>
+                  </button> */}
                   <button
-                    className="flex justify-center gap-[10px] bg-[#F6F6F9] text-black w-1/2 rounded-[99px] px-[24px] py-[6px] sm:py-[12px] h-[34px] sm:h-[48px]"
+                    className="flex justify-center gap-[10px] bg-[#F6F6F9]  text-black w-[100%] rounded-[99px] px-[24px] py-[6px] sm:py-[12px] h-[34px] sm:h-[48px]"
                     onClick={() => handleOauthSignIn("google")}
                   >
                     <span>
