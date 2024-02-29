@@ -30,7 +30,6 @@ function CardSitter(props) {
       sitterId: id,
     });
   }
-  console.log("bookingdata", bookingData);
   function renderStar(starNumber) {
     let stars = [];
     for (let i = 0; i < starNumber; i++) {
@@ -45,7 +44,6 @@ function CardSitter(props) {
       .select("pet_type_master_id")
       .eq("pet_sitter_id", id);
     if (petPreferError || !petPrefer) {
-      console.log(error);
     }
     setPetId(petPrefer);
     let { data: gallery, error: galleryError } = await supabase
@@ -53,9 +51,7 @@ function CardSitter(props) {
       .select("image_url")
       .eq("id", id);
     if (!gallery || galleryError) {
-      console.log(galleryError);
     }
-    console.log("piccccc", gallery);
     setGallery(gallery[0].image_url);
   }
 
@@ -134,7 +130,6 @@ function CardSitter(props) {
               </div>
               <div className=" flex   gap-2 pt-2">
                 {petId.map((eachId, index) => {
-                  //console.log("eachid", eachId);
                   if (eachId.pet_type_master_id === 1) {
                     return (
                       <p

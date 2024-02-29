@@ -88,17 +88,12 @@ function CreatePetModal({ onClose, fetchPets }) {
         .from("images")
         .upload(filePath, file);
       if (uploadError) {
-        console.error("Error uploading photo:", uploadError);
         return;
       }
 
       // Get URL of uploaded photo
       let url = supabase.storage.from("images").getPublicUrl(data.path);
       if (!url.data.publicUrl) {
-        console.error(
-          "Error getting photo URL: File does not exist or bucket is not public",
-          url.data.publicUrl
-        );
         return;
       }
 
@@ -121,10 +116,8 @@ function CreatePetModal({ onClose, fetchPets }) {
     const { error } = await supabase.from("pet").insert([petData]);
 
     if (error) {
-      console.error("Error creating pet: ", error);
       return null;
     } else {
-      console.log("Pet created successfully");
     }
   };
 

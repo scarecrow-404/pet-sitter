@@ -23,8 +23,7 @@ function ResetPasswordPage() {
   async function handleSubmit(event) {
     event.preventDefault();
     const { error } = await supabase.auth.updateUser({ password: password });
-    if (error) {
-      console.error("Error resetting password:", error.message);
+    if (error) {     
       toast({
         title: "Error",
         position: "top",
@@ -34,7 +33,6 @@ function ResetPasswordPage() {
         isClosable: true,
       });
     } else {
-      console.log("Password reset successfully");
       toast({
         title: "Successfully reset",
         position: "top",
@@ -46,25 +44,6 @@ function ResetPasswordPage() {
       router.push("/login");
     }
   }
-
-  //   async function handleSubmit(event) {
-  //     event.preventDefault();
-  //     try {
-  //       const { error } = await supabase.auth.api.updateUser(
-  //         access_token,
-  //         password
-  //       );
-  //       if (error) {
-  //         throw error;
-  //       } else {
-  //         console.log("Password reset successfully");
-  //         router.push("/login");
-  //       }
-  //     } catch (error) {
-  //       setError(error.message);
-  //     }
-  //   }
-
   return (
     <div className="flex items-center justify-center">
       <div className="h-screen xl:w-[1440px] flex items-center justify-center relative">

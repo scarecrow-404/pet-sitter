@@ -32,7 +32,6 @@ function UserManagementProfile() {
   useEffect(() => {
     const fetchUserData = async () => {
       if (!user || !userId) {
-        console.error("User ID is null or user object is missing");
         return;
       }
       const { data: userData, error } = await supabase
@@ -41,7 +40,6 @@ function UserManagementProfile() {
         .eq("id", userId);
 
       if (error) {
-        console.error("Error fetching user data:", error);
       } else if (userData && userData.length > 0) {
         const fetchedUser = userData[0];
         setName(fetchedUser.full_name);
@@ -51,7 +49,6 @@ function UserManagementProfile() {
         setDateOfBirth(fetchedUser.date_of_birth);
         setImageUrl(fetchedUser.image_url || previewImg);
       } else {
-        console.error("User data not found");
       }
     };
 
@@ -69,7 +66,6 @@ function UserManagementProfile() {
       const url = URL.createObjectURL(file);
       if (url) {
         const uniqueFileName = generateUniqueFileName(file.name);
-        console.log("Generated unique filename:", uniqueFileName); // Log the generated filename
         setPhoto({ [uniqueFileName]: file });
         setImageUrl(url);
       }
@@ -87,18 +83,13 @@ function UserManagementProfile() {
       let { data, error: uploadError } = await supabase.storage
         .from("images")
         .upload(filePath, file);
-      console.log(data);
+
       if (uploadError) {
-        console.error("Error uploading photo:", uploadError);
         return;
       }
       // Get URL of uploaded photo
       let url = supabase.storage.from("images").getPublicUrl(data.path);
       if (!url.data.publicUrl) {
-        console.error(
-          "Error getting photo URL: File does not exist or bucket is not public",
-          url.data.publicUrl
-        );
         return;
       }
       imageUrlToUse = url.data.publicUrl;
@@ -114,14 +105,21 @@ function UserManagementProfile() {
       image_url: imageUrlToUse,
       updated_at: new Date(),
     };
-    console.log("updates", updates);
+
     const { error } = await supabase
       .from("users")
       .update(updates)
       .eq("id", userId);
 
     if (error) {
-      console.error("Error updating user:", error);
+      toast({
+        title: "error",
+        position: "top",
+        description: "Error updating user",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
     } else {
       toast({
         title: "success",

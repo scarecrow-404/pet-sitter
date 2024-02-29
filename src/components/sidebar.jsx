@@ -30,7 +30,6 @@ import supabase from "@/lib/utils/db";
 import { ro } from "date-fns/locale";
 
 export function Sidebar({ active }) {
-  console.log("sideBar");
   const [imageSrcPetSittetProfile, setImageSrcPetSittetProfile] =
     useState(petSittetProfile);
   const [imageSrcBookingList, setImageSrcBookingList] = useState(bookingList);
@@ -70,10 +69,9 @@ export function Sidebar({ active }) {
       .from("pet_sitter")
       .select("id")
       .eq("user_id", userId);
-
     setSitterId(data[0]?.id);
     if (error) {
-      console.error(error);
+     
     }
   }
 
@@ -89,7 +87,7 @@ export function Sidebar({ active }) {
           await Promise.all([getSitterId()]);
         }
       } catch (error) {
-        console.error("Error fetching user data:", error);
+      
       }
     };
 
@@ -97,7 +95,7 @@ export function Sidebar({ active }) {
       try {
         await user;
       } catch (error) {
-        console.error("Error fetching user data:", error);
+     
       }
     };
 
@@ -192,7 +190,7 @@ export function Sidebar({ active }) {
 
 export function TopBar() {
   const [count, setCount] = useState(0);
-  console.log("Topbar", count);
+
   const router = useRouter();
   const { user, setUser, userId, sitterId, setUserId } = useUser();
   const [profileImage, setProfileImage] = useState(null);
@@ -214,7 +212,7 @@ export function TopBar() {
       .from("users")
       .select("*")
       .eq("id", session.user.id);
-    console.log(error);
+
     setUser(data[0]);
 
     setIsLoading(false);
@@ -232,8 +230,6 @@ export function TopBar() {
     }
 
     supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log(`Supabase auth event: ${event}`);
-
       if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
         if (session) {
           setUserId(session.user.id);
@@ -241,11 +237,8 @@ export function TopBar() {
 
           setIsLoading(false);
           const image = user?.image_url;
-          console.log(user?.image_url);
           setProfileImage(image ?? mockPhoto);
           if (user?.user_type === "sitter") {
-            console.log(user?.user_type);
-            console.log(user);
           } else {
             router.push("/");
           }

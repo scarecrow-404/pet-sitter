@@ -46,9 +46,6 @@ const BookingHistory = () => {
       fetchData(userId);
     }
   }, [userId]);
-
-  console.log(bookingDetail, "mmm");
-
   async function fetchData(userId) {
     try {
       let { data: bookDetail, error: bookDetailError } = await supabase
@@ -57,18 +54,11 @@ const BookingHistory = () => {
         .eq("user_id", userId)
         .order("created_at", { ascending: sortOrder === "asc" });
       if (bookDetail) {
-        console.log(bookDetail, "123");
         setBookingDetail(bookDetail);
       } else if (bookDetailError || !bookDetailError) {
-        console.log(bookDetailError);
       }
-    } catch (error) {
-      console.error("Error fetching data:", error.message);
-    }
+    } catch (error) {}
   }
-
-  console.log(bookingDetail, "fgh");
-
   return (
     <div className="max-w-[1440px] mx-auto bg-sixthGray gap-9">
       <Navbar />

@@ -21,7 +21,6 @@ export default function PopUpSitterConfirm() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { user, userId } = useUser();
   const handleSitterMode = async () => {
-    console.log("Sitter Mode");
     if (user?.user_type === "sitter") {
       router.push("/sitter_management");
     } else {
@@ -30,14 +29,12 @@ export default function PopUpSitterConfirm() {
         .update({ user_type: "sitter" })
         .eq("id", userId)
         .select();
-      console.log(data);
     }
     const { data: petSitterData, error: petSitterError } = await supabase
       .from("pet_sitter")
       .upsert([{ user_id: userId }], { returning: "minimal" });
 
     if (petSitterError) {
-      console.error(petSitterError);
     }
 
     router.push("/sitter_management");

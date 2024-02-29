@@ -40,7 +40,7 @@ function SitterDetail(props) {
     }
     return pageArr;
   }
-  console.log("idsit", params.sitterId);
+ 
   async function getReviewData(
     ratingStart,
     ratingEnd,
@@ -71,17 +71,16 @@ function SitterDetail(props) {
         }
       );
       if (!reviewAll || errorReviewAll || !pageOfReview || errorPageOfReview) {
-        console.log(errorReviewAll, errorPageOfReview);
+      
       }
 
-      // console.log("data", reviewAll);
-      // console.log("dataPage", pageOfReview);
+     
       const totalPage = reviewAll.length ? reviewAll.length : 5;
       setLengthReview(Math.ceil(totalPage / reviewsPerPage));
       setReview(pageOfReview);
       setTotalpage(reviewAll.length);
     } catch (error) {
-      console.log(error);
+
     }
   }
 
@@ -118,7 +117,7 @@ function SitterDetail(props) {
     return stars;
   }
   function handleClickStar(number) {
-    // console.log("number", number);
+ 
     if (number == "All Reviews") {
       setRatingEnd(5);
       setRatingStart(1);

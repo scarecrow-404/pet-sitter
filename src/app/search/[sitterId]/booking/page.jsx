@@ -20,7 +20,6 @@ const Booking = () => {
   const params = useParams();
   const { userId } = useUser();
   const { bookingData, setBookingData } = useUser();
-  console.log("biikingdata", bookingData);
   const [dataForSearch, setDataForSearch] = useState(bookingData);
   const [currentStep, setCurrentStep] = useState(1);
   const steps = ["Your Pet", "Information", "Payment"];
@@ -116,29 +115,20 @@ const Booking = () => {
   }
 
   const formattedDate = formatDate(dataForSearch.date);
-  console.log("dateselect", formattedDate);
   useEffect(() => {
-    calculateTotal(selectedPets.length, startTime, endTime);
-    //const { startTime, endTime } = dataForSearch;
-    // const { hours, minutes } = getTimeDifference(startTime, endTime);
-    // console.log(hours, minutes);
+    calculateTotal(selectedPets.length, startTime, endTime);   
   }, [selectedPets]);
 
   const { startTime, endTime } = dataForSearch;
   const { hours, minutes } = getTimeDifference(startTime, endTime);
-  console.log("h and m", hours, minutes);
-  console.log("s and e", startTime, endTime);
-
-  const calculateTotal = (numberOfPets, startTime, endTime) => {
-    //console.log("calculate total called", numberOfPets, startTime, endTime);
+  const calculateTotal = (numberOfPets, startTime, endTime) => { 
     const baseCost = 600; // Base cost for 3-hour booking
     const additionalCostPerPet = 300; // Additional cost per extra pet
     const additionalHourlyRate = 200; // Additional hourly rate for bookings over 3 hours
 
     // Calculate duration in hours and minutes
     // let { startTime, endTime } = dataForSearch;
-    const { hours, minutes } = getTimeDifference(startTime, endTime);
-    // console.log("h and m",hours, minutes);
+    const { hours, minutes } = getTimeDifference(startTime, endTime);   
     // Convert duration to total hours
     const totalHours = hours + minutes / 60;
 
@@ -215,8 +205,6 @@ const Booking = () => {
     let newStep = currentStep;
 
     if (newStep === 1) {
-      console.log("amouttttttttt", totalAmount, disable);
-
       setBookingData({
         ...bookingData,
         petselect: selectedPets,
@@ -280,9 +268,7 @@ const Booking = () => {
     setValues(newObj);
   };
 
-  useEffect(() => {
-    console.log(values);
-  }, [values]);
+  useEffect(() => {}, [values]);
 
   return (
     <div className="bg-[#FAFAFB] ">

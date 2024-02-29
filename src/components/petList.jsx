@@ -48,7 +48,6 @@ export default function PetList() {
       .eq("user_id", userId);
 
     if (error) {
-      console.error("Error fetching pets data:", error);
     } else {
       setDataPets(pets);
     }

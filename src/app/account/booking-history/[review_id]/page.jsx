@@ -46,14 +46,10 @@ const ReviewPage = () => {
       const { data, error } = await supabase.from("review_rating").select(`*`);
 
       if (!data || error) {
-        console.error("error", error);
       } else {
-        console.log("Review data:", data);
         setDataReview(data);
       }
-    } catch (error) {
-      console.error("Error fetching review data:", error.message);
-    }
+    } catch (error) {}
   }
 
   useEffect(() => {

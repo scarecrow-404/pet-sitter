@@ -41,7 +41,6 @@ function BookingHistoryList(props) {
   const [checkStatus, setCheckStatus] = useState(props.process_status);
 
   function petName(arr) {
-    console.log("infncccccccc");
     let allPetName = [];
     arr.map((item) => {
       allPetName.push(`${item.pet.name} `);
@@ -59,7 +58,6 @@ function BookingHistoryList(props) {
     if (startTime && endTime) {
       duration = Math.floor(moment.duration(endTime.diff(startTime)).asHours());
     } else {
-      console.error("Invalid start_time or end_time");
     }
 
     return (
@@ -186,7 +184,6 @@ function BookingHistoryList(props) {
   };
 
   const submitReview = (event) => {
-    console.log("status2", checkStatus, description);
     event.preventDefault();
     insertReview(
       writeRating,
@@ -206,13 +203,6 @@ function BookingHistoryList(props) {
     booking_id,
     user_id
   ) {
-    console.log(
-      "infunction",
-      writeRating,
-      writeDescription,
-      booking_id,
-      user_id
-    );
     const { data, error } = await supabase
       .from("review")
       .insert([
@@ -226,12 +216,9 @@ function BookingHistoryList(props) {
       ])
       .eq("booking_id", booking_id);
 
-    console.log(data, "11AA");
     if (error) {
-      console.log("found some error", error);
       return false;
     }
-    console.log("Review inserted successfully:", data);
     return true;
   }
 
@@ -242,13 +229,11 @@ function BookingHistoryList(props) {
   }, []);
 
   async function fetchData(sitterId, bookingId) {
-    console.log("iddddddd", sitterId, bookingId);
     let { data: sitter, error: sitterError } = await supabase
       .from("pet_sitter")
       .select(`users(full_name, image_url, phone_number)`)
       .eq("id", sitterId);
     if (sitter) {
-      console.log(sitter[0].users.full_name, "aaaaaaaaaaaaaaa");
       setPetSitterFullname([...petSitterFullname, sitter[0].users.full_name]);
       setPetSitterImage([...petSitterFullname, sitter[0].users.image_url]);
       setPetSitterPhoneNumber([
@@ -261,25 +246,19 @@ function BookingHistoryList(props) {
         .select(`*, pet(name)`)
         .eq("booking_id", bookingId);
       if (bookPet) {
-        console.log(bookPet, "123456");
         petName(bookPet);
       } else if (petError || !bookPet) {
-        console.log(petError);
       }
     } else if (sitterError || !sitterError) {
-      console.log(sitterError);
     }
     let { data: review, error: reviewError } = await supabase
       .from("review")
       .select(`*`)
       .eq("booking_id", bookingId);
     if (review) {
-      console.log(review, "12345");
       setDescription(review[0]?.description);
       setRating(review[0]?.rating);
-      console.log(review, "aaaaaaaaaaaaaaah");
     } else if (reviewError || !review) {
-      console.log(reviewError);
     }
   }
 
